@@ -27,7 +27,7 @@ const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 async function searchHackerNews(query: string): Promise<HNSearchResult[]> {
   const ALGOLIA_APP_ID = 'HYI9B2GI1O'
   const ALGOLIA_API_KEY = '39dd00ce238cbf8d556b3b4ae1c2d1ab'
-  
+
   try {
     // First search for stories
     const storiesResponse = await fetch(
@@ -45,7 +45,7 @@ async function searchHackerNews(query: string): Promise<HNSearchResult[]> {
           advancedSyntax: true,
           analyticsTags: ['production'],
         }),
-      }
+      },
     )
 
     if (!storiesResponse.ok) {
@@ -53,7 +53,7 @@ async function searchHackerNews(query: string): Promise<HNSearchResult[]> {
     }
 
     const storiesData = await storiesResponse.json()
-    
+
     return storiesData.hits.map((hit: any) => ({
       title: hit.title || hit.story_title || '',
       url: hit.url || `https://news.ycombinator.com/item?id=${hit.objectID}`,
@@ -119,7 +119,7 @@ function generateCacheKey(query: string): string {
 function getCachedOrFetch(query: string): Promise<HNContext> {
   const cacheKey = generateCacheKey(query)
   const cached = hnCache.get(cacheKey)
-  
+
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
     return Promise.resolve(cached.data)
   }
@@ -139,7 +139,7 @@ export async function fetchHNContext(query: string): Promise<HNContext> {
 
     // Search Hacker News
     const rawResults = await searchHackerNews(searchQuery)
-    
+
     // Rank and filter results
     const rankedResults = rankAndFilterResults(rawResults)
 
@@ -194,7 +194,7 @@ export async function POST(request: Request) {
     if (!query || typeof query !== 'string') {
       return NextResponse.json(
         { error: 'Query is required and must be a string' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -202,7 +202,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         success: true,
         data: null,
-        message: 'HN context disabled'
+        message: 'HN context disabled',
       })
     }
 
@@ -215,11 +215,11 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('HN context API error:', error)
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

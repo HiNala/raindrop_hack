@@ -9,11 +9,11 @@ export default function SignUpPage() {
       {/* Background Effects */}
       <div className="absolute inset-0 hero-gradient"></div>
       <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
-      
+
       {/* Floating Orbs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-      
+
       {/* Content */}
       <div className="w-full max-w-md relative z-10">
         {/* Header */}
@@ -34,8 +34,8 @@ export default function SignUpPage() {
 
         {/* Clerk Sign Up Component */}
         <div className="glass-card p-1">
-          <SignUp 
-            routing="path" 
+          <SignUp
+            routing="path"
             path="/sign-up"
             appearance={{
               variables: {

@@ -39,7 +39,7 @@ export function ImportMarkdownDialog() {
     }
 
     setFile(selectedFile)
-    
+
     // Read file content
     const reader = new FileReader()
     reader.onload = (event) => {

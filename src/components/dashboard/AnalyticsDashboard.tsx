@@ -15,7 +15,7 @@ import {
   Target,
   Award,
   Zap,
-  Activity
+  Activity,
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -33,7 +33,7 @@ const mockAnalytics = {
     totalComments: 78,
     avgReadTime: 4.2,
     topDay: '2024-01-15',
-    topDayViews: 234
+    topDayViews: 234,
   },
   posts: [
     {
@@ -58,8 +58,8 @@ const mockAnalytics = {
         { date: '2024-01-13', views: 123 },
         { date: '2024-01-14', views: 156 },
         { date: '2024-01-15', views: 234 },
-        { date: '2024-01-16', views: 198 }
-      ]
+        { date: '2024-01-16', views: 198 },
+      ],
     },
     {
       id: '2',
@@ -83,8 +83,8 @@ const mockAnalytics = {
         { date: '2024-01-11', views: 167 },
         { date: '2024-01-12', views: 189 },
         { date: '2024-01-13', views: 201 },
-        { date: '2024-01-14', views: 178 }
-      ]
+        { date: '2024-01-14', views: 178 },
+      ],
     },
     {
       id: '3',
@@ -108,16 +108,16 @@ const mockAnalytics = {
         { date: '2024-01-08', views: 89 },
         { date: '2024-01-09', views: 112 },
         { date: '2024-01-10', views: 134 },
-        { date: '2024-01-11', views: 123 }
-      ]
-    }
+        { date: '2024-01-11', views: 123 },
+      ],
+    },
   ],
   recentActivity: [
     { type: 'view', post: 'Getting Started with Next.js 15', timestamp: '2 minutes ago', count: 3 },
     { type: 'like', post: 'TypeScript Best Practices in 2024', timestamp: '5 minutes ago', count: 1 },
     { type: 'comment', post: 'Building Scalable React Applications', timestamp: '12 minutes ago', count: 1 },
-    { type: 'view', post: 'Getting Started with Next.js 15', timestamp: '18 minutes ago', count: 7 }
-  ]
+    { type: 'view', post: 'Getting Started with Next.js 15', timestamp: '18 minutes ago', count: 7 },
+  ],
 }
 
 interface MiniChartProps {
@@ -400,7 +400,7 @@ export function AnalyticsDashboard() {
                 >
                   <div className={`p-2 rounded-full ${
                     activity.type === 'view' ? 'bg-teal-500/10' :
-                    activity.type === 'like' ? 'bg-red-500/10' : 'bg-blue-500/10'
+                      activity.type === 'like' ? 'bg-red-500/10' : 'bg-blue-500/10'
                   }`}>
                     {activity.type === 'view' && <Eye className="w-4 h-4 text-teal-400" />}
                     {activity.type === 'like' && <Heart className="w-4 h-4 text-red-400" />}

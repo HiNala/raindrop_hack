@@ -2,25 +2,20 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { 
-  Menu, 
-  X, 
-  Home, 
-  FileText, 
-  Folder, 
-  MessageSquare, 
-  Users, 
-  Settings, 
+import {
+  Menu,
+  X,
+  Home,
+  FileText,
+  Folder,
+  MessageSquare,
+  Users,
+  Settings,
   BarChart3,
   Bell,
   Search,
   UserCircle,
   ChevronDown,
-  TrendingUp,
-  Eye,
-  Heart,
-  MessageCircle,
-  Calendar
 } from 'lucide-react'
 
 export default function AdminLayout({
@@ -31,54 +26,54 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const navigation = [
-    { 
-      name: 'Dashboard', 
-      href: '/admin', 
-      icon: Home, 
+    {
+      name: 'Dashboard',
+      href: '/admin',
+      icon: Home,
       current: true,
-      description: 'Overview and statistics'
+      description: 'Overview and statistics',
     },
-    { 
-      name: 'Posts', 
-      href: '/admin/posts', 
-      icon: FileText, 
+    {
+      name: 'Posts',
+      href: '/admin/posts',
+      icon: FileText,
       current: false,
-      description: 'Manage blog posts'
+      description: 'Manage blog posts',
     },
-    { 
-      name: 'Categories', 
-      href: '/admin/categories', 
-      icon: Folder, 
+    {
+      name: 'Categories',
+      href: '/admin/categories',
+      icon: Folder,
       current: false,
-      description: 'Organize content'
+      description: 'Organize content',
     },
-    { 
-      name: 'Comments', 
-      href: '/admin/comments', 
-      icon: MessageSquare, 
+    {
+      name: 'Comments',
+      href: '/admin/comments',
+      icon: MessageSquare,
       current: false,
-      description: 'Moderate discussions'
+      description: 'Moderate discussions',
     },
-    { 
-      name: 'Users', 
-      href: '/admin/users', 
-      icon: Users, 
+    {
+      name: 'Users',
+      href: '/admin/users',
+      icon: Users,
       current: false,
-      description: 'User management'
+      description: 'User management',
     },
-    { 
-      name: 'Analytics', 
-      href: '/admin/analytics', 
-      icon: BarChart3, 
+    {
+      name: 'Analytics',
+      href: '/admin/analytics',
+      icon: BarChart3,
       current: false,
-      description: 'View insights'
+      description: 'View insights',
     },
-    { 
-      name: 'Settings', 
-      href: '/admin/settings', 
-      icon: Settings, 
+    {
+      name: 'Settings',
+      href: '/admin/settings',
+      icon: Settings,
       current: false,
-      description: 'Configure site'
+      description: 'Configure site',
     },
   ]
 
@@ -86,7 +81,7 @@ export default function AdminLayout({
     <div className="min-h-screen bg-gray-50">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -114,7 +109,7 @@ export default function AdminLayout({
                 <X className="w-6 h-6" />
               </button>
             </div>
-            
+
             {/* User info */}
             <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
               <div className="flex items-center space-x-3">
@@ -130,7 +125,7 @@ export default function AdminLayout({
                 </button>
               </div>
             </div>
-            
+
             {/* Navigation */}
             <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
               {navigation.map((item) => (
@@ -139,10 +134,10 @@ export default function AdminLayout({
                   href={item.href}
                   className={`
                     group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200
-                    ${item.current 
-                      ? 'bg-primary-50 text-primary-700 border-r-2 border-primary-600' 
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                    }
+                    ${item.current
+                  ? 'bg-primary-50 text-primary-700 border-r-2 border-primary-600'
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                }
                   `}
                 >
                   <item.icon className={`
@@ -194,7 +189,7 @@ export default function AdminLayout({
                 >
                   <Menu className="w-6 h-6" />
                 </button>
-                
+
                 {/* Search */}
                 <div className="hidden md:block ml-4 flex-1 max-w-lg">
                   <div className="relative">
@@ -221,7 +216,7 @@ export default function AdminLayout({
                     <UserCircle className="w-5 h-5" />
                     <ChevronDown className="w-4 h-4" />
                   </button>
-                  
+
                   {/* Dropdown menu */}
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
                     <div className="py-1">
@@ -244,7 +239,7 @@ export default function AdminLayout({
               </div>
             </div>
           </header>
-          
+
           {/* Page content */}
           <main className="flex-1">
             {children}

@@ -1,15 +1,15 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { 
-  Heart, 
-  Bookmark, 
-  Share2, 
-  Eye, 
+import {
+  Heart,
+  Bookmark,
+  Share2,
+  Eye,
   MessageCircle,
   MoreHorizontal,
   ExternalLink,
-  Clock
+  Clock,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -56,7 +56,7 @@ export function PostInteractions({
   isLiked: initialIsLiked = false,
   isBookmarked: initialIsBookmarked = false,
   readingTime,
-  author
+  author,
 }: PostInteractionsProps) {
   const [likes, setLikes] = useState(initialLikes)
   const [views, setViews] = useState(initialViews)
@@ -68,7 +68,7 @@ export function PostInteractions({
   const [lastAction, setLastAction] = useState<'like' | 'bookmark' | null>(null)
   const [nextUpPosts, setNextUpPosts] = useState<NextUpPost[]>([])
   const [showNextUp, setShowNextUp] = useState(false)
-  
+
   const { toast } = useToast()
 
   // Mock next up posts
@@ -80,22 +80,22 @@ export function PostInteractions({
         excerpt: 'A deep dive into React\'s new paradigm',
         author: 'React Expert',
         readTime: 12,
-        coverImage: '/api/placeholder/400/200'
+        coverImage: '/api/placeholder/400/200',
       },
       {
         id: '2',
         title: 'TypeScript Best Practices',
         excerpt: 'Write better TypeScript with these tips',
         author: 'TypeScript Guru',
-        readTime: 8
+        readTime: 8,
       },
       {
         id: '3',
         title: 'Modern CSS Layout Techniques',
         excerpt: 'Master Flexbox, Grid, and more',
         author: 'CSS Wizard',
-        readTime: 10
-      }
+        readTime: 10,
+      },
     ]
     setNextUpPosts(mockNextUp)
   }, [])
@@ -106,14 +106,14 @@ export function PostInteractions({
       const scrolled = window.scrollY
       const windowHeight = window.innerHeight
       const documentHeight = document.documentElement.scrollHeight
-      
+
       if (scrolled > 100) {
         // User has scrolled down, increment views if not already counted
         if (views === initialViews) {
           setViews(prev => prev + 1)
         }
       }
-      
+
       // Show next up when near bottom
       const scrollPercentage = (scrolled / (documentHeight - windowHeight)) * 100
       if (scrollPercentage > 80 && !showNextUp) {
@@ -129,17 +129,17 @@ export function PostInteractions({
     const newLikedState = !isLiked
     setIsLiked(newLikedState)
     setLikes(prev => newLikedState ? prev + 1 : prev - 1)
-    
+
     setLastAction('like')
     setShowUndo(true)
-    
+
     // Hide undo after 3 seconds
     setTimeout(() => setShowUndo(false), 3000)
-    
+
     // Show toast
     toast.success(
       newLikedState ? 'Post liked!' : 'Like removed',
-      { description: newLikedState ? 'Added to your likes' : 'Removed from your likes' }
+      { description: newLikedState ? 'Added to your likes' : 'Removed from your likes' },
     )
   }, [isLiked, toast])
 
@@ -147,17 +147,17 @@ export function PostInteractions({
     const newBookmarkedState = !isBookmarked
     setIsBookmarked(newBookmarkedState)
     setBookmarks(prev => newBookmarkedState ? prev + 1 : prev - 1)
-    
+
     setLastAction('bookmark')
     setShowUndo(true)
-    
+
     // Hide undo after 3 seconds
     setTimeout(() => setShowUndo(false), 3000)
-    
+
     // Show toast
     toast.success(
       newBookmarkedState ? 'Post saved!' : 'Bookmark removed',
-      { description: newBookmarkedState ? 'Added to your reading list' : 'Removed from your reading list' }
+      { description: newBookmarkedState ? 'Added to your reading list' : 'Removed from your reading list' },
     )
   }, [isBookmarked, toast])
 
@@ -183,7 +183,7 @@ export function PostInteractions({
         await navigator.share({
           title: 'Check out this post',
           text: 'I found this interesting article',
-          url: window.location.href
+          url: window.location.href,
         })
       } catch (error) {
         // User cancelled or error occurred
@@ -201,7 +201,7 @@ export function PostInteractions({
 
   const UndoToast = () => {
     if (!showUndo || !lastAction) return null
-    
+
     return (
       <div className="fixed bottom-4 right-4 z-50 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3 animate-slide-up">
         <span className="text-sm text-gray-600 dark:text-gray-300">
@@ -230,15 +230,15 @@ export function PostInteractions({
               <button
                 onClick={handleLike}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200",
-                  isLiked 
-                    ? "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20" 
-                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  'flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200',
+                  isLiked
+                    ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800',
                 )}
               >
                 <Heart className={cn(
-                  "w-5 h-5 transition-transform duration-200",
-                  isLiked && "fill-current scale-110"
+                  'w-5 h-5 transition-transform duration-200',
+                  isLiked && 'fill-current scale-110',
                 )} />
                 <span className="font-medium">{likes}</span>
               </button>
@@ -253,15 +253,15 @@ export function PostInteractions({
               <button
                 onClick={handleBookmark}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200",
+                  'flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200',
                   isBookmarked
-                    ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
-                    : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800',
                 )}
               >
                 <Bookmark className={cn(
-                  "w-5 h-5 transition-transform duration-200",
-                  isBookmarked && "fill-current scale-110"
+                  'w-5 h-5 transition-transform duration-200',
+                  isBookmarked && 'fill-current scale-110',
                 )} />
                 <span className="font-medium">{bookmarks}</span>
               </button>
@@ -316,7 +316,7 @@ export function PostInteractions({
                   ×
                 </Button>
               </div>
-              
+
               <div className="grid gap-4 md:grid-cols-3">
                 {nextUpPosts.map((post, index) => (
                   <a

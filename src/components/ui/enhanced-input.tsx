@@ -1,8 +1,8 @@
 'use client'
 
-import * as React from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { cn } from "@/lib/utils"
+import * as React from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '@/lib/utils'
 
 export interface EnhancedInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -33,15 +33,15 @@ const EnhancedInput = React.forwardRef<HTMLInputElement, EnhancedInputProps>(
         <div className="relative">
           <input
             className={cn(
-              "flex h-12 w-full rounded-lg border border-[#27272a] bg-[#1a1a1d] px-4 py-3 text-base text-text-primary transition-all duration-200",
-              "placeholder:text-text-tertiary",
-              "focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20",
-              "disabled:cursor-not-allowed disabled:opacity-50",
-              isFocused && !error && "shadow-glow-teal border-teal-500",
-              error && "border-red-500 focus:border-red-500 focus:ring-red-500/20",
-              success && "border-green-500 focus:border-green-500 focus:ring-green-500/20",
-              showLabel && "pt-6 pb-2",
-              className
+              'flex h-12 w-full rounded-lg border border-[#27272a] bg-[#1a1a1d] px-4 py-3 text-base text-text-primary transition-all duration-200',
+              'placeholder:text-text-tertiary',
+              'focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20',
+              'disabled:cursor-not-allowed disabled:opacity-50',
+              isFocused && !error && 'shadow-glow-teal border-teal-500',
+              error && 'border-red-500 focus:border-red-500 focus:ring-red-500/20',
+              success && 'border-green-500 focus:border-green-500 focus:ring-green-500/20',
+              showLabel && 'pt-6 pb-2',
+              className,
             )}
             ref={ref}
             value={value}
@@ -69,13 +69,13 @@ const EnhancedInput = React.forwardRef<HTMLInputElement, EnhancedInputProps>(
                 }}
                 transition={{ duration: 0.2 }}
                 className={cn(
-                  "absolute left-4 pointer-events-none transition-colors duration-200",
+                  'absolute left-4 pointer-events-none transition-colors duration-200',
                   hasValue ? 'top-2' : 'top-3',
                   isFocused
                     ? 'text-teal-400'
                     : error
-                    ? 'text-red-400'
-                    : 'text-text-tertiary'
+                      ? 'text-red-400'
+                      : 'text-text-tertiary',
                 )}
               >
                 {label}
@@ -106,7 +106,7 @@ const EnhancedInput = React.forwardRef<HTMLInputElement, EnhancedInputProps>(
                   {error}
                 </motion.p>
               )}
-              
+
               {success && !error && (
                 <motion.p
                   initial={{ scale: 0.8 }}
@@ -122,10 +122,10 @@ const EnhancedInput = React.forwardRef<HTMLInputElement, EnhancedInputProps>(
               {showCharCount && maxLength && (
                 <span
                   className={cn(
-                    "text-xs transition-colors ml-auto",
+                    'text-xs transition-colors ml-auto',
                     charCount > maxLength * 0.9
                       ? 'text-orange-400'
-                      : 'text-text-tertiary'
+                      : 'text-text-tertiary',
                   )}
                 >
                   {charCount}/{maxLength}
@@ -136,9 +136,9 @@ const EnhancedInput = React.forwardRef<HTMLInputElement, EnhancedInputProps>(
         </AnimatePresence>
       </div>
     )
-  }
+  },
 )
-EnhancedInput.displayName = "EnhancedInput"
+EnhancedInput.displayName = 'EnhancedInput'
 
 export { EnhancedInput }
 

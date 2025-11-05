@@ -17,23 +17,23 @@ const glowColorMap = {
   purple: { base: 280, spread: 300 },
   green: { base: 120, spread: 200 },
   red: { base: 0, spread: 200 },
-  orange: { base: 30, spread: 200 }
+  orange: { base: 30, spread: 200 },
 };
 
 const sizeMap = {
   sm: 'w-48 h-64',
   md: 'w-64 h-80',
-  lg: 'w-80 h-96'
+  lg: 'w-80 h-96',
 };
 
-const GlowCard: React.FC<GlowCardProps> = ({ 
-  children, 
-  className = '', 
+const GlowCard: React.FC<GlowCardProps> = ({
+  children,
+  className = '',
   glowColor = 'blue',
   size = 'md',
   width,
   height,
-  customSize = false
+  customSize = false,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -41,7 +41,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
   useEffect(() => {
     const syncPointer = (e: PointerEvent) => {
       const { clientX: x, clientY: y } = e;
-      
+
       if (cardRef.current) {
         cardRef.current.style.setProperty('--x', x.toFixed(2));
         cardRef.current.style.setProperty('--xp', (x / window.innerWidth).toFixed(2));

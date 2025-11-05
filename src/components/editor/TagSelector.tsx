@@ -35,12 +35,12 @@ export function TagSelector({ selectedTags, onTagsChange, availableTags }: TagSe
     if (searchQuery.trim()) {
       const filtered = availableTags.filter(tag =>
         tag.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !selectedTags.some(st => st.id === tag.id)
+        !selectedTags.some(st => st.id === tag.id),
       )
       setFilteredTags(filtered)
     } else {
-      setFilteredTags(availableTags.filter(tag => 
-        !selectedTags.some(st => st.id === tag.id)
+      setFilteredTags(availableTags.filter(tag =>
+        !selectedTags.some(st => st.id === tag.id),
       ))
     }
   }, [searchQuery, availableTags, selectedTags])
@@ -94,7 +94,7 @@ export function TagSelector({ selectedTags, onTagsChange, availableTags }: TagSe
         ) : (
           <span className="text-text-secondary text-sm">No tags selected</span>
         )}
-        
+
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button type="button" variant="ghost" size="sm" className="gap-1.5 text-teal-400 hover:text-teal-300 hover:bg-teal-500/10 transition-colors h-7">
@@ -112,7 +112,7 @@ export function TagSelector({ selectedTags, onTagsChange, availableTags }: TagSe
                 Type to search existing tags or press Enter to create a new one
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-4 mt-4">
               <div className="relative">
                 <Input

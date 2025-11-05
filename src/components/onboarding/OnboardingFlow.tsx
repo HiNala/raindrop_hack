@@ -2,19 +2,19 @@
 
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
-import { 
-  X, 
-  ChevronRight, 
-  User, 
-  Image, 
-  Heart, 
+import {
+  X,
+  ChevronRight,
+  User,
+  Image,
+  Heart,
   Sparkles,
   Code,
   Palette,
   Globe,
   Database,
   Brain,
-  Camera
+  Camera,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -36,20 +36,20 @@ const onboardingSteps: OnboardingStep[] = [
     id: 'profile',
     title: 'Complete your profile',
     description: 'Set up your display name and username',
-    icon: User
+    icon: User,
   },
   {
     id: 'avatar',
     title: 'Add your photo',
     description: 'Upload an avatar and write a quick bio',
-    icon: Image
+    icon: Image,
   },
   {
     id: 'interests',
     title: 'Choose your interests',
     description: 'Personalize your feed with topics you care about',
-    icon: Heart
-  }
+    icon: Heart,
+  },
 ]
 
 const interests = [
@@ -58,7 +58,7 @@ const interests = [
   { id: 'design', name: 'Design', icon: Palette, color: 'bg-pink-500' },
   { id: 'mobile', name: 'Mobile Development', icon: Globe, color: 'bg-green-500' },
   { id: 'backend', name: 'Backend Systems', icon: Database, color: 'bg-orange-500' },
-  { id: 'photography', name: 'Photography', icon: Camera, color: 'bg-cyan-500' }
+  { id: 'photography', name: 'Photography', icon: Camera, color: 'bg-cyan-500' },
 ]
 
 interface OnboardingFlowProps {
@@ -102,15 +102,15 @@ export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
       username,
       bio,
       avatarUrl,
-      interests: selectedInterests
+      interests: selectedInterests,
     })
   }
 
   const toggleInterest = (interestId: string) => {
-    setSelectedInterests(prev => 
+    setSelectedInterests(prev =>
       prev.includes(interestId)
         ? prev.filter(id => id !== interestId)
-        : [...prev, interestId]
+        : [...prev, interestId],
     )
   }
 
@@ -126,7 +126,7 @@ export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
                 <Icon className="w-8 h-8 text-white" />
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -139,7 +139,7 @@ export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
                   className="w-full"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Username
@@ -236,25 +236,25 @@ export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
               <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
                 Select topics that interest you to personalize your feed
               </p>
-              
+
               <div className="grid grid-cols-2 gap-3">
                 {interests.map((interest) => {
                   const InterestIcon = interest.icon
                   const isSelected = selectedInterests.includes(interest.id)
-                  
+
                   return (
                     <button
                       key={interest.id}
                       onClick={() => toggleInterest(interest.id)}
                       className={cn(
-                        "p-4 rounded-xl border-2 transition-all duration-200 text-left",
+                        'p-4 rounded-xl border-2 transition-all duration-200 text-left',
                         isSelected
-                          ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-                          : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600',
                       )}
                     >
                       <div className="flex items-center gap-3 mb-2">
-                        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", interest.color)}>
+                        <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', interest.color)}>
                           <InterestIcon className="w-4 h-4 text-white" />
                         </div>
                         <span className="font-medium text-gray-900 dark:text-white text-sm">
@@ -292,7 +292,7 @@ export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
                 animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${2 + Math.random() * 2}s`
+                animationDuration: `${2 + Math.random() * 2}s`,
               }}
             />
           ))}
@@ -310,7 +310,7 @@ export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
           >
             <X className="w-4 h-4" />
           </Button>
-          
+
           <div className="text-center">
             <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center mx-auto mb-4">
               {currentStepData.icon && <currentStepData.icon className="w-6 h-6 text-white" />}
@@ -330,12 +330,12 @@ export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
             <div
               key={index}
               className={cn(
-                "w-2 h-2 rounded-full transition-all duration-200",
+                'w-2 h-2 rounded-full transition-all duration-200',
                 index === currentStep
-                  ? "w-8 bg-primary-500"
+                  ? 'w-8 bg-primary-500'
                   : index < currentStep
-                  ? "bg-primary-300"
-                  : "bg-gray-300 dark:bg-gray-700"
+                    ? 'bg-primary-300'
+                    : 'bg-gray-300 dark:bg-gray-700',
               )}
             />
           ))}

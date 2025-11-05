@@ -11,7 +11,7 @@ export async function requireUser() {
   // Check if user exists, create if not
   let user = await prisma.user.findUnique({
     where: { clerkId: userId },
-    include: { profile: true }
+    include: { profile: true },
   })
 
   if (!user) {
@@ -21,13 +21,13 @@ export async function requireUser() {
     }
 
     // Generate a unique username from Clerk user data
-    const baseUsername = clerkUser.username || 
-                       clerkUser.firstName?.toLowerCase() || 
+    const baseUsername = clerkUser.username ||
+                       clerkUser.firstName?.toLowerCase() ||
                        clerkUser.emailAddresses?.[0]?.emailAddress?.split('@')[0] ||
                        'user'
-    
-    let username = slugify(baseUsername, { lower: true, strict: true })
-    
+
+    const username = slugify(baseUsername, { lower: true, strict: true })
+
     // Ensure username is unique
     let finalUsername = username
     let counter = 1
@@ -44,15 +44,15 @@ export async function requireUser() {
         profile: {
           create: {
             username: finalUsername,
-            displayName: clerkUser.fullName || 
-                         clerkUser.firstName && clerkUser.lastName 
-                           ? `${clerkUser.firstName} ${clerkUser.lastName}` 
-                           : 'New User',
+            displayName: clerkUser.fullName ||
+                         clerkUser.firstName && clerkUser.lastName
+              ? `${clerkUser.firstName} ${clerkUser.lastName}`
+              : 'New User',
             avatarUrl: clerkUser.imageUrl,
           },
         },
       },
-      include: { profile: true }
+      include: { profile: true },
     })
 
     console.log(`Created new user: ${user.id} with username: ${finalUsername}`)
@@ -67,7 +67,7 @@ export async function getCurrentUser() {
 
   return await prisma.user.findUnique({
     where: { clerkId: userId },
-    include: { profile: true }
+    include: { profile: true },
   })
 }
 

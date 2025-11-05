@@ -2,10 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import MarkdownIt from 'markdown-it'
-import { generateHTML } from '@tiptap/html'
-import StarterKit from '@tiptap/starter-kit'
-import Link from '@tiptap/extension-link'
-import Image from '@tiptap/extension-image'
 
 const md = new MarkdownIt()
 
@@ -13,61 +9,61 @@ const md = new MarkdownIt()
 function markdownToTiptap(markdown: string): any {
   // Parse markdown to HTML
   const html = md.render(markdown)
-  
+
   // Convert HTML to TipTap JSON
   // This is a simplified conversion - TipTap's generateJSON would be ideal
   // but we'll create a basic structure
   const lines = markdown.split('\n')
   const content: any[] = []
-  
+
   let currentParagraph: string[] = []
-  
+
   for (const line of lines) {
     // Headings
     if (line.startsWith('### ')) {
       if (currentParagraph.length > 0) {
         content.push({
           type: 'paragraph',
-          content: [{ type: 'text', text: currentParagraph.join(' ') }]
+          content: [{ type: 'text', text: currentParagraph.join(' ') }],
         })
         currentParagraph = []
       }
       content.push({
         type: 'heading',
         attrs: { level: 3 },
-        content: [{ type: 'text', text: line.replace('### ', '') }]
+        content: [{ type: 'text', text: line.replace('### ', '') }],
       })
     } else if (line.startsWith('## ')) {
       if (currentParagraph.length > 0) {
         content.push({
           type: 'paragraph',
-          content: [{ type: 'text', text: currentParagraph.join(' ') }]
+          content: [{ type: 'text', text: currentParagraph.join(' ') }],
         })
         currentParagraph = []
       }
       content.push({
         type: 'heading',
         attrs: { level: 2 },
-        content: [{ type: 'text', text: line.replace('## ', '') }]
+        content: [{ type: 'text', text: line.replace('## ', '') }],
       })
     } else if (line.startsWith('# ')) {
       if (currentParagraph.length > 0) {
         content.push({
           type: 'paragraph',
-          content: [{ type: 'text', text: currentParagraph.join(' ') }]
+          content: [{ type: 'text', text: currentParagraph.join(' ') }],
         })
         currentParagraph = []
       }
       content.push({
         type: 'heading',
         attrs: { level: 1 },
-        content: [{ type: 'text', text: line.replace('# ', '') }]
+        content: [{ type: 'text', text: line.replace('# ', '') }],
       })
     } else if (line.trim() === '') {
       if (currentParagraph.length > 0) {
         content.push({
           type: 'paragraph',
-          content: [{ type: 'text', text: currentParagraph.join(' ') }]
+          content: [{ type: 'text', text: currentParagraph.join(' ') }],
         })
         currentParagraph = []
       }
@@ -75,18 +71,18 @@ function markdownToTiptap(markdown: string): any {
       currentParagraph.push(line)
     }
   }
-  
+
   // Add remaining paragraph
   if (currentParagraph.length > 0) {
     content.push({
       type: 'paragraph',
-      content: [{ type: 'text', text: currentParagraph.join(' ') }]
+      content: [{ type: 'text', text: currentParagraph.join(' ') }],
     })
   }
-  
+
   return {
     type: 'doc',
-    content: content.length > 0 ? content : [{ type: 'paragraph' }]
+    content: content.length > 0 ? content : [{ type: 'paragraph' }],
   }
 }
 
@@ -112,21 +108,21 @@ function extractTitle(markdown: string): string {
 function extractExcerpt(markdown: string): string {
   const lines = markdown.split('\n')
   let excerpt = ''
-  
+
   for (const line of lines) {
     if (line.trim() && !line.startsWith('#')) {
       excerpt = line.trim()
       break
     }
   }
-  
+
   return excerpt.substring(0, 200)
 }
 
 export async function POST(req: NextRequest) {
   try {
     const session = await auth()
-    
+
     if (!session?.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -139,7 +135,7 @@ export async function POST(req: NextRequest) {
 
     // Find user
     const user = await prisma.user.findUnique({
-      where: { clerkId: session.userId }
+      where: { clerkId: session.userId },
     })
 
     if (!user) {
@@ -150,7 +146,7 @@ export async function POST(req: NextRequest) {
     const title = providedTitle || extractTitle(markdown)
     const excerpt = extractExcerpt(markdown)
     const slug = generateSlug(title)
-    
+
     // Convert markdown to TipTap JSON
     const contentJson = markdownToTiptap(markdown)
 
@@ -171,16 +167,16 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       postId: post.id,
-      redirect: `/editor/${post.id}`
+      redirect: `/editor/${post.id}`,
     })
   } catch (error) {
     console.error('Import markdown error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Import failed' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

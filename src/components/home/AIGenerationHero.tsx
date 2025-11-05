@@ -95,10 +95,10 @@ export function AIGenerationHero() {
         const drafts: AnonymousDraft[] = existingDrafts ? JSON.parse(existingDrafts) : []
         drafts.push(draft)
         localStorage.setItem('anonymousDrafts', JSON.stringify(drafts))
-        
+
         setAnonymousCount(drafts.length)
         toast.success('Post generated! Saved to your drafts.')
-        
+
         // Redirect to a preview page or show in modal
         // For now, let's show a success message
         setPrompt('')
@@ -125,7 +125,7 @@ export function AIGenerationHero() {
           transition={{
             duration: 8,
             repeat: Infinity,
-            ease: "easeInOut",
+            ease: 'easeInOut',
           }}
           className="absolute top-20 -left-20 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl"
         />
@@ -137,7 +137,7 @@ export function AIGenerationHero() {
           transition={{
             duration: 10,
             repeat: Infinity,
-            ease: "easeInOut",
+            ease: 'easeInOut',
           }}
           className="absolute bottom-20 -right-20 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl"
         />
@@ -156,13 +156,13 @@ export function AIGenerationHero() {
               AI-Powered Blog Generation
             </span>
           </div>
-          
+
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
             Write Your Story
             <br />
             In Seconds
           </h1>
-          
+
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
             Describe your idea and let AI craft a compelling blog post. Edit, refine, and publish in minutes.
           </p>

@@ -4,7 +4,7 @@ class ApiError extends Error {
   constructor(
     message: string,
     public status: number,
-    public data?: any
+    public data?: any,
   ) {
     super(message)
     this.name = 'ApiError'
@@ -13,10 +13,10 @@ class ApiError extends Error {
 
 async function apiRequest<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T> {
   const url = `${API_BASE_URL}/api${endpoint}`
-  
+
   const config: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ async function apiRequest<T>(
       throw new ApiError(
         data.error || 'Request failed',
         response.status,
-        data
+        data,
       )
     }
 

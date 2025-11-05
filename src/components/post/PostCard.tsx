@@ -40,7 +40,7 @@ interface PostCardProps {
 export function PostCard({ post }: PostCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [isHovered, setIsHovered] = useState(false)
-  
+
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
 
@@ -49,11 +49,11 @@ export function PostCard({ post }: PostCardProps) {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return
-    
+
     const rect = cardRef.current.getBoundingClientRect()
     const centerX = rect.left + rect.width / 2
     const centerY = rect.top + rect.height / 2
-    
+
     mouseX.set(e.clientX - centerX)
     mouseY.set(e.clientY - centerY)
   }
@@ -126,9 +126,9 @@ export function PostCard({ post }: PostCardProps) {
         <div className="p-6 flex-1 flex flex-col">
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (
-            <motion.div 
+            <motion.div
               className="flex flex-wrap gap-2 mb-3"
-              style={{ transform: `translateZ(30px)` }}
+              style={{ transform: 'translateZ(30px)' }}
             >
               {post.tags.slice(0, 2).map((postTag, idx) => (
                 <motion.div

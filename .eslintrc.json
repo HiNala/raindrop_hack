@@ -1,20 +1,35 @@
 {
   "extends": [
-    "next/core-web-vitals",
-    "@typescript-eslint/recommended",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
     "prettier"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",
-    "project": "./tsconfig.json"
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
   "plugins": [
     "@typescript-eslint",
+    "react",
     "react-hooks",
     "react-refresh"
   ],
+  "env": {
+    "browser": true,
+    "es2020": true,
+    "node": true
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
   "rules": {
     // TypeScript rules
     "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
@@ -24,7 +39,7 @@
     "@typescript-eslint/no-non-null-assertion": "warn",
     "@typescript-eslint/prefer-const": "error",
     "@typescript-eslint/no-var-requires": "error",
-    
+
     // React rules
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
@@ -35,11 +50,8 @@
     "react/no-unescaped-entities": "off",
     "react/prop-types": "off",
     "react/display-name": "off",
-    
-    // Next.js rules
-    "@next/next/no-img-element": "warn",
-    "@next/next/no-page-custom-font": "off",
-    
+    "react/react-in-jsx-scope": "off",
+
     // General rules
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "no-debugger": "error",
@@ -49,9 +61,9 @@
     "prefer-template": "error",
     "prefer-arrow-callback": "error",
     "arrow-spacing": "error",
-    "comma-dangle": ["error", "es5"],
+    "comma-dangle": ["error", "always-multiline"],
     "quotes": ["error", "single", { "avoidEscape": true }],
-    "semi": false,
+    "semi": "off",
     "no-trailing-spaces": "error",
     "indent": ["error", 2, { "SwitchCase": 1 }],
     "max-len": ["warn", { "code": 100, "ignoreUrls": true }],

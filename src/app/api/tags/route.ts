@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 const createTagSchema = z.object({
-  name: z.string().min(1).max(30)
+  name: z.string().min(1).max(30),
 })
 
 export async function GET() {
@@ -13,11 +13,11 @@ export async function GET() {
       include: {
         _count: {
           select: {
-            posts: true
-          }
-        }
+            posts: true,
+          },
+        },
       },
-      orderBy: { name: 'asc' }
+      orderBy: { name: 'asc' },
     })
 
     return NextResponse.json({ tags })
@@ -39,12 +39,12 @@ export async function POST(request: NextRequest) {
 
     // Check if tag already exists
     const existingTag = await prisma.tag.findFirst({
-      where: { name: validatedData.name }
+      where: { name: validatedData.name },
     })
 
     if (existingTag) {
-      return NextResponse.json({ 
-        error: 'Tag already exists' 
+      return NextResponse.json({
+        error: 'Tag already exists',
       }, { status: 400 })
     }
 
@@ -66,19 +66,19 @@ export async function POST(request: NextRequest) {
     const tag = await prisma.tag.create({
       data: {
         name: validatedData.name,
-        slug: finalSlug
-      }
+        slug: finalSlug,
+      },
     })
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      data: tag 
+      data: tag,
     }, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       )
     }
 

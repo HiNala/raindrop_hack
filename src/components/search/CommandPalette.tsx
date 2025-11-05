@@ -93,7 +93,7 @@ export function CommandPalette() {
     }
 
     const filtered = allCommands.filter((cmd) =>
-      cmd.title.toLowerCase().includes(search.toLowerCase())
+      cmd.title.toLowerCase().includes(search.toLowerCase()),
     )
     setResults(filtered)
     setSelectedIndex(0)
@@ -175,7 +175,7 @@ export function CommandPalette() {
                           'w-full flex items-center gap-3 px-4 py-3 text-left transition-colors relative',
                           selectedIndex === index
                             ? 'bg-teal-500/10 text-text-primary'
-                            : 'text-text-secondary hover:bg-dark-card'
+                            : 'text-text-secondary hover:bg-dark-card',
                         )}
                       >
                         {/* Sliding highlight indicator */}

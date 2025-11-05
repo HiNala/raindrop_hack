@@ -50,7 +50,7 @@ export function extractKeywords(text: string): string[] {
     'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might',
     'can', 'must', 'shall', 'what', 'which', 'how', 'why', 'when', 'where',
     'who', 'that', 'this', 'these', 'those', 'i', 'you', 'he', 'she', 'it',
-    'we', 'they', 'them', 'their', 'your', 'my', 'our', 'his', 'her', 'its'
+    'we', 'they', 'them', 'their', 'your', 'my', 'our', 'his', 'her', 'its',
   ])
 
   return text
@@ -70,13 +70,13 @@ export async function searchHN(
     limit?: number
     minPoints?: number
     tag?: string
-  } = {}
+  } = {},
 ): Promise<HNSearchResult> {
   const { limit = 10, minPoints = 10, tag = 'story' } = options
 
   // Generate cache key
   const cacheKey = `${query}:${limit}:${minPoints}:${tag}`
-  
+
   // Check cache first
   const cached = cache.get(cacheKey)
   if (cached && cached.expires > Date.now()) {
@@ -172,20 +172,20 @@ export function formatCitationsMarkdown(citations: HNCitation[]): string {
   if (citations.length === 0) return ''
 
   const lines = ['## Sources', '']
-  
+
   citations.forEach((citation, index) => {
     const num = index + 1
     const date = new Date(citation.created_at).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     })
-    
+
     lines.push(
       `${num}. **${citation.title}**  `,
       `   ${citation.url}  `,
       `   Posted by ${citation.author} on ${date} • ${citation.points} points • ${citation.num_comments} comments`,
-      ''
+      '',
     )
   })
 
@@ -200,7 +200,7 @@ export async function enrichWithHN(
   options: {
     limit?: number
     minPoints?: number
-  } = {}
+  } = {},
 ): Promise<{
   citations: HNCitation[]
   contextText: string
@@ -216,16 +216,16 @@ export async function enrichWithHN(
 
     // Search HN
     const result = await searchHN(query, options)
-    
+
     // Deduplicate
     const uniqueStories = deduplicateByUrl(result.hits)
-    
+
     // Convert to citations
     const citations = storiesToCitations(uniqueStories)
 
     // Create context text for LLM
-    const contextText = citations.map((cit, i) => 
-      `[${i + 1}] ${cit.title} (${cit.points} points)`
+    const contextText = citations.map((cit, i) =>
+      `[${i + 1}] ${cit.title} (${cit.points} points)`,
     ).join('\n')
 
     return { citations, contextText }

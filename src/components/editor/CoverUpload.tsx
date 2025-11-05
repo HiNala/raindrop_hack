@@ -34,7 +34,7 @@ export function CoverUpload({ currentImage, onUpload, onRemove }: CoverUploadPro
 
     try {
       const res = await startUpload([file])
-      
+
       if (res && res[0]?.url) {
         onUpload(res[0].url)
         toast.success('Cover image uploaded!')

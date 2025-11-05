@@ -9,7 +9,7 @@ export default function Loading() {
           <Skeleton className="h-10 w-64 mb-4" />
           <Skeleton className="h-6 w-96" />
         </div>
-        
+
         {/* Content skeleton */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (

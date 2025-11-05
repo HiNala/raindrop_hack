@@ -1,10 +1,10 @@
 'use client'
 
-import * as React from "react"
-import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { motion, AnimatePresence } from "framer-motion"
-import { X } from "lucide-react"
-import { cn } from "@/lib/utils"
+import * as React from 'react'
+import * as DialogPrimitive from '@radix-ui/react-dialog'
+import { motion, AnimatePresence } from 'framer-motion'
+import { X } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 const Dialog = DialogPrimitive.Root
 
@@ -28,8 +28,8 @@ const DialogOverlay = React.forwardRef<
       exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
       transition={{ duration: 0.3 }}
       className={cn(
-        "fixed inset-0 z-50 bg-black/80",
-        className
+        'fixed inset-0 z-50 bg-black/80',
+        className,
       )}
       {...props}
     />
@@ -58,8 +58,8 @@ const DialogContent = React.forwardRef<
           damping: 30,
         }}
         className={cn(
-          "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-[#27272a] bg-[#1a1a1d] glass-effect p-6 shadow-2xl shadow-teal-500/10 sm:rounded-lg",
-          className
+          'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-[#27272a] bg-[#1a1a1d] glass-effect p-6 shadow-2xl shadow-teal-500/10 sm:rounded-lg',
+          className,
         )}
       >
         <motion.div
@@ -92,13 +92,13 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col space-y-1.5 text-center sm:text-left",
-      className
+      'flex flex-col space-y-1.5 text-center sm:text-left',
+      className,
     )}
     {...props}
   />
 )
-DialogHeader.displayName = "DialogHeader"
+DialogHeader.displayName = 'DialogHeader'
 
 const DialogFooter = ({
   className,
@@ -106,13 +106,13 @@ const DialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
-      className
+      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
+      className,
     )}
     {...props}
   />
 )
-DialogFooter.displayName = "DialogFooter"
+DialogFooter.displayName = 'DialogFooter'
 
 const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
@@ -121,8 +121,8 @@ const DialogTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
-      "text-lg font-semibold leading-none tracking-tight",
-      className
+      'text-lg font-semibold leading-none tracking-tight',
+      className,
     )}
     {...props}
   />
@@ -135,7 +135,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn("text-sm text-gray-500 dark:text-gray-400", className)}
+    className={cn('text-sm text-gray-500 dark:text-gray-400', className)}
     {...props}
   />
 ))

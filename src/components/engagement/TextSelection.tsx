@@ -21,7 +21,7 @@ export function InlineToolbar({ selection, onAction, onClose }: InlineToolbarPro
   // Position toolbar above selection
   const position = {
     top: selection.rect.top - 50, // 50px above selection
-    left: selection.rect.left + (selection.rect.width / 2) - 100 // Center horizontally
+    left: selection.rect.left + (selection.rect.width / 2) - 100, // Center horizontally
   }
 
   // Close on click outside
@@ -40,7 +40,7 @@ export function InlineToolbar({ selection, onAction, onClose }: InlineToolbarPro
     { icon: Bold, label: 'Bold', action: 'bold' },
     { icon: Italic, label: 'Italic', action: 'italic' },
     { icon: Quote, label: 'Quote', action: 'quote' },
-    { icon: MessageSquare, label: 'Comment', action: 'comment' }
+    { icon: MessageSquare, label: 'Comment', action: 'comment' },
   ]
 
   return (
@@ -49,7 +49,7 @@ export function InlineToolbar({ selection, onAction, onClose }: InlineToolbarPro
       className="fixed z-50 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1 flex items-center gap-1"
       style={{
         top: `${position.top}px`,
-        left: `${position.left}px`
+        left: `${position.left}px`,
       }}
     >
       {actions.map(({ icon: Icon, label, action }) => (
@@ -92,7 +92,7 @@ export function TextSelection({ content, onTextAction, onComment }: TextSelectio
 
       const range = sel.getRangeAt(0)
       const text = sel.toString()
-      
+
       // Only show toolbar for selections within our content
       if (!contentRef.current.contains(range.commonAncestorContainer)) {
         setSelection(null)
@@ -106,17 +106,17 @@ export function TextSelection({ content, onTextAction, onComment }: TextSelectio
       }
 
       const rect = range.getBoundingClientRect()
-      
+
       setSelection({
         text,
         range,
-        rect
+        rect,
       })
     }
 
     document.addEventListener('selectionchange', handleSelectionChange)
     document.addEventListener('mouseup', handleSelectionChange)
-    
+
     return () => {
       document.removeEventListener('selectionchange', handleSelectionChange)
       document.removeEventListener('mouseup', handleSelectionChange)
@@ -125,13 +125,13 @@ export function TextSelection({ content, onTextAction, onComment }: TextSelectio
 
   const handleAction = (action: string) => {
     if (!selection) return
-    
+
     if (action === 'comment') {
       onComment(selection.text, selection.rect)
     } else {
       onTextAction(action, selection.text, selection.range)
     }
-    
+
     // Clear selection after action
     window.getSelection()?.removeAllRanges()
     setSelection(null)
@@ -144,7 +144,7 @@ export function TextSelection({ content, onTextAction, onComment }: TextSelectio
         className="prose prose-gray dark:prose-invert max-w-none select-text"
         dangerouslySetInnerHTML={{ __html: content }}
       />
-      
+
       {selection && (
         <InlineToolbar
           selection={selection}

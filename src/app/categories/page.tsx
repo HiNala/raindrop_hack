@@ -7,13 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 async function getCategories() {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/categories`, {
-      cache: 'no-store'
+      cache: 'no-store',
     })
-    
+
     if (!response.ok) {
       return []
     }
-    
+
     return await response.json()
   } catch (error) {
     console.error('Error fetching categories:', error)
@@ -24,13 +24,13 @@ async function getCategories() {
 async function getRecentPosts() {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/posts?published=true&limit=6`, {
-      cache: 'no-store'
+      cache: 'no-store',
     })
-    
+
     if (!response.ok) {
       return []
     }
-    
+
     const data = await response.json()
     return data.posts || []
   } catch (error) {
@@ -127,7 +127,7 @@ export default async function CategoriesPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {recentPosts.slice(0, 6).map((post: any, index: number) => (
+              {recentPosts.slice(0, 6).map((post: any, _index: number) => (
                 <Card key={post.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-3">
@@ -138,15 +138,15 @@ export default async function CategoriesPage() {
                         {Math.ceil(post.content?.length / 1000) || 5} min read
                       </span>
                     </div>
-                    
+
                     <Link href={`/posts/${post.slug}`}>
                       <h3 className="text-lg font-semibold text-gray-900 mb-2 hover:text-primary-600 transition-colors line-clamp-2">
                         {post.title}
                       </h3>
                     </Link>
-                    
+
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">{post.excerpt}</p>
-                    
+
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-500">
                         {post.author?.name || 'Anonymous'}

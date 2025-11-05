@@ -12,7 +12,7 @@ export default function PostsManagement() {
       author: 'Admin',
       status: 'Published',
       createdAt: '2024-01-15',
-      views: 234
+      views: 234,
     },
     {
       id: '2',
@@ -22,7 +22,7 @@ export default function PostsManagement() {
       author: 'Admin',
       status: 'Draft',
       createdAt: '2024-01-14',
-      views: 0
+      views: 0,
     },
     {
       id: '3',
@@ -32,7 +32,7 @@ export default function PostsManagement() {
       author: 'Admin',
       status: 'Published',
       createdAt: '2024-01-13',
-      views: 156
+      views: 156,
     },
     {
       id: '4',
@@ -42,15 +42,15 @@ export default function PostsManagement() {
       author: 'Admin',
       status: 'Draft',
       createdAt: '2024-01-12',
-      views: 0
+      views: 0,
     },
   ])
 
   const [showCreateModal, setShowCreateModal] = useState(false)
 
   const handleStatusChange = (postId: string, newStatus: string) => {
-    setPosts(posts.map(post => 
-      post.id === postId ? { ...post, status: newStatus } : post
+    setPosts(posts.map(post =>
+      post.id === postId ? { ...post, status: newStatus } : post,
     ))
   }
 
@@ -121,8 +121,8 @@ export default function PostsManagement() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      post.status === 'Published' 
-                        ? 'bg-green-100 text-green-800' 
+                      post.status === 'Published'
+                        ? 'bg-green-100 text-green-800'
                         : 'bg-yellow-100 text-yellow-800'
                     }`}>
                       {post.status}
@@ -140,8 +140,8 @@ export default function PostsManagement() {
                       <button className="text-gray-600 hover:text-gray-900">View</button>
                       <button
                         onClick={() => handleStatusChange(
-                          post.id, 
-                          post.status === 'Published' ? 'Draft' : 'Published'
+                          post.id,
+                          post.status === 'Published' ? 'Draft' : 'Published',
                         )}
                         className="text-green-600 hover:text-green-900"
                       >
@@ -175,7 +175,7 @@ export default function PostsManagement() {
                 ✕
               </button>
             </div>
-            
+
             <form className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -187,7 +187,7 @@ export default function PostsManagement() {
                   placeholder="Enter post title"
                 />
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -199,7 +199,7 @@ export default function PostsManagement() {
                     <option>General</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Status
@@ -210,7 +210,7 @@ export default function PostsManagement() {
                   </select>
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Excerpt
@@ -221,7 +221,7 @@ export default function PostsManagement() {
                   placeholder="Brief description of the post"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Content
@@ -232,7 +232,7 @@ export default function PostsManagement() {
                   placeholder="Write your post content here..."
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Tags (comma separated)
@@ -243,7 +243,7 @@ export default function PostsManagement() {
                   placeholder="nextjs, tutorial, development"
                 />
               </div>
-              
+
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"

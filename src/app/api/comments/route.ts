@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 const createCommentSchema = z.object({
   body: z.string().min(1).max(2000),
-  postId: z.string()
+  postId: z.string(),
 })
 
 export async function GET(request: NextRequest) {
@@ -34,17 +34,17 @@ export async function GET(request: NextRequest) {
             select: {
               id: true,
               title: true,
-              slug: true
-            }
+              slug: true,
+            },
           },
           author: {
             include: {
-              profile: true
-            }
-          }
-        }
+              profile: true,
+            },
+          },
+        },
       }),
-      prisma.comment.count({ where })
+      prisma.comment.count({ where }),
     ])
 
     return NextResponse.json({
@@ -53,8 +53,8 @@ export async function GET(request: NextRequest) {
         page,
         limit,
         total,
-        pages: Math.ceil(total / limit)
-      }
+        pages: Math.ceil(total / limit),
+      },
     })
   } catch (error) {
     console.error('Error fetching comments:', error)
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     // Get user
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
-      include: { profile: true }
+      include: { profile: true },
     })
 
     if (!user) {
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     // Verify post exists
     const post = await prisma.post.findUnique({
-      where: { id: validatedData.postId }
+      where: { id: validatedData.postId },
     })
 
     if (!post) {
@@ -95,14 +95,14 @@ export async function POST(request: NextRequest) {
     const existingComment = await prisma.comment.findFirst({
       where: {
         postId: validatedData.postId,
-        authorId: user.id
-      }
+        authorId: user.id,
+      },
     })
 
     if (existingComment) {
       return NextResponse.json(
         { error: 'You have already commented on this post' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -110,22 +110,22 @@ export async function POST(request: NextRequest) {
       data: {
         body: validatedData.body,
         postId: validatedData.postId,
-        authorId: user.id
+        authorId: user.id,
       },
       include: {
         post: {
           select: {
             id: true,
             title: true,
-            slug: true
-          }
+            slug: true,
+          },
         },
         author: {
           include: {
-            profile: true
-          }
-        }
-      }
+            profile: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json(comment, { status: 201 })
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       )
     }
 

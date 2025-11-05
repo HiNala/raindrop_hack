@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { userId } = auth()
@@ -15,7 +15,7 @@ export async function POST(
     const existing = await prisma.like.findUnique({
       where: {
         userId_postId: {
-          userId: userId,
+          userId,
           postId: params.id,
         },
       },
@@ -26,7 +26,7 @@ export async function POST(
       await prisma.like.delete({
         where: {
           userId_postId: {
-            userId: userId,
+            userId,
             postId: params.id,
           },
         },
@@ -35,29 +35,29 @@ export async function POST(
       // Like
       await prisma.like.create({
         data: {
-          userId: userId,
+          userId,
           postId: params.id,
         },
       })
     }
 
     const likes = await prisma.like.count({
-      where: { postId: params.id }
+      where: { postId: params.id },
     })
 
     const isLiked = await prisma.like.findUnique({
       where: {
         userId_postId: {
-          userId: userId,
+          userId,
           postId: params.id,
         },
       },
     })
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       likes,
-      isLiked: !!isLiked
+      isLiked: !!isLiked,
     })
   } catch (error) {
     console.error('Like error:', error)

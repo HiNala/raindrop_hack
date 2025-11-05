@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { userId } = auth()
@@ -15,15 +15,15 @@ export async function GET(
     const like = await prisma.like.findUnique({
       where: {
         userId_postId: {
-          userId: userId,
+          userId,
           postId: params.id,
         },
       },
     })
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      isLiked: !!like
+      isLiked: !!like,
     })
   } catch (error) {
     console.error('Like check error:', error)

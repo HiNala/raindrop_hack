@@ -2,12 +2,12 @@
 
 import { useState } from 'react'
 import { useUser } from '@clerk/nextjs'
-import { 
-  User, 
-  Bell, 
-  Shield, 
-  CreditCard, 
-  Download, 
+import {
+  User,
+  Bell,
+  Shield,
+  CreditCard,
+  Download,
   Save,
   Eye,
   EyeOff,
@@ -15,8 +15,6 @@ import {
   Monitor,
   Mail,
   MessageSquare,
-  Heart,
-  Users
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -25,7 +23,6 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
@@ -36,7 +33,7 @@ const settingsSections = [
   { id: 'notifications', name: 'Notifications', icon: Bell },
   { id: 'security', name: 'Security', icon: Shield },
   { id: 'billing', name: 'Billing', icon: CreditCard },
-  { id: 'export', name: 'Export Data', icon: Download }
+  { id: 'export', name: 'Export Data', icon: Download },
 ]
 
 export function SettingsPage() {
@@ -60,7 +57,7 @@ export function SettingsPage() {
     followerEmails: true,
     weeklyDigest: true,
     inAppNotifications: true,
-    desktopNotifications: false
+    desktopNotifications: false,
   })
 
   const handleSave = async () => {
@@ -133,7 +130,7 @@ export function SettingsPage() {
             <div className="relative">
               <Input
                 id="currentPassword"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Enter current password"
               />
               <Button
@@ -174,7 +171,7 @@ export function SettingsPage() {
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold mb-4">Profile Information</h3>
-        
+
         {/* Avatar Upload */}
         <div className="flex items-center gap-6 mb-6">
           <Avatar className="w-20 h-20">
@@ -462,7 +459,7 @@ export function SettingsPage() {
     try {
       setSaveStatus('saving')
       const res = await fetch(`/api/export/${type}`)
-      
+
       if (!res.ok) {
         throw new Error('Export failed')
       }
@@ -496,8 +493,8 @@ export function SettingsPage() {
             Download all your posts, comments, and profile information in JSON format.
           </p>
           <div className="space-y-3">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full justify-start border-[#27272a] hover:border-teal-500/50 hover:bg-teal-500/5"
               onClick={() => handleExport('posts')}
               disabled={saveStatus === 'saving'}
@@ -505,8 +502,8 @@ export function SettingsPage() {
               <Download className="w-4 h-4 mr-2" />
               {saveStatus === 'saving' ? 'Exporting...' : 'Export All Posts'}
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full justify-start border-[#27272a] hover:border-teal-500/50 hover:bg-teal-500/5"
               onClick={() => handleExport('comments')}
               disabled={saveStatus === 'saving'}
@@ -514,8 +511,8 @@ export function SettingsPage() {
               <Download className="w-4 h-4 mr-2" />
               {saveStatus === 'saving' ? 'Exporting...' : 'Export Comments'}
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full justify-start border-[#27272a] hover:border-teal-500/50 hover:bg-teal-500/5"
               onClick={() => handleExport('profile')}
               disabled={saveStatus === 'saving'}
@@ -569,10 +566,10 @@ export function SettingsPage() {
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
                       className={cn(
-                        "w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200",
+                        'w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200',
                         activeSection === section.id
-                          ? "bg-teal-500/10 text-teal-400 shadow-glow-teal border border-teal-500/30"
-                          : "text-text-secondary hover:text-text-primary hover:bg-dark-card border border-transparent"
+                          ? 'bg-teal-500/10 text-teal-400 shadow-glow-teal border border-teal-500/30'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-dark-card border border-transparent',
                       )}
                     >
                       <Icon className="w-4 h-4" />
@@ -588,7 +585,7 @@ export function SettingsPage() {
           <div className="lg:col-span-3">
             <div className="glass-effect border border-[#27272a] rounded-xl p-8">
               {renderSectionContent()}
-              
+
               {/* Save Button */}
               <div className="mt-8 pt-6 border-t border-[#27272a]">
                 <div className="flex items-center justify-between">

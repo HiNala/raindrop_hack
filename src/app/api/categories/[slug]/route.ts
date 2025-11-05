@@ -13,17 +13,17 @@ export async function GET(request: NextRequest, { params }: Params) {
         _count: {
           select: {
             posts: {
-              where: { published: true }
-            }
-          }
-        }
-      }
+              where: { published: true },
+            },
+          },
+        },
+      },
     })
 
     if (!category) {
       return NextResponse.json(
         { error: 'Category not found' },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest, { params }: Params) {
     console.error('Error fetching category:', error)
     return NextResponse.json(
       { error: 'Failed to fetch category' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

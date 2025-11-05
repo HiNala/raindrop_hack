@@ -1,16 +1,16 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { 
-  MessageCircle, 
-  Heart, 
-  MoreHorizontal, 
-  Reply, 
+import {
+  MessageCircle,
+  Heart,
+  MoreHorizontal,
+  Reply,
   Pin,
   Check,
   Flag,
   Trash2,
-  User
+  User,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -66,7 +66,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
   const [mentionQuery, setMentionQuery] = useState('')
   const [showMentions, setShowMentions] = useState(false)
   const [mentionIndex, setMentionIndex] = useState(0)
-  
+
   const commentTextareaRef = useRef<HTMLTextAreaElement>(null)
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -79,7 +79,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
 
   const filteredMentions = mockUsers.filter(user =>
     user.username.toLowerCase().includes(mentionQuery.toLowerCase()) ||
-    user.displayName.toLowerCase().includes(mentionQuery.toLowerCase())
+    user.displayName.toLowerCase().includes(mentionQuery.toLowerCase()),
   )
 
   const handleCommentSubmit = async () => {
@@ -95,7 +95,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
       likes: 0,
       isLiked: false,
       replies: [],
-      _count: { replies: 0 }
+      _count: { replies: 0 },
     }
 
     setComments(prev => [comment, ...prev])
@@ -115,7 +115,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
       parentId,
       likes: 0,
       isLiked: false,
-      replies: []
+      replies: [],
     }
 
     setComments(prev => prev.map(comment => {
@@ -123,9 +123,9 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
         return {
           ...comment,
           replies: [...(comment.replies || []), reply],
-          _count: { 
-            replies: (comment._count?.replies || 0) + 1 
-          }
+          _count: {
+            replies: (comment._count?.replies || 0) + 1,
+          },
         }
       }
       return comment
@@ -142,7 +142,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
         return {
           ...comment,
           isLiked: !comment.isLiked,
-          likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1
+          likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1,
         }
       }
       if (comment.replies) {
@@ -151,8 +151,8 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
           replies: comment.replies.map(reply =>
             reply.id === commentId
               ? { ...reply, isLiked: !reply.isLiked, likes: reply.isLiked ? reply.likes - 1 : reply.likes + 1 }
-              : reply
-          )
+              : reply,
+          ),
         }
       }
       return comment
@@ -167,13 +167,13 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
     }
 
     // Check for mentions
-    const cursorPos = isReply 
+    const cursorPos = isReply
       ? replyTextareaRef.current?.selectionStart || 0
       : commentTextareaRef.current?.selectionStart || 0
-    
+
     const textBeforeCursor = value.slice(0, cursorPos)
     const mentionMatch = textBeforeCursor.match(/@(\w*)$/)
-    
+
     if (mentionMatch) {
       setMentionQuery(mentionMatch[1])
       setShowMentions(true)
@@ -187,25 +187,25 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
   const insertMention = (user: any, isReply = false) => {
     const mention = `@${user.username}`
     const text = isReply ? replyText : newComment
-    const cursorPos = isReply 
+    const cursorPos = isReply
       ? replyTextareaRef.current?.selectionStart || 0
       : commentTextareaRef.current?.selectionStart || 0
-    
+
     const textBeforeCursor = text.slice(0, cursorPos)
     const textAfterCursor = text.slice(cursorPos)
     const mentionMatch = textBeforeCursor.match(/@(\w*)$/)
-    
+
     if (mentionMatch) {
       const beforeMention = textBeforeCursor.slice(0, -mentionMatch[0].length)
-      const newText = beforeMention + mention + ' ' + textAfterCursor
-      
+      const newText = `${beforeMention + mention  } ${  textAfterCursor}`
+
       if (isReply) {
         setReplyText(newText)
         setTimeout(() => {
           replyTextareaRef.current?.focus()
           replyTextareaRef.current?.setSelectionRange(
             beforeMention.length + mention.length + 1,
-            beforeMention.length + mention.length + 1
+            beforeMention.length + mention.length + 1,
           )
         }, 0)
       } else {
@@ -214,12 +214,12 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
           commentTextareaRef.current?.focus()
           commentTextareaRef.current?.setSelectionRange(
             beforeMention.length + mention.length + 1,
-            beforeMention.length + mention.length + 1
+            beforeMention.length + mention.length + 1,
           )
         }, 0)
       }
     }
-    
+
     setShowMentions(false)
     setMentionQuery('')
   }
@@ -251,7 +251,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
   }
 
   const CommentItem = ({ comment, isReply = false }: { comment: Comment; isReply?: boolean }) => (
-    <div className={cn("group", isReply && "ml-8")}>
+    <div className={cn('group', isReply && 'ml-8')}>
       <div className="flex gap-3">
         <Avatar className="w-8 h-8 flex-shrink-0">
           <AvatarImage src={comment.author.avatarUrl} />
@@ -259,7 +259,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
             {comment.author.displayName.charAt(0)}
           </AvatarFallback>
         </Avatar>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className="font-medium text-sm text-gray-900 dark:text-white">
@@ -278,25 +278,25 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
               {format(comment.createdAt, 'MMM d, yyyy')}
             </span>
           </div>
-          
+
           <div className="prose prose-sm dark:prose-invert max-w-none mb-3">
             <p>{comment.body}</p>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => handleLike(comment.id)}
               className={cn(
-                "text-xs gap-1 px-2 py-1",
-                comment.isLiked && "text-red-600 dark:text-red-400"
+                'text-xs gap-1 px-2 py-1',
+                comment.isLiked && 'text-red-600 dark:text-red-400',
               )}
             >
-              <Heart className={cn("w-3 h-3", comment.isLiked && "fill-current")} />
+              <Heart className={cn('w-3 h-3', comment.isLiked && 'fill-current')} />
               {comment.likes}
             </Button>
-            
+
             {!isReply && (
               <Button
                 variant="ghost"
@@ -308,7 +308,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
                 Reply
               </Button>
             )}
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="text-xs p-1 opacity-0 group-hover:opacity-100">
@@ -329,7 +329,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          
+
           {/* Reply Form */}
           {replyingTo === comment.id && (
             <div className="mt-4 space-y-2">
@@ -342,7 +342,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
                   placeholder={`Reply to @${comment.author.username}...`}
                   className="min-h-[80px] resize-none"
                 />
-                
+
                 {/* Mentions Dropdown */}
                 {showMentions && filteredMentions.length > 0 && (
                   <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
@@ -351,8 +351,8 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
                         key={user.id}
                         onClick={() => insertMention(user, true)}
                         className={cn(
-                          "w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800",
-                          index === mentionIndex && "bg-gray-50 dark:bg-gray-800"
+                          'w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800',
+                          index === mentionIndex && 'bg-gray-50 dark:bg-gray-800',
                         )}
                       >
                         <Avatar className="w-6 h-6">
@@ -369,7 +369,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
                   </div>
                 )}
               </div>
-              
+
               <div className="flex gap-2 justify-end">
                 <Button
                   variant="outline"
@@ -391,7 +391,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
               </div>
             </div>
           )}
-          
+
           {/* Replies */}
           {comment.replies && comment.replies.length > 0 && (
             <div className="mt-4 space-y-4">
@@ -420,7 +420,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
               placeholder="Share your thoughts..."
               className="min-h-[100px] resize-none"
             />
-            
+
             {/* Mentions Dropdown */}
             {showMentions && filteredMentions.length > 0 && (
               <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
@@ -429,8 +429,8 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
                     key={user.id}
                     onClick={() => insertMention(user)}
                     className={cn(
-                      "w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800",
-                      index === mentionIndex && "bg-gray-50 dark:bg-gray-800"
+                      'w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800',
+                      index === mentionIndex && 'bg-gray-50 dark:bg-gray-800',
                     )}
                   >
                     <Avatar className="w-6 h-6">
@@ -447,7 +447,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
               </div>
             )}
           </div>
-          
+
           <div className="flex justify-end">
             <Button
               onClick={handleCommentSubmit}
@@ -468,7 +468,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
           <Button>Sign In</Button>
         </div>
       )}
-      
+
       {/* Comments List */}
       <div className="space-y-6">
         {comments.length === 0 ? (

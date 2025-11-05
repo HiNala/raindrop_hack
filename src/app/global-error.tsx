@@ -23,21 +23,21 @@ export default function GlobalError({
           <div className="w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle className="w-8 h-8 text-orange-400" />
           </div>
-          
+
           <h1 className="text-2xl font-bold text-text-primary mb-2">
             Application Error
           </h1>
-          
+
           <p className="text-text-secondary mb-6">
             A critical error occurred. Please refresh the page or contact support if the problem persists.
           </p>
-          
+
           {error.digest && (
             <p className="text-xs text-text-tertiary mb-6 font-mono">
               Error ID: {error.digest}
             </p>
           )}
-          
+
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button
               onClick={reset}
@@ -46,7 +46,7 @@ export default function GlobalError({
               <RefreshCw className="w-4 h-4 mr-2" />
               Reload Page
             </Button>
-            
+
             <a href="/">
               <Button className="btn-secondary">
                 <Home className="w-4 h-4 mr-2" />

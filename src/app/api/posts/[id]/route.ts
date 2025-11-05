@@ -24,21 +24,21 @@ export async function GET(request: NextRequest, { params }: Params) {
       include: {
         author: {
           include: {
-            profile: true
-          }
+            profile: true,
+          },
         },
         tags: {
           include: {
-            tag: true
-          }
+            tag: true,
+          },
         },
         _count: {
           select: {
             likes: true,
-            comments: true
-          }
-        }
-      }
+            comments: true,
+          },
+        },
+      },
     })
 
     if (!post) {
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest, { params }: Params) {
     // Increment view count
     await prisma.post.update({
       where: { id: post.id },
-      data: { viewCount: { increment: 1 } }
+      data: { viewCount: { increment: 1 } },
     })
 
     return NextResponse.json(post)
@@ -71,7 +71,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     // Check if user owns the post
     const existingPost = await prisma.post.findUnique({
       where: { id: params.id },
-      include: { author: true }
+      include: { author: true },
     })
 
     if (!existingPost) {
@@ -83,19 +83,19 @@ export async function PUT(request: NextRequest, { params }: Params) {
     }
 
     // Handle tag updates
-    let updateData: any = { ...validatedData }
-    
+    const updateData: any = { ...validatedData }
+
     if (validatedData.tagIds !== undefined) {
       // Delete existing tag relationships
       await prisma.postTag.deleteMany({
-        where: { postId: params.id }
+        where: { postId: params.id },
       })
 
       updateData.tags = {
-        create: validatedData.tagIds.map((tagId, index) => ({
+        create: validatedData.tagIds.map((tagId, _index) => ({
           tagId,
-          postId: params.id
-        }))
+          postId: params.id,
+        })),
       }
     }
 
@@ -110,21 +110,21 @@ export async function PUT(request: NextRequest, { params }: Params) {
       include: {
         author: {
           include: {
-            profile: true
-          }
+            profile: true,
+          },
         },
         tags: {
           include: {
-            tag: true
-          }
+            tag: true,
+          },
         },
         _count: {
           select: {
             likes: true,
-            comments: true
-          }
-        }
-      }
+            comments: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json(post)
@@ -132,7 +132,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -151,7 +151,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     // Check if user owns the post
     const existingPost = await prisma.post.findUnique({
       where: { id: params.id },
-      include: { author: true }
+      include: { author: true },
     })
 
     if (!existingPost) {
@@ -164,19 +164,19 @@ export async function DELETE(request: NextRequest, { params }: Params) {
 
     // Delete related records first
     await prisma.postTag.deleteMany({
-      where: { postId: params.id }
+      where: { postId: params.id },
     })
 
     await prisma.comment.deleteMany({
-      where: { postId: params.id }
+      where: { postId: params.id },
     })
 
     await prisma.like.deleteMany({
-      where: { postId: params.id }
+      where: { postId: params.id },
     })
 
     await prisma.post.delete({
-      where: { id: params.id }
+      where: { id: params.id },
     })
 
     return NextResponse.json({ message: 'Post deleted successfully' })

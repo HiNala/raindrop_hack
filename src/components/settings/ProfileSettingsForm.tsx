@@ -26,7 +26,7 @@ export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
-  
+
   const [formData, setFormData] = useState({
     displayName: profile.displayName,
     bio: profile.bio || '',
@@ -54,7 +54,7 @@ export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
 
     try {
       const res = await startUpload([file])
-      
+
       if (res && res[0]?.url) {
         setFormData({ ...formData, avatarUrl: res[0].url })
         toast.success('Avatar uploaded!')
@@ -121,7 +121,7 @@ export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
                   {formData.displayName.charAt(0)}
                 </AvatarFallback>
               </Avatar>
-              
+
               <label className="cursor-pointer">
                 <input
                   type="file"
@@ -225,7 +225,7 @@ export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
                 'Save Changes'
               )}
             </Button>
-            
+
             <Button
               type="button"
               variant="outline"

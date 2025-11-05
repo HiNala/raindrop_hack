@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     if (!currentSlug || !newSlug) {
       return NextResponse.json(
         { error: 'Both current and new slug parameters are required' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 

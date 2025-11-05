@@ -92,11 +92,11 @@ export function SchedulePublish({
     const now = new Date()
     const futureDate = new Date(now.getTime() + hours * 60 * 60 * 1000)
     setDate(futureDate)
-    
+
     const futureHours = futureDate.getHours().toString().padStart(2, '0')
     const futureMinutes = futureDate.getMinutes().toString().padStart(2, '0')
     setTime(`${futureHours}:${futureMinutes}`)
-    
+
     setSelectedQuickTime(hours)
   }
 
@@ -124,7 +124,7 @@ export function SchedulePublish({
     const localDate = format(scheduledDate, 'MMM d, yyyy')
     const localTime = format(scheduledDate, 'h:mm a')
     const timezoneInfo = TIMEZONES.find(tz => tz.value === timezone)
-    
+
     return `${localDate} at ${localTime} (${timezoneInfo?.label || timezone})`
   }
 
@@ -159,8 +159,8 @@ export function SchedulePublish({
   // Get user's timezone
   useEffect(() => {
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    const matchingTimezone = TIMEZONES.find(tz => 
-      tz.value.toLowerCase().includes(userTimezone.toLowerCase().split('/')[0])
+    const matchingTimezone = TIMEZONES.find(tz =>
+      tz.value.toLowerCase().includes(userTimezone.toLowerCase().split('/')[0]),
     )
     if (matchingTimezone && !existingSchedule) {
       setTimezone(matchingTimezone.value)
@@ -176,7 +176,7 @@ export function SchedulePublish({
             {existingSchedule ? 'Update Schedule' : 'Schedule Publish'}
           </DialogTitle>
           <DialogDescription>
-            {existingSchedule 
+            {existingSchedule
               ? 'Update when your post will be published'
               : 'Choose a date and time to publish your post automatically'
             }

@@ -63,7 +63,7 @@ export function DashboardPostCard({ post, onDelete }: DashboardPostCardProps) {
                 </h3>
               </Link>
             </div>
-            
+
             {/* Status Badge */}
             <Badge
               className={`flex-shrink-0 ${
@@ -152,7 +152,7 @@ export function DashboardPostCard({ post, onDelete }: DashboardPostCardProps) {
                   <Eye className="w-4 h-4" />
                 </Link>
               )}
-              
+
               {/* Edit */}
               <Link
                 href={`/editor/${post.id}`}

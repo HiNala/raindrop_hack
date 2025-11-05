@@ -12,7 +12,7 @@ export function useMagneticHover(strength: number = 0.3) {
     const centerY = rect.top + rect.height / 2
 
     const distance = Math.sqrt(
-      Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2)
+      Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2),
     )
 
     const maxDistance = 150 // pixels

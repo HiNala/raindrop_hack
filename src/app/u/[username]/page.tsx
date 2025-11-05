@@ -137,7 +137,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
                     Website
                   </a>
                 )}
-                
+
                 <span className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
                   Joined {format(new Date(profile.createdAt), 'MMM yyyy')}

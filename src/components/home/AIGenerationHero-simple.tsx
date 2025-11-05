@@ -86,7 +86,7 @@ export function AIGenerationHero() {
         const drafts: AnonymousDraft[] = existingDrafts ? JSON.parse(existingDrafts) : []
         drafts.push(draft)
         localStorage.setItem('anonymousDrafts', JSON.stringify(drafts))
-        
+
         setAnonymousCount(drafts.length)
         toast.success('Post generated! Saved to your drafts.')
         setPrompt('')
@@ -114,7 +114,7 @@ export function AIGenerationHero() {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: "easeInOut",
+            ease: 'easeInOut',
           }}
           className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl"
         />
@@ -127,7 +127,7 @@ export function AIGenerationHero() {
           transition={{
             duration: 25,
             repeat: Infinity,
-            ease: "easeInOut",
+            ease: 'easeInOut',
           }}
           className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"
         />
@@ -151,7 +151,7 @@ export function AIGenerationHero() {
             </span>
             <Zap className="w-4 h-4 text-orange-400" />
           </div>
-          
+
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight">
             <span className="text-gradient">
               Write Your Story
@@ -161,9 +161,9 @@ export function AIGenerationHero() {
               In Seconds
             </span>
           </h1>
-          
+
           <p className="text-xl text-text-secondary mb-8 max-w-2xl mx-auto leading-relaxed">
-            Describe your idea and let AI craft a compelling blog post. 
+            Describe your idea and let AI craft a compelling blog post.
             <span className="text-teal-400 font-medium"> Edit, refine, and publish</span> in minutes.
           </p>
 

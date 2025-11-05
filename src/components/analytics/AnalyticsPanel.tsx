@@ -13,7 +13,7 @@ import {
   Calendar,
   Download,
   ExternalLink,
-  Zap
+  Zap,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -75,7 +75,7 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
     const generateMockData = (): AnalyticsData => {
       const days = selectedTimeRange === '7d' ? 7 : selectedTimeRange === '30d' ? 30 : 90
       const baseViews = selectedTimeRange === '7d' ? 100 : selectedTimeRange === '30d' ? 500 : 1500
-      
+
       const viewsByDay = Array.from({ length: days }, (_, i) => {
         const date = format(subDays(new Date(), days - i), 'MMM d')
         const views = baseViews + Math.floor(Math.random() * 200) - 100
@@ -104,7 +104,7 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
             reads: 180,
             likes: 32,
             comments: 8,
-            readRate: 40
+            readRate: 40,
           },
           {
             id: '2',
@@ -113,7 +113,7 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
             reads: 160,
             likes: 45,
             comments: 14,
-            readRate: 50
+            readRate: 50,
           },
           {
             id: '3',
@@ -122,20 +122,20 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
             reads: 140,
             likes: 28,
             comments: 6,
-            readRate: 50
-          }
+            readRate: 50,
+          },
         ],
         trafficSources: [
           { source: 'Direct', visits: 1200, percentage: 40 },
           { source: 'Search', visits: 750, percentage: 25 },
           { source: 'Social', visits: 600, percentage: 20 },
-          { source: 'Referral', visits: 450, percentage: 15 }
+          { source: 'Referral', visits: 450, percentage: 15 },
         ],
         devices: [
           { device: 'Desktop', visits: 1800, percentage: 60 },
           { device: 'Mobile', visits: 900, percentage: 30 },
-          { device: 'Tablet', visits: 300, percentage: 10 }
-        ]
+          { device: 'Tablet', visits: 300, percentage: 10 },
+        ],
       }
     }
 
@@ -146,13 +146,13 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
     }, 1000)
   }, [selectedTimeRange])
 
-  const MetricCard = ({ 
-    title, 
-    value, 
-    change, 
-    icon: Icon, 
+  const MetricCard = ({
+    title,
+    value,
+    change,
+    icon: Icon,
     color = 'blue',
-    format = 'number'
+    format = 'number',
   }: {
     title: string
     value: number | string
@@ -165,7 +165,7 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
       blue: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20',
       green: 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20',
       purple: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20',
-      orange: 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20'
+      orange: 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20',
     }
 
     const formatValue = (val: number | string) => {
@@ -176,22 +176,22 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
     }
 
     return (
-      <Card className={cn("p-6", compact && "p-4")}>
+      <Card className={cn('p-6', compact && 'p-4')}>
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
               {title}
             </p>
             <p className={cn(
-              "text-2xl font-bold mt-2",
-              colorClasses[color as keyof typeof colorClasses]?.split(' ')[0]
+              'text-2xl font-bold mt-2',
+              colorClasses[color as keyof typeof colorClasses]?.split(' ')[0],
             )}>
               {formatValue(value)}
             </p>
             {change !== undefined && (
               <div className={cn(
-                "flex items-center gap-1 mt-2 text-sm",
-                change >= 0 ? "text-green-600" : "text-red-600"
+                'flex items-center gap-1 mt-2 text-sm',
+                change >= 0 ? 'text-green-600' : 'text-red-600',
               )}>
                 <TrendingUp className="w-4 h-4" />
                 <span>{Math.abs(change)}% from last period</span>
@@ -199,8 +199,8 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
             )}
           </div>
           <div className={cn(
-            "w-12 h-12 rounded-lg flex items-center justify-center",
-            colorClasses[color as keyof typeof colorClasses]
+            'w-12 h-12 rounded-lg flex items-center justify-center',
+            colorClasses[color as keyof typeof colorClasses],
           )}>
             <Icon className="w-6 h-6" />
           </div>
@@ -269,7 +269,7 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
     <div className="space-y-6">
       {/* Time Range Selector */}
       <div className="flex items-center justify-between">
-        <h2 className={cn("font-bold text-gray-900 dark:text-white", compact ? "text-lg" : "text-2xl")}>
+        <h2 className={cn('font-bold text-gray-900 dark:text-white', compact ? 'text-lg' : 'text-2xl')}>
           {compact ? 'Performance' : 'Analytics Dashboard'}
         </h2>
         <div className="flex items-center gap-3">
@@ -292,8 +292,8 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
 
       {/* Key Metrics */}
       <div className={cn(
-        "grid gap-6",
-        compact ? "grid-cols-2 md:grid-cols-4" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+        'grid gap-6',
+        compact ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
       )}>
         <MetricCard
           title="Total Views"

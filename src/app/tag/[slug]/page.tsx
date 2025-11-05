@@ -2,7 +2,6 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { PostCard } from '@/components/post/PostCard'
-import { Badge } from '@/components/ui/badge'
 import { Tag, Sparkles } from 'lucide-react'
 
 async function getTagWithPosts(slug: string) {
@@ -79,7 +78,7 @@ export default async function TagPage({ params }: { params: { slug: string } }) 
           <div className="glass-effect border border-[#27272a] rounded-2xl p-8 relative overflow-hidden">
             {/* Background Glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl"></div>
-            
+
             <div className="relative flex items-start justify-between">
               <div className="flex items-center gap-6">
                 <div className="p-5 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl shadow-glow-teal">

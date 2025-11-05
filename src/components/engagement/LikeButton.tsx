@@ -27,7 +27,7 @@ export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
   const [particles, setParticles] = useState<Particle[]>([])
   const [showBurst, setShowBurst] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
-  
+
   // Spring animation for heart scale
   const scale = useSpring(1, { stiffness: 300, damping: 10 })
   const opacity = useSpring(1)
@@ -45,7 +45,7 @@ export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
   const createParticles = () => {
     const newParticles: Particle[] = []
     const particleCount = 12
-    
+
     for (let i = 0; i < particleCount; i++) {
       newParticles.push({
         id: Date.now() + i,
@@ -54,10 +54,10 @@ export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
         angle: (360 / particleCount) * i,
       })
     }
-    
+
     setParticles(newParticles)
     setShowBurst(true)
-    
+
     setTimeout(() => {
       setShowBurst(false)
       setParticles([])
@@ -75,13 +75,13 @@ export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
     // Optimistic update
     const newIsLiked = !isLiked
     const newLikes = newIsLiked ? likes + 1 : likes - 1
-    
+
     // Trigger animations
     if (newIsLiked) {
       scale.set(1.3)
       setTimeout(() => scale.set(1), 200)
       createParticles()
-      
+
       // Haptic feedback (if supported)
       if ('vibrate' in navigator) {
         navigator.vibrate(50)
@@ -90,7 +90,7 @@ export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
       scale.set(0.8)
       setTimeout(() => scale.set(1), 150)
     }
-    
+
     setIsLiked(newIsLiked)
     setLikes(newLikes)
 
@@ -124,11 +124,11 @@ export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
         {showBurst && particles.map((particle) => (
           <motion.div
             key={particle.id}
-            initial={{ 
-              x: 0, 
-              y: 0, 
-              opacity: 1, 
-              scale: 0 
+            initial={{
+              x: 0,
+              y: 0,
+              opacity: 1,
+              scale: 0,
             }}
             animate={{
               x: Math.cos((particle.angle * Math.PI) / 180) * 40,
@@ -137,9 +137,9 @@ export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
               scale: [0, 1, 0],
             }}
             exit={{ opacity: 0 }}
-            transition={{ 
-              duration: 0.8, 
-              ease: [0.23, 1, 0.32, 1] 
+            transition={{
+              duration: 0.8,
+              ease: [0.23, 1, 0.32, 1],
             }}
             className="absolute top-1/2 left-1/2 pointer-events-none"
             style={{ transformOrigin: 'center' }}
@@ -160,8 +160,8 @@ export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
           onClick={handleToggleLike}
           disabled={isLoading}
           className={`relative overflow-hidden transition-all duration-300 ${
-            isLiked 
-              ? 'bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white border-0 shadow-lg shadow-red-500/30' 
+            isLiked
+              ? 'bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white border-0 shadow-lg shadow-red-500/30'
               : 'border-[#27272a] hover:border-red-500/50 text-text-primary hover:text-red-400'
           }`}
         >
@@ -178,7 +178,7 @@ export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
               }}
             />
           )}
-          
+
           <motion.div
             style={{ scale }}
             className="flex items-center gap-2"

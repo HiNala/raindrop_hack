@@ -1,4 +1,3 @@
-import slugify from 'slugify'
 import { prisma } from './prisma'
 import { validateSlug } from './security'
 
@@ -24,6 +23,7 @@ export async function generateUniqueSlug(title: string, excludePostId?: string):
   let slug = baseSlug
   let counter = 1
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     const existing = await prisma.post.findUnique({
       where: { slug },

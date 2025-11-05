@@ -1,8 +1,8 @@
 'use client'
 
-import * as React from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { cn } from "@/lib/utils"
+import * as React from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '@/lib/utils'
 
 export interface EnhancedTextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -22,20 +22,20 @@ const EnhancedTextarea = React.forwardRef<HTMLTextAreaElement, EnhancedTextareaP
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setValue(e.target.value)
-      
+
       // Auto-resize
       if (autoResize && textareaRef.current) {
         textareaRef.current.style.height = 'auto'
-        textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px'
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight  }px`
       }
-      
+
       props.onChange?.(e)
     }
 
     React.useEffect(() => {
       if (autoResize && textareaRef.current) {
         textareaRef.current.style.height = 'auto'
-        textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px'
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight  }px`
       }
     }, [autoResize])
 
@@ -48,7 +48,7 @@ const EnhancedTextarea = React.forwardRef<HTMLTextAreaElement, EnhancedTextareaP
           ref.current = node
         }
       },
-      [ref]
+      [ref],
     )
 
     const hasValue = value.length > 0 || isFocused
@@ -61,16 +61,16 @@ const EnhancedTextarea = React.forwardRef<HTMLTextAreaElement, EnhancedTextareaP
         <div className="relative">
           <textarea
             className={cn(
-              "flex min-h-[120px] w-full rounded-lg border border-[#27272a] bg-[#1a1a1d] px-4 py-3 text-base text-text-primary transition-all duration-200 resize-none",
-              "placeholder:text-text-tertiary",
-              "focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20",
-              "disabled:cursor-not-allowed disabled:opacity-50",
-              isFocused && !error && "shadow-glow-teal border-teal-500",
-              error && "border-red-500 focus:border-red-500 focus:ring-red-500/20",
-              success && "border-green-500 focus:border-green-500 focus:ring-green-500/20",
-              showLabel && "pt-6",
-              autoResize && "overflow-hidden",
-              className
+              'flex min-h-[120px] w-full rounded-lg border border-[#27272a] bg-[#1a1a1d] px-4 py-3 text-base text-text-primary transition-all duration-200 resize-none',
+              'placeholder:text-text-tertiary',
+              'focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20',
+              'disabled:cursor-not-allowed disabled:opacity-50',
+              isFocused && !error && 'shadow-glow-teal border-teal-500',
+              error && 'border-red-500 focus:border-red-500 focus:ring-red-500/20',
+              success && 'border-green-500 focus:border-green-500 focus:ring-green-500/20',
+              showLabel && 'pt-6',
+              autoResize && 'overflow-hidden',
+              className,
             )}
             ref={combinedRef}
             value={value}
@@ -98,13 +98,13 @@ const EnhancedTextarea = React.forwardRef<HTMLTextAreaElement, EnhancedTextareaP
                 }}
                 transition={{ duration: 0.2 }}
                 className={cn(
-                  "absolute left-4 pointer-events-none transition-colors duration-200",
+                  'absolute left-4 pointer-events-none transition-colors duration-200',
                   hasValue ? 'top-2' : 'top-3',
                   isFocused
                     ? 'text-teal-400'
                     : error
-                    ? 'text-red-400'
-                    : 'text-text-tertiary'
+                      ? 'text-red-400'
+                      : 'text-text-tertiary',
                 )}
               >
                 {label}
@@ -135,7 +135,7 @@ const EnhancedTextarea = React.forwardRef<HTMLTextAreaElement, EnhancedTextareaP
                   {error}
                 </motion.p>
               )}
-              
+
               {success && !error && (
                 <motion.p
                   initial={{ scale: 0.8 }}
@@ -151,10 +151,10 @@ const EnhancedTextarea = React.forwardRef<HTMLTextAreaElement, EnhancedTextareaP
               {showCharCount && maxLength && (
                 <span
                   className={cn(
-                    "text-xs transition-colors ml-auto",
+                    'text-xs transition-colors ml-auto',
                     charCount > maxLength * 0.9
                       ? 'text-orange-400'
-                      : 'text-text-tertiary'
+                      : 'text-text-tertiary',
                   )}
                 >
                   {charCount}/{maxLength}
@@ -165,9 +165,9 @@ const EnhancedTextarea = React.forwardRef<HTMLTextAreaElement, EnhancedTextareaP
         </AnimatePresence>
       </div>
     )
-  }
+  },
 )
-EnhancedTextarea.displayName = "EnhancedTextarea"
+EnhancedTextarea.displayName = 'EnhancedTextarea'
 
 export { EnhancedTextarea }
 

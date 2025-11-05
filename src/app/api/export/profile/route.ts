@@ -6,19 +6,19 @@ import { rateLimiter, RATE_LIMITS } from '@/lib/security'
 export async function GET() {
   try {
     const user = await requireUser()
-    
+
     // Rate limit exports
     const exportRateKey = `export:profile:${user.id}`
     const allowed = rateLimiter.check(
       exportRateKey,
       RATE_LIMITS.EXPORT.limit,
-      RATE_LIMITS.EXPORT.windowMs
+      RATE_LIMITS.EXPORT.windowMs,
     )
 
     if (!allowed) {
       return NextResponse.json(
         { error: 'Export limit exceeded. You can request 3 exports per day.' },
-        { status: 429 }
+        { status: 429 },
       )
     }
 
@@ -50,15 +50,15 @@ export async function GET() {
       },
       profile: profile
         ? {
-            username: profile.username,
-            displayName: profile.displayName,
-            bio: profile.bio,
-            avatarUrl: profile.avatarUrl,
-            websiteUrl: profile.websiteUrl,
-            twitterHandle: profile.twitterHandle,
-            githubUsername: profile.githubUsername,
-            location: profile.location,
-          }
+          username: profile.username,
+          displayName: profile.displayName,
+          bio: profile.bio,
+          avatarUrl: profile.avatarUrl,
+          websiteUrl: profile.websiteUrl,
+          twitterHandle: profile.twitterHandle,
+          githubUsername: profile.githubUsername,
+          location: profile.location,
+        }
         : null,
       stats: {
         totalPublishedPosts: postCount,

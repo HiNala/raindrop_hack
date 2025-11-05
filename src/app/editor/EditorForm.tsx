@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Loader2, Eye, Wand2, FileText, Settings, Sparkles, Clock, CheckCircle, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Eye, Wand2, Sparkles, Clock, CheckCircle, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -47,17 +47,17 @@ const AUTO_SAVE_INTERVAL = 3000 // 3 seconds
 
 export default function EditorForm({ existingPost }: EditorFormProps) {
   const router = useRouter()
-  
+
   // Core state
   const [title, setTitle] = useState(existingPost?.title || '')
   const [excerpt, setExcerpt] = useState(existingPost?.excerpt || '')
   const [content, setContent] = useState<object>(existingPost?.contentJson || { type: 'doc', content: [] })
   const [coverImage, setCoverImage] = useState<string | null>(existingPost?.coverImage || null)
   const [selectedTags, setSelectedTags] = useState<Tag[]>(
-    existingPost?.tags.map((t) => t.tag) || []
+    existingPost?.tags.map((t) => t.tag) || [],
   )
   const [availableTags, setAvailableTags] = useState<Tag[]>([])
-  
+
   // UI state
   const [isSaving, setIsSaving] = useState(false)
   const [isPublishing, setIsPublishing] = useState(false)
@@ -66,7 +66,7 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
   const [lastSaved, setLastSaved] = useState<Date | null>(existingPost ? new Date() : null)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [isDirty, setIsDirty] = useState(false)
-  
+
   // AI state
   const [aiPrompt, setAiPrompt] = useState('')
   const [includeHNContext, setIncludeHNContext] = useState(false)
@@ -202,13 +202,13 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
         setTitle(result.data.title)
         setContent(result.data.contentJson)
         setExcerpt(result.data.excerpt || '')
-        
+
         // Add suggested tags
         if (result.data.suggestedTags && result.data.suggestedTags.length > 0) {
           const newTags = result.data.suggestedTags.slice(0, 3).map(tagName => ({
             id: `temp_${Date.now()}_${tagName}`,
             name: tagName,
-            slug: tagName.toLowerCase().replace(/\s+/g, '-')
+            slug: tagName.toLowerCase().replace(/\s+/g, '-'),
           }))
           setSelectedTags(prev => [...prev, ...newTags])
         }
@@ -318,7 +318,7 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
                     Draft
                   </Badge>
                 )}
-                
+
                 {/* Save Status */}
                 <div className="flex items-center gap-2 text-xs text-text-secondary">
                   {getSaveStatusIcon()}
@@ -415,7 +415,7 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
               {/* Publish Button */}
               <Sheet open={showPublishSheet} onOpenChange={setShowPublishSheet}>
                 <SheetTrigger asChild>
-                  <Button 
+                  <Button
                     className="bg-teal-500 hover:bg-teal-600 text-white shadow-glow-teal hover:shadow-lg"
                     disabled={!title.trim() || selectedTags.length === 0}
                   >
@@ -460,7 +460,7 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
                         </div>
                         <Switch
                           checked={publishOptions.publishNow}
-                          onCheckedChange={(checked) => 
+                          onCheckedChange={(checked) =>
                             setPublishOptions(prev => ({ ...prev, publishNow: checked }))
                           }
                         />
@@ -473,7 +473,7 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
                         </div>
                         <Switch
                           checked={publishOptions.notifyFollowers}
-                          onCheckedChange={(checked) => 
+                          onCheckedChange={(checked) =>
                             setPublishOptions(prev => ({ ...prev, notifyFollowers: checked }))
                           }
                         />

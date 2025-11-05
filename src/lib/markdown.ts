@@ -7,20 +7,17 @@ const md = new MarkdownIt()
  * This is a simplified conversion - Novel editor can handle this
  */
 export function markdownToTiptapJson(markdown: string): object {
-  // Parse markdown to HTML
-  const html = md.render(markdown)
-  
   // For now, return a basic structure
   // In production, you'd want a more sophisticated parser
   // or use TipTap's generateJSON on the server
-  
+
   const paragraphs = markdown.split('\n\n').filter(p => p.trim())
-  
+
   const content: any[] = []
-  
+
   for (const para of paragraphs) {
     const trimmed = para.trim()
-    
+
     // Heading
     if (trimmed.startsWith('# ')) {
       content.push({
@@ -40,7 +37,7 @@ export function markdownToTiptapJson(markdown: string): object {
         attrs: { level: 3 },
         content: [{ type: 'text', text: trimmed.substring(4) }],
       })
-    } 
+    }
     // List items
     else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
       const items = trimmed.split('\n').filter(l => l.startsWith('- ') || l.startsWith('* '))
@@ -58,9 +55,9 @@ export function markdownToTiptapJson(markdown: string): object {
     // Regular paragraph
     else {
       // Handle bold and italic
-      let text = trimmed
+      const text = trimmed
       const hasFormatting = /\*\*|\*|__|\||`/.test(text)
-      
+
       if (hasFormatting) {
         // Simple formatting - in production use a proper parser
         content.push({
@@ -75,7 +72,7 @@ export function markdownToTiptapJson(markdown: string): object {
       }
     }
   }
-  
+
   return {
     type: 'doc',
     content,
@@ -101,7 +98,7 @@ export function extractTitleFromMarkdown(markdown: string): string {
 export function extractExcerptFromMarkdown(markdown: string, maxLength: number = 200): string {
   // Remove title (first h1)
   let content = markdown.replace(/^#\s+.+\n\n?/, '')
-  
+
   // Remove markdown formatting
   content = content
     .replace(/#{1,6}\s+/g, '') // Remove headings
@@ -111,15 +108,15 @@ export function extractExcerptFromMarkdown(markdown: string, maxLength: number =
     .replace(/`(.+?)`/g, '$1') // Remove code
     .replace(/^[-*]\s+/gm, '') // Remove list markers
     .trim()
-  
+
   // Get first paragraph and truncate
   const firstPara = content.split('\n\n')[0] || content
-  
+
   if (firstPara.length <= maxLength) {
     return firstPara
   }
-  
-  return firstPara.substring(0, maxLength).trim() + '...'
+
+  return `${firstPara.substring(0, maxLength).trim()  }...`
 }
 
 

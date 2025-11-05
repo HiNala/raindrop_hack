@@ -76,13 +76,13 @@ export function EnhancedEditor({
     onUpdate: ({ editor }) => {
       const json = editor.getJSON()
       const html = editor.getHTML()
-      
+
       // Update word count and read time
       const text = editor.getText()
       const words = text.trim().split(/\s+/).filter(Boolean)
       setWordCount(words.length)
       setReadTime(Math.ceil(words.length / 200)) // 200 words per minute
-      
+
       onChange(html)
     },
     editorProps: {
@@ -97,7 +97,7 @@ export function EnhancedEditor({
           'prose-blockquote:text-text-secondary prose-blockquote:border-l-accent-teal',
           'prose-hr:border-surface-300',
           'min-h-[200px] p-4',
-          editable ? 'cursor-text' : 'cursor-default'
+          editable ? 'cursor-text' : 'cursor-default',
         ),
       },
     },
@@ -106,9 +106,9 @@ export function EnhancedEditor({
   // Auto-create version snapshots
   const createVersionSnapshot = useCallback(async () => {
     if (!onVersionCreate || !postId || !editor) return
-    
+
     setIsCreatingVersion(true)
-    
+
     try {
       const snapshot = {
         content: editor.getJSON(),
@@ -117,7 +117,7 @@ export function EnhancedEditor({
         readTime,
         timestamp: new Date().toISOString(),
       }
-      
+
       await onVersionCreate(snapshot)
     } catch (error) {
       console.error('Failed to create version snapshot:', error)
@@ -183,7 +183,7 @@ export function EnhancedEditor({
             >
               <strong>B</strong>
             </ToolbarButton>
-            
+
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleItalic().run()}
               disabled={!editor.can().chain().focus().toggleItalic().run()}
@@ -191,7 +191,7 @@ export function EnhancedEditor({
             >
               <em>I</em>
             </ToolbarButton>
-            
+
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleUnderline().run()}
               disabled={!editor.can().chain().focus().toggleUnderline().run()}
@@ -199,48 +199,48 @@ export function EnhancedEditor({
             >
               <u>U</u>
             </ToolbarButton>
-            
+
             <div className="w-px h-4 bg-surface-300"></div>
-            
+
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
               active={editor.isActive('heading', { level: 2 })}
             >
               H2
             </ToolbarButton>
-            
+
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
               active={editor.isActive('heading', { level: 3 })}
             >
               H3
             </ToolbarButton>
-            
+
             <div className="w-px h-4 bg-surface-300"></div>
-            
+
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleBulletList().run()}
               active={editor.isActive('bulletList')}
             >
               •
             </ToolbarButton>
-            
+
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
               active={editor.isActive('orderedList')}
             >
               1.
             </ToolbarButton>
-            
+
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleCodeBlock().run()}
               active={editor.isActive('codeBlock')}
             >
               {'</>'}
             </ToolbarButton>
-            
+
             <div className="w-px h-4 bg-surface-300"></div>
-            
+
             <ToolbarButton
               onClick={() => {
                 const url = window.prompt('Enter URL:')
@@ -252,7 +252,7 @@ export function EnhancedEditor({
             >
               🔗
             </ToolbarButton>
-            
+
             <ToolbarButton
               onClick={() => {
                 const url = window.prompt('Enter image URL:')
@@ -264,7 +264,7 @@ export function EnhancedEditor({
               🖼️
             </ToolbarButton>
           </div>
-          
+
           <div className="flex items-center gap-4 text-sm text-text-secondary">
             <span>{wordCount} words</span>
             <span>≈ {readTime} min read</span>
@@ -274,15 +274,15 @@ export function EnhancedEditor({
           </div>
         </div>
       )}
-      
+
       {/* Editor Content */}
       <EditorContent editor={editor} />
-      
+
       {/* Status Bar */}
       <div className="mt-4 flex items-center justify-between text-xs text-text-secondary">
         <div className="flex items-center gap-4">
           <span>
-            {editor.storage.markdown?.getMarkdown() 
+            {editor.storage.markdown?.getMarkdown()
               ? `${editor.storage.markdown?.getMarkdown().length} characters`
               : `${wordCount * 5} characters (approx)`}
           </span>
@@ -296,7 +296,7 @@ export function EnhancedEditor({
             </button>
           )}
         </div>
-        
+
         <div className="flex items-center gap-2">
           {editor.isActive('bold') && <span className="px-2 py-1 bg-surface-100 rounded">Bold</span>}
           {editor.isActive('italic') && <span className="px-2 py-1 bg-surface-100 rounded">Italic</span>}
@@ -327,7 +327,7 @@ function ToolbarButton({
         'hover:bg-surface-200 hover:text-text-primary',
         'focus:outline-none focus:ring-2 focus:ring-accent-teal/50',
         active ? 'bg-accent-teal text-white' : 'text-text-secondary',
-        disabled && 'opacity-50 cursor-not-allowed'
+        disabled && 'opacity-50 cursor-not-allowed',
       )}
     >
       {children}

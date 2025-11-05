@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
-  BookOpen, 
-  PenTool, 
-  Plus, 
-  Wand2, 
+import {
+  BookOpen,
+  PenTool,
+  Plus,
+  Wand2,
   FileText,
   Clock,
   BarChart3,
@@ -21,7 +21,7 @@ import {
   List,
   Edit,
   Trash2,
-  MoreVertical
+  MoreVertical,
 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
@@ -46,78 +46,78 @@ import { useUser } from '@clerk/nextjs'
 // Mock data for development
 const mockPosts = [
   {
-    id: "1",
-    title: "Getting Started with Next.js 15",
-    slug: "getting-started-nextjs-15",
-    excerpt: "A comprehensive guide to building modern web applications with Next.js 15, including the latest App Router features.",
+    id: '1',
+    title: 'Getting Started with Next.js 15',
+    slug: 'getting-started-nextjs-15',
+    excerpt: 'A comprehensive guide to building modern web applications with Next.js 15, including the latest App Router features.',
     coverImage: null,
     publishedAt: new Date(),
     readTimeMin: 5,
     viewCount: 120,
     author: {
       profile: {
-        username: "demo",
-        displayName: "Demo User",
-        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=demo"
-      }
+        username: 'demo',
+        displayName: 'Demo User',
+        avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo',
+      },
     },
     tags: [
-      { tag: { name: "nextjs", slug: "nextjs" } },
-      { tag: { name: "react", slug: "react" } }
+      { tag: { name: 'nextjs', slug: 'nextjs' } },
+      { tag: { name: 'react', slug: 'react' } },
     ],
-    _count: { likes: 15, comments: 3 }
+    _count: { likes: 15, comments: 3 },
   },
   {
-    id: "2",
-    title: "TypeScript Best Practices in 2024",
-    slug: "typescript-best-practices-2024",
-    excerpt: "Learn the essential TypeScript patterns and practices that will make your code more maintainable and type-safe.",
+    id: '2',
+    title: 'TypeScript Best Practices in 2024',
+    slug: 'typescript-best-practices-2024',
+    excerpt: 'Learn the essential TypeScript patterns and practices that will make your code more maintainable and type-safe.',
     coverImage: null,
     publishedAt: new Date(),
     readTimeMin: 7,
     viewCount: 85,
     author: {
       profile: {
-        username: "demo",
-        displayName: "Demo User",
-        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=demo"
-      }
+        username: 'demo',
+        displayName: 'Demo User',
+        avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo',
+      },
     },
     tags: [
-      { tag: { name: "typescript", slug: "typescript" } },
-      { tag: { name: "javascript", slug: "javascript" } }
+      { tag: { name: 'typescript', slug: 'typescript' } },
+      { tag: { name: 'javascript', slug: 'javascript' } },
     ],
-    _count: { likes: 23, comments: 7 }
+    _count: { likes: 23, comments: 7 },
   },
   {
-    id: "3",
-    title: "Building Scalable React Applications",
-    slug: "building-scalable-react-applications",
-    excerpt: "Discover the architectural patterns and best practices for building React applications that can scale.",
+    id: '3',
+    title: 'Building Scalable React Applications',
+    slug: 'building-scalable-react-applications',
+    excerpt: 'Discover the architectural patterns and best practices for building React applications that can scale.',
     coverImage: null,
     publishedAt: new Date(),
     readTimeMin: 8,
     viewCount: 156,
     author: {
       profile: {
-        username: "demo",
-        displayName: "Demo User",
-        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=demo"
-      }
+        username: 'demo',
+        displayName: 'Demo User',
+        avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo',
+      },
     },
     tags: [
-      { tag: { name: "react", slug: "react" } },
-      { tag: { name: "frontend", slug: "frontend" } }
+      { tag: { name: 'react', slug: 'react' } },
+      { tag: { name: 'frontend', slug: 'frontend' } },
     ],
-    _count: { likes: 31, comments: 12 }
-  }
+    _count: { likes: 31, comments: 12 },
+  },
 ]
 
 const mockDrafts = [
   {
-    id: "draft1",
-    title: "My First Draft Post",
-    slug: "my-first-draft-post",
+    id: 'draft1',
+    title: 'My First Draft Post',
+    slug: 'my-first-draft-post',
     excerpt: "This is a work in progress that I'm excited to share...",
     coverImage: null,
     publishedAt: null,
@@ -125,95 +125,95 @@ const mockDrafts = [
     viewCount: 0,
     author: {
       profile: {
-        username: "demo",
-        displayName: "Demo User",
-        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=demo"
-      }
+        username: 'demo',
+        displayName: 'Demo User',
+        avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo',
+      },
     },
     tags: [],
-    _count: { likes: 0, comments: 0 }
+    _count: { likes: 0, comments: 0 },
   },
   {
-    id: "draft2",
-    title: "Understanding React Hooks",
-    slug: "understanding-react-hooks",
-    excerpt: "A deep dive into how React hooks work under the hood...",
+    id: 'draft2',
+    title: 'Understanding React Hooks',
+    slug: 'understanding-react-hooks',
+    excerpt: 'A deep dive into how React hooks work under the hood...',
     coverImage: null,
     publishedAt: null,
     readTimeMin: 6,
     viewCount: 0,
     author: {
       profile: {
-        username: "demo",
-        displayName: "Demo User",
-        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=demo"
-      }
+        username: 'demo',
+        displayName: 'Demo User',
+        avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo',
+      },
     },
     tags: [
-      { tag: { name: "react", slug: "react" } },
-      { tag: { name: "hooks", slug: "hooks" } }
+      { tag: { name: 'react', slug: 'react' } },
+      { tag: { name: 'hooks', slug: 'hooks' } },
     ],
-    _count: { likes: 0, comments: 0 }
-  }
+    _count: { likes: 0, comments: 0 },
+  },
 ]
 
 export function Dashboard() {
   const { user } = useUser()
-  const [activeTab, setActiveTab] = useState("writer")
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const [activeTab, setActiveTab] = useState('writer')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedPost, setSelectedPost] = useState<any>(null)
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState('')
 
   const readerSections = [
-    { 
-      id: "foryou", 
-      title: "For you", 
-      description: "Personalized based on your interests",
+    {
+      id: 'foryou',
+      title: 'For you',
+      description: 'Personalized based on your interests',
       posts: mockPosts,
-      icon: TrendingUp 
+      icon: TrendingUp,
     },
-    { 
-      id: "following", 
-      title: "Following", 
-      description: "From authors and tags you follow",
+    {
+      id: 'following',
+      title: 'Following',
+      description: 'From authors and tags you follow',
       posts: mockPosts.slice(0, 1),
-      icon: Bookmark 
+      icon: Bookmark,
     },
-    { 
-      id: "trending", 
-      title: "Trending", 
-      description: "Popular posts this week",
+    {
+      id: 'trending',
+      title: 'Trending',
+      description: 'Popular posts this week',
       posts: mockPosts,
-      icon: BarChart3 
-    }
+      icon: BarChart3,
+    },
   ]
 
   const writerSections = [
     {
-      id: "drafts",
-      title: "Drafts",
-      description: "Works in progress",
+      id: 'drafts',
+      title: 'Drafts',
+      description: 'Works in progress',
       posts: mockDrafts,
       icon: FileText,
-      count: mockDrafts.length
+      count: mockDrafts.length,
     },
     {
-      id: "published",
-      title: "Published",
-      description: "Your published posts",
+      id: 'published',
+      title: 'Published',
+      description: 'Your published posts',
       posts: mockPosts,
       icon: BookOpen,
-      count: mockPosts.length
+      count: mockPosts.length,
     },
     {
-      id: "analytics",
-      title: "Analytics",
-      description: "Performance insights",
+      id: 'analytics',
+      title: 'Analytics',
+      description: 'Performance insights',
       posts: [],
       icon: BarChart3,
       count: mockPosts.length,
-      isAnalytics: true
-    }
+      isAnalytics: true,
+    },
   ]
 
   const totalViews = mockPosts.reduce((sum, post) => sum + post.viewCount, 0)
@@ -236,7 +236,7 @@ export function Dashboard() {
                 Create, manage, and discover great content
               </p>
             </div>
-            
+
             <Avatar className="w-12 h-12 ring-2 ring-teal-500/30">
               <AvatarImage src={user?.imageUrl} />
               <AvatarFallback className="bg-gradient-to-br from-teal-500 to-teal-600 text-white">
@@ -294,22 +294,22 @@ export function Dashboard() {
                   className="pl-10 bg-[#1a1a1d] border-[#27272a] focus:border-teal-500"
                 />
               </div>
-              
-              {activeTab === "writer" && (
+
+              {activeTab === 'writer' && (
                 <div className="flex items-center gap-2">
                   <Button
-                    variant={viewMode === "grid" ? "default" : "outline"}
+                    variant={viewMode === 'grid' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setViewMode("grid")}
-                    className={viewMode === "grid" ? "bg-teal-500 text-white" : "border-[#27272a] text-text-primary"}
+                    onClick={() => setViewMode('grid')}
+                    className={viewMode === 'grid' ? 'bg-teal-500 text-white' : 'border-[#27272a] text-text-primary'}
                   >
                     <Grid className="w-4 h-4" />
                   </Button>
                   <Button
-                    variant={viewMode === "list" ? "default" : "outline"}
+                    variant={viewMode === 'list' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setViewMode("list")}
-                    className={viewMode === "list" ? "bg-teal-500 text-white" : "border-[#27272a] text-text-primary"}
+                    onClick={() => setViewMode('list')}
+                    className={viewMode === 'list' ? 'bg-teal-500 text-white' : 'border-[#27272a] text-text-primary'}
                   >
                     <List className="w-4 h-4" />
                   </Button>
@@ -320,15 +320,15 @@ export function Dashboard() {
             {/* Reader/Writer Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               <TabsList className="grid w-full grid-cols-2 h-12 bg-[#1a1a1d] border border-[#27272a] p-1">
-                <TabsTrigger 
-                  value="reader" 
+                <TabsTrigger
+                  value="reader"
                   className="data-[state=active]:bg-[#0a0a0b] data-[state=active]:text-teal-400 data-[state=active]:shadow-glow-teal transition-all duration-200 text-text-secondary"
                 >
                   <BookOpen className="w-4 h-4 mr-2" />
                   Reader
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="writer" 
+                <TabsTrigger
+                  value="writer"
                   className="data-[state=active]:bg-[#0a0a0b] data-[state=active]:text-orange-400 data-[state=active]:shadow-glow-orange transition-all duration-200 text-text-secondary"
                 >
                   <PenTool className="w-4 h-4 mr-2" />
@@ -367,9 +367,9 @@ export function Dashboard() {
                             No posts yet
                           </h3>
                           <p className="text-text-secondary mb-4">
-                            {section.id === 'foryou' && "Start following authors and tags to see personalized content"}
-                            {section.id === 'following' && "Follow authors and tags to see their latest posts here"}
-                            {section.id === 'trending' && "Popular posts will appear here as they gain traction"}
+                            {section.id === 'foryou' && 'Start following authors and tags to see personalized content'}
+                            {section.id === 'following' && 'Follow authors and tags to see their latest posts here'}
+                            {section.id === 'trending' && 'Popular posts will appear here as they gain traction'}
                           </p>
                           {section.id === 'foryou' && (
                             <Link href="/tags">
@@ -383,8 +383,8 @@ export function Dashboard() {
                     ) : (
                       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                         {section.posts.map((post) => (
-                          <div 
-                            key={post.id} 
+                          <div
+                            key={post.id}
                             className="cursor-pointer"
                             onClick={() => setSelectedPost(post)}
                           >
@@ -416,7 +416,7 @@ export function Dashboard() {
                           {section.description}
                         </p>
                       </div>
-                      
+
                       {section.id === 'drafts' && section.count > 0 && (
                         <Button size="sm" variant="outline" className="border-[#27272a] hover:bg-[#1a1a1d] text-text-primary">
                           View All
@@ -434,9 +434,9 @@ export function Dashboard() {
                             No {section.title.toLowerCase()}
                           </h3>
                           <p className="text-text-secondary mb-4">
-                            {section.id === 'drafts' && "Start writing your first draft and it will appear here"}
-                            {section.id === 'published' && "Your published posts will appear here for easy access"}
-                            {section.id === 'analytics' && "Publish some posts to see analytics and insights"}
+                            {section.id === 'drafts' && 'Start writing your first draft and it will appear here'}
+                            {section.id === 'published' && 'Your published posts will appear here for easy access'}
+                            {section.id === 'analytics' && 'Publish some posts to see analytics and insights'}
                           </p>
                           {section.id === 'drafts' && (
                             <Link href="/editor/new">
@@ -449,14 +449,14 @@ export function Dashboard() {
                         </div>
                       </Card>
                     ) : (
-                      <div className={viewMode === "grid" ? "grid gap-6 md:grid-cols-2 lg:grid-cols-3" : "space-y-4"}>
+                      <div className={viewMode === 'grid' ? 'grid gap-6 md:grid-cols-2 lg:grid-cols-3' : 'space-y-4'}>
                         {section.posts.map((post) => (
-                          <div 
-                            key={post.id} 
+                          <div
+                            key={post.id}
                             className="cursor-pointer"
                             onClick={() => setSelectedPost(post)}
                           >
-                            {viewMode === "grid" ? (
+                            {viewMode === 'grid' ? (
                               <DashboardPostCard post={post} />
                             ) : (
                               <DashboardPostCard post={post} />
@@ -497,11 +497,11 @@ export function Dashboard() {
                       />
                     </div>
                   )}
-                  
+
                   <div className="p-6">
                     <div className="flex items-center gap-2 mb-3">
                       <Badge className={`${
-                        selectedPost.published 
+                        selectedPost.published
                           ? 'bg-teal-500/10 text-teal-400 border-teal-500/30'
                           : 'bg-orange-500/10 text-orange-400 border-orange-500/30'
                       }`}>

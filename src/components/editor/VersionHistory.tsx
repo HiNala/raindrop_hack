@@ -6,16 +6,16 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  GitBranch, 
-  Clock, 
-  FileText, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  GitBranch,
+  Clock,
+  FileText,
   Eye,
   RotateCcw,
   Copy,
-  Trash2
+  Trash2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -54,7 +54,7 @@ export function VersionHistory({
 
   // Sort versions by date (newest first)
   const sortedVersions = [...versions].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   )
 
   useEffect(() => {
@@ -94,14 +94,14 @@ export function VersionHistory({
     // Simple diff implementation (in production, use a proper diff library)
     const oldLines = oldContent.split('\n')
     const newLines = newContent.split('\n')
-    
+
     const diff: Array<{
       type: 'equal' | 'added' | 'removed'
       content: string
     }> = []
-    
+
     let i = 0, j = 0
-    
+
     while (i < oldLines.length || j < newLines.length) {
       if (i < oldLines.length && j < newLines.length && oldLines[i] === newLines[j]) {
         diff.push({ type: 'equal', content: oldLines[i] })
@@ -115,7 +115,7 @@ export function VersionHistory({
         i++
       }
     }
-    
+
     return diff
   }
 
@@ -148,7 +148,7 @@ export function VersionHistory({
             <Badge variant="secondary">{sortedVersions.length} versions</Badge>
           </div>
         </div>
-        
+
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-2">
             {/* Current Version */}
@@ -161,7 +161,7 @@ export function VersionHistory({
                 setDiffView(false)
               }}
             />
-            
+
             {/* Version List */}
             {sortedVersions.map((version) => (
               <VersionCard
@@ -192,7 +192,7 @@ export function VersionHistory({
                       {selectedVersion.id === 'current' ? 'Current Version' : formatDistanceToNow(new Date(selectedVersion.createdAt), { addSuffix: true })}
                     </span>
                   </div>
-                  
+
                   {selectedVersion.id !== 'current' && (
                     <div className="flex items-center gap-2 text-sm text-text-secondary">
                       <FileText className="w-4 h-4" />
@@ -202,7 +202,7 @@ export function VersionHistory({
                     </div>
                   )}
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   {/* Toggle Diff View */}
                   {currentContent && selectedVersion.id !== 'current' && (
@@ -224,7 +224,7 @@ export function VersionHistory({
                       )}
                     </Button>
                   )}
-                  
+
                   {/* Copy Content */}
                   <Button
                     variant="outline"
@@ -234,7 +234,7 @@ export function VersionHistory({
                     <Copy className="w-4 h-4 mr-2" />
                     {copiedContent ? 'Copied!' : 'Copy'}
                   </Button>
-                  
+
                   {/* Restore Version */}
                   {selectedVersion.id !== 'current' && (
                     <Button
@@ -246,7 +246,7 @@ export function VersionHistory({
                       Restore
                     </Button>
                   )}
-                  
+
                   {/* Delete Version */}
                   {selectedVersion.id !== 'current' && (
                     <Button
@@ -274,7 +274,7 @@ export function VersionHistory({
                           'p-2 rounded',
                           line.type === 'added' && 'bg-green-500/10 text-green-400',
                           line.type === 'removed' && 'bg-red-500/10 text-red-400',
-                          line.type === 'equal' && 'text-text-secondary'
+                          line.type === 'equal' && 'text-text-secondary',
                         )}
                       >
                         <span className="inline-block w-12 text-right mr-4 text-text-muted">
@@ -326,7 +326,7 @@ function VersionCard({
       className={cn(
         'p-3 cursor-pointer transition-all hover:bg-surface-100',
         isSelected && 'ring-2 ring-accent-teal bg-surface-100',
-        isCurrent && 'border-accent-teal'
+        isCurrent && 'border-accent-teal',
       )}
       onClick={onSelect}
     >
@@ -342,7 +342,7 @@ function VersionCard({
               {formatDistanceToNow(new Date(version.createdAt), { addSuffix: true })}
             </span>
           </div>
-          
+
           {!isCurrent && 'snapshot' in version && (
             <div className="flex items-center gap-2 mt-1 text-xs text-text-secondary">
               <FileText className="w-3 h-3" />
@@ -352,7 +352,7 @@ function VersionCard({
             </div>
           )}
         </div>
-        
+
         {isSelected && (
           <ChevronRight className="w-4 h-4 text-accent-teal" />
         )}

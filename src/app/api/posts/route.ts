@@ -25,28 +25,28 @@ export async function GET(request: NextRequest) {
     // If specific slug requested
     if (slug) {
       const post = await prisma.post.findUnique({
-        where: { 
+        where: {
           slug,
-          published: true 
+          published: true,
         },
         include: {
           author: {
             include: {
-              profile: true
-            }
+              profile: true,
+            },
           },
           tags: {
             include: {
-              tag: true
-            }
+              tag: true,
+            },
           },
           _count: {
             select: {
               likes: true,
-              comments: true
-            }
-          }
-        }
+              comments: true,
+            },
+          },
+        },
       })
 
       if (!post) {
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
       // Increment view count
       await prisma.post.update({
         where: { id: post.id },
-        data: { viewCount: { increment: 1 } }
+        data: { viewCount: { increment: 1 } },
       })
 
       return NextResponse.json(post)
@@ -64,23 +64,23 @@ export async function GET(request: NextRequest) {
 
     // Build where clause
     const where: any = { published: true }
-    
+
     if (tag) {
       where.tags = {
         some: {
-          tag: { slug: tag }
-        }
+          tag: { slug: tag },
+        },
       }
     }
-    
+
     if (authorId) {
       where.authorId = authorId
     }
-    
+
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
-        { excerpt: { contains: search, mode: 'insensitive' } }
+        { excerpt: { contains: search, mode: 'insensitive' } },
       ]
     }
 
@@ -89,24 +89,24 @@ export async function GET(request: NextRequest) {
       include: {
         author: {
           include: {
-            profile: true
-          }
+            profile: true,
+          },
         },
         tags: {
           include: {
-            tag: true
-          }
+            tag: true,
+          },
         },
         _count: {
           select: {
             likes: true,
-            comments: true
-          }
-        }
+            comments: true,
+          },
+        },
       },
       orderBy: [
         { publishedAt: 'desc' },
-        { featured: 'desc' }
+        { featured: 'desc' },
       ],
       skip: (page - 1) * limit,
       take: limit,
@@ -120,14 +120,14 @@ export async function GET(request: NextRequest) {
         page,
         limit,
         total,
-        pages: Math.ceil(total / limit)
-      }
+        pages: Math.ceil(total / limit),
+      },
     })
   } catch (error) {
     console.error('Posts API error:', error)
     return NextResponse.json(
       { error: 'Failed to fetch posts' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
     // Get user
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
-      include: { profile: true }
+      include: { profile: true },
     })
 
     if (!user) {
@@ -177,46 +177,46 @@ export async function POST(request: NextRequest) {
         coverImage: validatedData.coverImage,
         authorId: user.id,
         published: false, // Start as draft
-        readTimeMin: validatedData.contentHtml ? 
+        readTimeMin: validatedData.contentHtml ?
           Math.ceil(validatedData.contentHtml.split(' ').length / 200) : 5,
         tags: validatedData.tagIds ? {
-          create: validatedData.tagIds.map((tagId, index) => ({
+          create: validatedData.tagIds.map((tagId, _index) => ({
             tagId,
             postId: post.id, // This will be set after post creation
-          }))
-        } : undefined
+          })),
+        } : undefined,
       },
       include: {
         author: {
           include: {
-            profile: true
-          }
+            profile: true,
+          },
         },
         tags: {
           include: {
-            tag: true
-          }
-        }
-      }
+            tag: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json({
       success: true,
-      data: post
+      data: post,
     })
   } catch (error) {
     console.error('Post creation error:', error)
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid input data', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     return NextResponse.json(
       { error: 'Failed to create post' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

@@ -15,7 +15,7 @@ export function useRipple() {
   const addRipple = useCallback((event: React.MouseEvent<HTMLElement>) => {
     const target = event.currentTarget
     const rect = target.getBoundingClientRect()
-    
+
     const size = Math.max(rect.width, rect.height) * 2
     const x = event.clientX - rect.left - size / 2
     const y = event.clientY - rect.top - size / 2

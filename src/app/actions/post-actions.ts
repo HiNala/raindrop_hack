@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { requireUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { generateUniqueSlug } from '@/lib/slug'
@@ -44,9 +43,9 @@ export async function saveDraft(postId: string | undefined, data: SaveDraftData)
           readTimeMin: calculateReadingTime(data.contentJson),
           tags: data.tagIds
             ? {
-                deleteMany: {},
-                create: data.tagIds.map((tagId) => ({ tagId })),
-              }
+              deleteMany: {},
+              create: data.tagIds.map((tagId) => ({ tagId })),
+            }
             : undefined,
         },
       })
@@ -67,8 +66,8 @@ export async function saveDraft(postId: string | undefined, data: SaveDraftData)
           published: false,
           tags: data.tagIds
             ? {
-                create: data.tagIds.map((tagId) => ({ tagId })),
-              }
+              create: data.tagIds.map((tagId) => ({ tagId })),
+            }
             : undefined,
         },
       })
@@ -247,7 +246,7 @@ export async function getOrCreateTags(tagNames: string[]) {
 
     for (const name of tagNames) {
       const slug = name.toLowerCase().replace(/\s+/g, '-')
-      
+
       const tag = await prisma.tag.upsert({
         where: { slug },
         update: {},

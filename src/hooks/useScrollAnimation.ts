@@ -21,14 +21,14 @@ export function useScrollAnimation(options: ScrollAnimationOptions = {}) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         const isIntersecting = entry.isIntersecting
-        
+
         setIsVisible(isIntersecting)
-        
+
         if (isIntersecting && !hasBeenVisible) {
           setHasBeenVisible(true)
         }
       },
-      { threshold, rootMargin }
+      { threshold, rootMargin },
     )
 
     observer.observe(element)

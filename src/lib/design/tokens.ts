@@ -163,31 +163,31 @@ export const tokens: DesignTokens = {
 // CSS custom properties for runtime access
 export function generateCSSVariables(tokens: DesignTokens) {
   const variables: Record<string, string> = {}
-  
+
   // Colors
   Object.entries(tokens.colors.base).forEach(([key, value]) => {
     variables[`--color-base-${key}`] = value
   })
-  
+
   Object.entries(tokens.colors.brand).forEach(([brand, shades]) => {
     Object.entries(shades).forEach(([shade, value]) => {
       variables[`--color-${brand}-${shade}`] = value
     })
   })
-  
+
   // Spacing
   Object.entries(tokens.spacing).forEach(([key, value]) => {
     variables[`--spacing-${key}`] = value
   })
-  
+
   // Borders
   Object.entries(tokens.borders.radius).forEach(([key, value]) => {
     variables[`--radius-${key}`] = value
   })
-  
+
   Object.entries(tokens.borders.shadow).forEach(([key, value]) => {
     variables[`--shadow-${key}`] = value
   })
-  
+
   return variables
 }

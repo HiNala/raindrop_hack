@@ -41,9 +41,9 @@ export function ToastProvider({ children }: ToastProviderProps) {
   const toast = (newToast: Omit<Toast, 'id'>) => {
     const id = Math.random().toString(36).substr(2, 9)
     const toastWithId = { ...newToast, id }
-    
+
     setToasts(prev => [...prev, toastWithId])
-    
+
     // Auto-dismiss after duration (default 5 seconds)
     const duration = newToast.duration ?? 5000
     setTimeout(() => {
@@ -77,7 +77,7 @@ function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
           toast={toast}
           onDismiss={onDismiss}
           style={{
-            animation: `slideIn 0.3s ease-out ${index * 0.1}s both`
+            animation: `slideIn 0.3s ease-out ${index * 0.1}s both`,
           }}
         />
       ))}
@@ -123,9 +123,9 @@ function ToastItem({ toast, onDismiss, style }: ToastItemProps) {
   return (
     <div
       className={cn(
-        "relative flex items-start gap-3 p-4 rounded-lg border shadow-lg backdrop-blur-sm",
-        "transform transition-all duration-300 ease-out",
-        getBackgroundColor()
+        'relative flex items-start gap-3 p-4 rounded-lg border shadow-lg backdrop-blur-sm',
+        'transform transition-all duration-300 ease-out',
+        getBackgroundColor(),
       )}
       style={style}
     >
@@ -168,17 +168,17 @@ function ToastItem({ toast, onDismiss, style }: ToastItemProps) {
 // Convenience functions
 export const createToast = () => {
   const { toast } = useToast()
-  
+
   return {
-    success: (title: string, description?: string) => 
+    success: (title: string, description?: string) =>
       toast({ type: 'success', title, description }),
-    error: (title: string, description?: string) => 
+    error: (title: string, description?: string) =>
       toast({ type: 'error', title, description }),
-    warning: (title: string, description?: string) => 
+    warning: (title: string, description?: string) =>
       toast({ type: 'warning', title, description }),
-    info: (title: string, description?: string) => 
+    info: (title: string, description?: string) =>
       toast({ type: 'info', title, description }),
-    custom: (options: Omit<Toast, 'id'>) => toast(options)
+    custom: (options: Omit<Toast, 'id'>) => toast(options),
   }
 }
 

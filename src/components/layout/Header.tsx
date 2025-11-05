@@ -5,19 +5,19 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useUser, UserButton } from '@clerk/nextjs'
-import { 
-  Search, 
-  Bell, 
-  Settings, 
-  LogOut, 
-  User, 
-  PenTool, 
-  Home, 
-  Bookmark, 
+import {
+  Search,
+  Bell,
+  Settings,
+  LogOut,
+  User,
+  PenTool,
+  Home,
+  Bookmark,
   BarChart3,
   Menu,
   X,
-  Sparkles
+  Sparkles,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -71,7 +71,7 @@ export function Header({ onSearchOpen }: HeaderProps) {
                   Raindrop
                 </span>
               </Link>
-              
+
               {/* Desktop Navigation with sliding indicator */}
               <nav className="hidden md:flex items-center gap-1 relative">
                 {mainNav.map((item) => {
@@ -95,7 +95,7 @@ export function Header({ onSearchOpen }: HeaderProps) {
                         {item.icon && <item.icon className="w-4 h-4" />}
                         {item.name}
                       </Link>
-                      
+
                       {/* Active indicator */}
                       {isActive && (
                         <motion.div
@@ -108,7 +108,7 @@ export function Header({ onSearchOpen }: HeaderProps) {
                           }}
                         />
                       )}
-                      
+
                       {/* Hover effect */}
                       {hoveredNav === item.name && !isActive && (
                         <motion.div
@@ -124,7 +124,7 @@ export function Header({ onSearchOpen }: HeaderProps) {
                 })}
               </nav>
             </div>
-            
+
             {/* Right Side Actions */}
             <div className="flex items-center space-x-3">
               {/* Search */}
@@ -166,7 +166,7 @@ export function Header({ onSearchOpen }: HeaderProps) {
                   <span className="hidden sm:inline">Write</span>
                 </Link>
               </Button>
-              
+
               {/* User Avatar / Sign In */}
               {isSignedIn ? (
                 <DropdownMenu>
@@ -190,8 +190,8 @@ export function Header({ onSearchOpen }: HeaderProps) {
                     <DropdownMenuSeparator className="bg-[#27272a]" />
                     {userMenu.map((item) => (
                       <DropdownMenuItem key={item.name} asChild>
-                        <Link 
-                          href={item.href} 
+                        <Link
+                          href={item.href}
                           className="flex items-center gap-3 px-2 py-2 text-sm cursor-pointer hover:bg-[#2a2a2d] transition-colors text-text-primary"
                         >
                           <item.icon className="w-4 h-4 text-text-muted" />

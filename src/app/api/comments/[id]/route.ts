@@ -13,7 +13,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     if (typeof approved !== 'boolean') {
       return NextResponse.json(
         { error: 'approved must be a boolean' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -25,10 +25,10 @@ export async function PUT(request: NextRequest, { params }: Params) {
           select: {
             id: true,
             title: true,
-            slug: true
-          }
-        }
-      }
+            slug: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json(comment)
@@ -36,7 +36,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     console.error('Error updating comment:', error)
     return NextResponse.json(
       { error: 'Failed to update comment' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -44,7 +44,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {
     await prisma.comment.delete({
-      where: { id: params.id }
+      where: { id: params.id },
     })
 
     return NextResponse.json({ message: 'Comment deleted successfully' })
@@ -52,7 +52,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     console.error('Error deleting comment:', error)
     return NextResponse.json(
       { error: 'Failed to delete comment' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

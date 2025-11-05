@@ -82,7 +82,7 @@ function generateSourcesSection(hnContext: HNContext | null): string {
  */
 function extractHNSources(hnContext: HNContext | null): HNSource[] {
   if (!hnContext) return []
-  
+
   return hnContext.citations.map(citation => ({
     title: citation.title,
     url: citation.url,
@@ -98,7 +98,7 @@ function extractHNSources(hnContext: HNContext | null): HNSource[] {
  */
 export async function generatePost(
   prompt: string,
-  options: GeneratePostOptions = {}
+  options: GeneratePostOptions = {},
 ): Promise<GeneratedPost> {
   const { tone = 'professional', length = 'medium', audience = 'web developers', hnContext } = options
 
@@ -163,7 +163,7 @@ IMPORTANT:
       max_tokens: 3000,
     })
 
-    let markdown = completion.choices[0]?.message?.content || '# Untitled\n\nContent generation failed.'
+    const markdown = completion.choices[0]?.message?.content || '# Untitled\n\nContent generation failed.'
 
     // Remove sources section from main content if it exists (we'll track it separately)
     const mainContent = markdown.split('## Sources')[0]

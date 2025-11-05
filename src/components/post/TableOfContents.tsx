@@ -30,7 +30,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
       const level = parseInt(heading.tagName.charAt(1))
       const text = heading.textContent || ''
       const id = heading.id || `heading-${index}`
-      
+
       // Add ID to heading if it doesn't have one
       if (!heading.id) {
         heading.id = id
@@ -56,7 +56,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
       {
         rootMargin: '-80px 0px -80% 0px',
         threshold: 1,
-      }
+      },
     )
 
     headings.forEach(({ id }) => {
@@ -75,7 +75,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
       const scrollHeight = document.documentElement.scrollHeight
       const scrollTop = window.scrollY
       const clientHeight = window.innerHeight
-      
+
       // Hide when near bottom (within 300px)
       const isNearBottom = scrollTop + clientHeight >= scrollHeight - 300
       setIsVisible(!isNearBottom)
@@ -110,7 +110,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
               <span className="w-1 h-4 bg-teal-500 rounded-full"></span>
               Table of Contents
             </h3>
-            
+
             <nav className="space-y-1">
               {headings.map((heading) => (
                 <motion.button
@@ -123,7 +123,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
                       ? 'text-teal-400 font-medium'
                       : 'text-text-secondary hover:text-text-primary',
                     heading.level === 2 && 'pl-2',
-                    heading.level === 3 && 'pl-6 text-xs'
+                    heading.level === 3 && 'pl-6 text-xs',
                   )}
                   whileHover={{ x: 4 }}
                   transition={{ duration: 0.2 }}
@@ -140,7 +140,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
                       }}
                     />
                   )}
-                  
+
                   <span className="flex items-center gap-1.5">
                     {heading.level === 3 && (
                       <ChevronRight className="w-3 h-3 flex-shrink-0 opacity-50" />

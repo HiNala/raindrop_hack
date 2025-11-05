@@ -11,7 +11,7 @@ const updateProfileSchema = z.object({
   location: z.string().max(100).optional(),
 })
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const { userId } = auth()
     if (!userId) {
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
-      include: { profile: true }
+      include: { profile: true },
     })
 
     if (!user) {
@@ -43,7 +43,7 @@ export async function PATCH(request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { clerkId: userId },
-      include: { profile: true }
+      include: { profile: true },
     })
 
     if (!user) {
@@ -63,15 +63,15 @@ export async function PATCH(request: NextRequest) {
           bio: validatedData.bio || null,
           websiteUrl: validatedData.websiteUrl || null,
           avatarUrl: validatedData.avatarUrl || null,
-          location: validatedData.location || null
-        }
+          location: validatedData.location || null,
+        },
       })
 
       return NextResponse.json({ profile })
     } else {
       const profile = await prisma.profile.update({
         where: { userId: user.id },
-        data: validatedData
+        data: validatedData,
       })
 
       return NextResponse.json({ profile })
@@ -80,7 +80,7 @@ export async function PATCH(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       )
     }
 

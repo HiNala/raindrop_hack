@@ -2,15 +2,14 @@
 
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
-import { 
-  Calendar, 
-  Clock, 
-  Eye, 
-  Heart, 
+import {
+  Calendar,
+  Clock,
+  Eye,
+  Heart,
   MessageCircle,
-  Share2,
   ArrowLeft,
-  User
+  User,
 } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -67,16 +66,16 @@ const mockPost = {
     username: 'tech_writer',
     displayName: 'Tech Writer',
     avatarUrl: null,
-    bio: 'Web development enthusiast and tutorial creator'
+    bio: 'Web development enthusiast and tutorial creator',
   },
   tags: [
     { tag: { name: 'JavaScript', slug: 'javascript' } },
     { tag: { name: 'React', slug: 'react' } },
-    { tag: { name: 'Web Development', slug: 'web-development' } }
+    { tag: { name: 'Web Development', slug: 'web-development' } },
   ],
   likes: 67,
   comments: 14,
-  shares: 8
+  shares: 8,
 }
 
 // Mock comments
@@ -90,7 +89,7 @@ const mockComments = [
       id: '2',
       username: 'learner123',
       displayName: 'Curious Learner',
-      avatarUrl: null
+      avatarUrl: null,
     },
     postId: '1',
     likes: 5,
@@ -105,31 +104,31 @@ const mockComments = [
           id: '3',
           username: 'dev_guru',
           displayName: 'Dev Guru',
-          avatarUrl: null
+          avatarUrl: null,
         },
         postId: '1',
         parentId: '1',
         likes: 2,
         isLiked: false,
-        replies: []
-      }
+        replies: [],
+      },
     ],
-    _count: { replies: 1 }
-  }
+    _count: { replies: 1 },
+  },
 ]
 
 export default function PostDetailPage() {
-  const params = useParams()
-  const [post, setPost] = useState(mockPost)
-  const [comments, setComments] = useState(mockComments)
+  const _params = useParams()
+  const [_post, _setPost] = useState(mockPost)
+  const [_comments, _setComments] = useState(mockComments)
   const [currentUser] = useState({
     id: '4',
     username: 'current_user',
     displayName: 'Current User',
-    avatarUrl: null
+    avatarUrl: null,
   })
 
-  const handleTextAction = (action: string, text: string, range: Range) => {
+  const handleTextAction = (action: string, text: string, _range: Range) => {
     // Handle text selection actions (bold, italic, quote)
     console.log(`${action} action on text:`, text)
   }
@@ -165,15 +164,15 @@ export default function PostDetailPage() {
               </Badge>
             ))}
           </div>
-          
+
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
             {post.title}
           </h1>
-          
+
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
             {post.excerpt}
           </p>
-          
+
           {/* Author Info and Meta */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -204,7 +203,7 @@ export default function PostDetailPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
               <span className="flex items-center gap-1">
                 <Eye className="w-4 h-4" />
@@ -257,7 +256,7 @@ export default function PostDetailPage() {
                 Copy Link
               </Button>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <User className="w-4 h-4 text-gray-500" />
               <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -278,7 +277,7 @@ export default function PostDetailPage() {
         readingTime={post.readTimeMin}
         author={{
           name: post.author.displayName,
-          username: post.author.username
+          username: post.author.username,
         }}
       />
 
@@ -288,7 +287,7 @@ export default function PostDetailPage() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
             Discussion ({comments.length})
           </h2>
-          
+
           <CommentSystem
             postId={post.id}
             initialComments={comments}
@@ -303,7 +302,7 @@ export default function PostDetailPage() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
             Related Posts
           </h2>
-          
+
           <div className="grid gap-6 md:grid-cols-2">
             <Card className="p-6">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
@@ -318,7 +317,7 @@ export default function PostDetailPage() {
                 <span>12 min read</span>
               </div>
             </Card>
-            
+
             <Card className="p-6">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
                 TypeScript Best Practices

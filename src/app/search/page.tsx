@@ -84,7 +84,7 @@ export default async function SearchPage({
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Search Results
           </h1>
-          
+
           {query && (
             <p className="text-lg text-gray-600 dark:text-gray-400">
               {posts.length} {posts.length === 1 ? 'result' : 'results'} for &ldquo;{query}&rdquo;

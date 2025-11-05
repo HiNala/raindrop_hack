@@ -1,19 +1,18 @@
 import Link from 'next/link'
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  FileText, 
-  Eye, 
-  Heart, 
-  MessageCircle, 
+import {
+  TrendingUp,
+  TrendingDown,
+  FileText,
+  Eye,
+  Heart,
+  MessageCircle,
   Users,
   Calendar,
   BarChart3,
   Activity,
-  Clock,
   ArrowUp,
   ArrowDown,
-  MoreHorizontal
+  MoreHorizontal,
 } from 'lucide-react'
 
 export default function AdminDashboard() {
@@ -25,7 +24,7 @@ export default function AdminDashboard() {
       changeType: 'increase',
       icon: FileText,
       color: 'blue',
-      description: 'Published and draft posts'
+      description: 'Published and draft posts',
     },
     {
       name: 'Total Views',
@@ -34,7 +33,7 @@ export default function AdminDashboard() {
       changeType: 'increase',
       icon: Eye,
       color: 'green',
-      description: 'Last 30 days'
+      description: 'Last 30 days',
     },
     {
       name: 'Comments',
@@ -43,7 +42,7 @@ export default function AdminDashboard() {
       changeType: 'increase',
       icon: MessageCircle,
       color: 'purple',
-      description: 'Approved and pending'
+      description: 'Approved and pending',
     },
     {
       name: 'Users',
@@ -52,7 +51,7 @@ export default function AdminDashboard() {
       changeType: 'decrease',
       icon: Users,
       color: 'orange',
-      description: 'Registered users'
+      description: 'Registered users',
     },
   ]
 
@@ -68,7 +67,7 @@ export default function AdminDashboard() {
       likes: 45,
       comments: 12,
       publishedAt: '2024-01-15',
-      trend: 'up'
+      trend: 'up',
     },
     {
       id: '2',
@@ -81,7 +80,7 @@ export default function AdminDashboard() {
       likes: 32,
       comments: 8,
       publishedAt: '2024-01-14',
-      trend: 'up'
+      trend: 'up',
     },
     {
       id: '3',
@@ -94,7 +93,7 @@ export default function AdminDashboard() {
       likes: 0,
       comments: 0,
       publishedAt: null,
-      trend: 'neutral'
+      trend: 'neutral',
     },
     {
       id: '4',
@@ -107,7 +106,7 @@ export default function AdminDashboard() {
       likes: 28,
       comments: 5,
       publishedAt: '2024-01-13',
-      trend: 'down'
+      trend: 'down',
     },
   ]
 
@@ -120,7 +119,7 @@ export default function AdminDashboard() {
       post: 'The Future of Web Development: Trends to Watch in 2024',
       status: 'Approved',
       createdAt: '2 hours ago',
-      avatar: 'JD'
+      avatar: 'JD',
     },
     {
       id: '2',
@@ -130,7 +129,7 @@ export default function AdminDashboard() {
       post: 'Building Scalable Applications with Microservices Architecture',
       status: 'Pending',
       createdAt: '5 hours ago',
-      avatar: 'JS'
+      avatar: 'JS',
     },
     {
       id: '3',
@@ -140,7 +139,7 @@ export default function AdminDashboard() {
       post: 'The Future of Web Development: Trends to Watch in 2024',
       status: 'Approved',
       createdAt: '1 day ago',
-      avatar: 'BW'
+      avatar: 'BW',
     },
   ]
 
@@ -194,7 +193,7 @@ export default function AdminDashboard() {
                 {stat.change}
               </div>
             </div>
-            
+
             <div>
               <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
               <p className="text-sm text-gray-600 mt-1">{stat.description}</p>
@@ -215,7 +214,7 @@ export default function AdminDashboard() {
                 </Link>
               </div>
             </div>
-            
+
             <div className="divide-y divide-gray-200">
               {recentPosts.map((post) => (
                 <div key={post.id} className="p-6 hover:bg-gray-50 transition-colors">
@@ -223,8 +222,8 @@ export default function AdminDashboard() {
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          post.status === 'Published' 
-                            ? 'bg-green-100 text-green-800' 
+                          post.status === 'Published'
+                            ? 'bg-green-100 text-green-800'
                             : 'bg-yellow-100 text-yellow-800'
                         }`}>
                           {post.status}
@@ -242,13 +241,13 @@ export default function AdminDashboard() {
                           </div>
                         )}
                       </div>
-                      
+
                       <Link href={`/posts/${post.slug}`} className="group">
                         <h3 className="text-base font-semibold text-gray-900 group-hover:text-primary-600 transition-colors mb-2">
                           {post.title}
                         </h3>
                       </Link>
-                      
+
                       <div className="flex items-center space-x-4 text-sm text-gray-500">
                         <span>By {post.author}</span>
                         {post.publishedAt && (
@@ -259,12 +258,12 @@ export default function AdminDashboard() {
                         )}
                       </div>
                     </div>
-                    
+
                     <button className="text-gray-400 hover:text-gray-600">
                       <MoreHorizontal className="w-5 h-5" />
                     </button>
                   </div>
-                  
+
                   {post.status === 'Published' && (
                     <div className="flex items-center space-x-6 text-sm text-gray-600">
                       <span className="flex items-center">
@@ -298,14 +297,14 @@ export default function AdminDashboard() {
                 </Link>
               </div>
             </div>
-            
+
             <div className="divide-y divide-gray-200">
               {recentComments.map((comment) => (
                 <div key={comment.id} className="p-4">
                   <div className="flex items-start space-x-3 mb-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      comment.status === 'Approved' 
-                        ? 'bg-green-100 text-green-600' 
+                      comment.status === 'Approved'
+                        ? 'bg-green-100 text-green-600'
                         : 'bg-yellow-100 text-yellow-600'
                     }`}>
                       <span className="text-xs font-medium">{comment.avatar}</span>
@@ -316,8 +315,8 @@ export default function AdminDashboard() {
                           {comment.author}
                         </h4>
                         <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-                          comment.status === 'Approved' 
-                            ? 'bg-green-100 text-green-800' 
+                          comment.status === 'Approved'
+                            ? 'bg-green-100 text-green-800'
                             : 'bg-yellow-100 text-yellow-800'
                         }`}>
                           {comment.status}
@@ -330,7 +329,7 @@ export default function AdminDashboard() {
                       </p>
                     </div>
                   </div>
-                  
+
                   {comment.status === 'Pending' && (
                     <div className="flex space-x-2 ml-11">
                       <button className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded hover:bg-green-200 transition-colors">
@@ -364,7 +363,7 @@ export default function AdminDashboard() {
                 </div>
               ))}
             </div>
-            
+
             <Link href="/admin/analytics" className="w-full mt-4 btn btn-outline text-sm">
               View Detailed Analytics
             </Link>
@@ -378,35 +377,35 @@ export default function AdminDashboard() {
           <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
           <Activity className="w-5 h-5 text-gray-400" />
         </div>
-        
+
         <div className="space-y-4">
           <div className="flex items-start space-x-3">
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
             <div className="flex-1">
               <p className="text-sm text-gray-700">
-                <span className="font-medium">Sarah Chen</span> published a new post 
+                <span className="font-medium">Sarah Chen</span> published a new post
                 <span className="text-primary-600 font-medium"> "The Future of Web Development"</span>
               </p>
               <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
             </div>
           </div>
-          
+
           <div className="flex items-start space-x-3">
             <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
             <div className="flex-1">
               <p className="text-sm text-gray-700">
-                <span className="font-medium">John Doe</span> commented on 
+                <span className="font-medium">John Doe</span> commented on
                 <span className="text-primary-600 font-medium"> "Building Scalable Applications"</span>
               </p>
               <p className="text-xs text-gray-500 mt-1">5 hours ago</p>
             </div>
           </div>
-          
+
           <div className="flex items-start space-x-3">
             <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
             <div className="flex-1">
               <p className="text-sm text-gray-700">
-                <span className="font-medium">Emily Johnson</span> created a draft 
+                <span className="font-medium">Emily Johnson</span> created a draft
                 <span className="text-primary-600 font-medium"> "Mastering React Hooks"</span>
               </p>
               <p className="text-xs text-gray-500 mt-1">1 day ago</p>

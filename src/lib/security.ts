@@ -20,7 +20,7 @@ export const MAX_AVATAR_SIZE = 2 * 1024 * 1024 // 2MB
  */
 export function validateImageUpload(
   file: File,
-  maxSize: number = MAX_IMAGE_SIZE
+  maxSize: number = MAX_IMAGE_SIZE,
 ): { valid: boolean; error?: string } {
   // Check file type
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
@@ -48,16 +48,16 @@ export function validateImageUpload(
 export function sanitizeHtml(html: string): string {
   // Remove script tags
   let sanitized = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-  
+
   // Remove iframe tags
   sanitized = sanitized.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
-  
+
   // Remove on* event handlers
   sanitized = sanitized.replace(/\son\w+\s*=/gi, '')
-  
+
   // Remove javascript: protocol
   sanitized = sanitized.replace(/javascript:/gi, '')
-  
+
   return sanitized
 }
 
@@ -71,18 +71,18 @@ class RateLimiter {
   check(key: string, limit: number, windowMs: number): boolean {
     const now = Date.now()
     const timestamps = this.requests.get(key) || []
-    
+
     // Filter out old requests outside the time window
     const recentRequests = timestamps.filter(ts => now - ts < windowMs)
-    
+
     if (recentRequests.length >= limit) {
       return false // Rate limit exceeded
     }
-    
+
     // Add current request
     recentRequests.push(now)
     this.requests.set(key, recentRequests)
-    
+
     return true // Request allowed
   }
 

@@ -32,7 +32,7 @@ export async function POST() {
             slug: tag.slug,
           },
         })
-      })
+      }),
     )
 
     return NextResponse.json({
@@ -43,11 +43,11 @@ export async function POST() {
   } catch (error) {
     console.error('Seed error:', error)
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
