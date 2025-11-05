@@ -45,6 +45,13 @@ module.exports = {
           border: '#27272a',  // Borders
           hover: '#2a2a2d',   // Hover states
         },
+        // Text colors
+        text: {
+          primary: '#fafafa',
+          secondary: '#a1a1aa',
+          tertiary: '#71717a',
+          muted: '#71717a',
+        },
         // Keep existing primary for backwards compatibility
         primary: {
           50: '#f0fdfa',
