@@ -31,7 +31,7 @@ export function Skeleton({
           <div
             key={i}
             className={cn(
-              'h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse',
+              'h-4 bg-dark-card rounded animate-pulse',
               i === lines - 1 ? 'w-3/4' : 'w-full'
             )}
             style={{
@@ -47,7 +47,7 @@ export function Skeleton({
   return (
     <div
       className={cn(
-        'bg-gray-200 dark:bg-gray-700 animate-pulse',
+        'bg-dark-card animate-pulse',
         variantClasses[variant],
         className
       )}
@@ -62,26 +62,26 @@ export function Skeleton({
 // Loading card skeleton
 export function PostCardSkeleton() {
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden animate-pulse">
-      <div className="h-48 bg-gray-200 dark:bg-gray-700" />
+    <div className="card animate-pulse">
+      <div className="h-48 bg-dark-card" />
       <div className="p-6 space-y-4">
         <div className="flex gap-2">
-          <div className="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded-full" />
-          <div className="h-6 w-20 bg-gray-200 dark:bg-gray-700 rounded-full" />
+          <div className="h-6 w-16 bg-dark-card rounded-full" />
+          <div className="h-6 w-20 bg-dark-card rounded-full" />
         </div>
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+        <div className="h-6 bg-dark-card rounded w-3/4" />
         <div className="space-y-2">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded" />
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6" />
+          <div className="h-4 bg-dark-card rounded" />
+          <div className="h-4 bg-dark-card rounded w-5/6" />
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded-full" />
-            <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-8 w-8 bg-dark-card rounded-full" />
+            <div className="h-4 w-24 bg-dark-card rounded" />
           </div>
           <div className="flex gap-4">
-            <div className="h-4 w-8 bg-gray-200 dark:bg-gray-700 rounded" />
-            <div className="h-4 w-8 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-4 w-8 bg-dark-card rounded" />
+            <div className="h-4 w-8 bg-dark-card rounded" />
           </div>
         </div>
       </div>
@@ -94,20 +94,20 @@ export function DashboardSkeleton() {
   return (
     <div className="space-y-8">
       {/* Quick actions skeleton */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
+      <div className="card p-6">
         <div className="flex flex-wrap gap-4">
-          <div className="h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
-          <div className="h-10 w-36 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
-          <div className="h-10 w-40 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+          <div className="h-10 w-32 bg-dark-card rounded-lg animate-pulse" />
+          <div className="h-10 w-36 bg-dark-card rounded-lg animate-pulse" />
+          <div className="h-10 w-40 bg-dark-card rounded-lg animate-pulse" />
         </div>
       </div>
 
       {/* Stats skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6">
-            <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded mb-4 animate-pulse" />
-            <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+          <div key={i} className="card p-6">
+            <div className="h-6 w-24 bg-dark-card rounded mb-4 animate-pulse" />
+            <div className="h-8 w-16 bg-dark-card rounded animate-pulse" />
           </div>
         ))}
       </div>
@@ -130,19 +130,19 @@ export function ArticleSkeleton() {
         {/* Title skeleton */}
         <div className="space-y-4">
           <div className="flex gap-2">
-            <div className="h-6 w-20 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
-            <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+            <div className="h-6 w-20 bg-dark-card rounded-full animate-pulse" />
+            <div className="h-6 w-24 bg-dark-card rounded-full animate-pulse" />
           </div>
-          <div className="h-12 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-          <div className="h-6 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+          <div className="h-12 w-3/4 bg-dark-card rounded animate-pulse" />
+          <div className="h-6 w-full bg-dark-card rounded animate-pulse" />
         </div>
 
         {/* Author skeleton */}
         <div className="flex items-center gap-4">
-          <div className="h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+          <div className="h-12 w-12 bg-dark-card rounded-full animate-pulse" />
           <div className="space-y-2">
-            <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-            <div className="h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            <div className="h-4 w-32 bg-dark-card rounded animate-pulse" />
+            <div className="h-3 w-24 bg-dark-card rounded animate-pulse" />
           </div>
         </div>
 
@@ -151,7 +151,7 @@ export function ArticleSkeleton() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="space-y-2">
               <div className={cn(
-                'h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse',
+                'h-4 bg-dark-card rounded animate-pulse',
                 i % 3 === 0 && 'w-5/6'
               )} />
             </div>
@@ -173,7 +173,7 @@ export function LoadingSpinner({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
   return (
     <div className={cn('animate-spin', sizeClasses[size])}>
       <svg
-        className="w-full h-full text-primary-600"
+        className="w-full h-full text-teal-500"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -202,7 +202,7 @@ export function FullPageLoading() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center space-y-4">
         <LoadingSpinner size="lg" />
-        <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        <p className="text-text-secondary">Loading...</p>
       </div>
     </div>
   )

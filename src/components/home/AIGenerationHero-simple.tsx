@@ -102,7 +102,7 @@ export function AIGenerationHero() {
   const remainingPosts = isSignedIn ? null : 3 - anonymousCount
 
   return (
-    <section className="relative min-h-[85vh] flex items-center justify-center px-4 py-20 overflow-hidden hero-gradient">
+    <section className="relative min-h-[85vh] flex items-center justify-center px-4 py-20 overflow-hidden bg-[#0a0a0b]">
       {/* Animated background orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -116,7 +116,7 @@ export function AIGenerationHero() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl"
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl"
         />
         <motion.div
           animate={{
@@ -129,12 +129,12 @@ export function AIGenerationHero() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl"
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"
         />
       </div>
 
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-30"></div>
+      {/* Subtle grid pattern */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:40px_40px]"></div>
 
       <div className="relative z-10 w-full max-w-4xl">
         {/* Header */}
@@ -144,7 +144,7 @@ export function AIGenerationHero() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full glass-card border border-teal-500/30">
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full glass-effect border border-teal-500/20">
             <Sparkles className="w-4 h-4 text-teal-400 animate-pulse" />
             <span className="text-sm font-medium text-text-primary">
               AI-Powered Blog Generation
@@ -153,7 +153,7 @@ export function AIGenerationHero() {
           </div>
           
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight">
-            <span className="text-gradient-primary">
+            <span className="text-gradient">
               Write Your Story
             </span>
             <br />
@@ -173,7 +173,7 @@ export function AIGenerationHero() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3 }}
             >
-              <Badge className="bg-dark-card/50 text-teal-400 border-teal-500/30 text-sm py-1.5 px-4">
+              <Badge className="bg-[#1a1a1d] text-teal-400 border-teal-500/30 text-sm py-1.5 px-4">
                 <Sparkles className="w-3 h-3 inline mr-1.5" />
                 {remainingPosts} free {remainingPosts === 1 ? 'post' : 'posts'} remaining
               </Badge>
@@ -186,11 +186,8 @@ export function AIGenerationHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="glass-card p-8 relative overflow-hidden group"
+          className="glass-effect p-8 relative overflow-hidden group gradient-border"
         >
-          {/* Gradient border on hover */}
-          <div className="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
-          
           <div className="space-y-6">
             <div>
               <label htmlFor="prompt" className="text-base font-semibold mb-3 block text-text-primary flex items-center gap-2">
@@ -202,7 +199,7 @@ export function AIGenerationHero() {
                 placeholder="E.g., 'A comprehensive guide to building scalable web applications' or 'The future of AI in software development'"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                className="min-h-[140px] text-base resize-none bg-dark-bg border-dark-border focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 input-glow"
+                className="min-h-[140px] text-base resize-none bg-[#0a0a0b] border-[#27272a] focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 input"
                 disabled={isGenerating}
               />
             </div>
@@ -221,7 +218,7 @@ export function AIGenerationHero() {
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         tone === t
                           ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/30'
-                          : 'bg-dark-card text-text-secondary border border-dark-border hover:border-teal-500/50 hover:text-text-primary'
+                          : 'bg-[#1a1a1d] text-text-secondary border border-[#27272a] hover:border-teal-500/50 hover:text-text-primary'
                       }`}
                     >
                       {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -242,7 +239,7 @@ export function AIGenerationHero() {
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         length === l
                           ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30'
-                          : 'bg-dark-card text-text-secondary border border-dark-border hover:border-orange-500/50 hover:text-text-primary'
+                          : 'bg-[#1a1a1d] text-text-secondary border border-[#27272a] hover:border-orange-500/50 hover:text-text-primary'
                       }`}
                     >
                       {l.charAt(0).toUpperCase() + l.slice(1)}
@@ -258,7 +255,7 @@ export function AIGenerationHero() {
                 onClick={handleGenerate}
                 disabled={isGenerating || !prompt.trim()}
                 size="lg"
-                className="flex-1 btn-primary text-base font-semibold h-12 group"
+                className="flex-1 bg-teal-500 hover:bg-teal-600 text-white text-base font-semibold h-12 group shadow-glow-teal hover:shadow-lg"
               >
                 {isGenerating ? (
                   <>
@@ -279,13 +276,13 @@ export function AIGenerationHero() {
                 onClick={() => router.push('/editor/new')}
                 disabled={isGenerating}
                 size="lg"
-                className="btn-secondary text-base font-medium h-12 px-6"
+                className="bg-[#1a1a1d] hover:bg-[#2a2a2d] text-text-primary border border-[#27272a] text-base font-medium h-12 px-6"
               >
                 Write Manually
               </Button>
             </div>
 
-            <p className="text-xs text-center text-text-tertiary pt-2 flex items-center justify-center gap-1">
+            <p className="text-xs text-center text-text-secondary pt-2 flex items-center justify-center gap-1">
               <Sparkles className="w-3 h-3" />
               AI-generated content is a starting point. Review and personalize before publishing.
             </p>

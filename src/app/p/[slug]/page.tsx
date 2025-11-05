@@ -47,6 +47,7 @@ async function getPost(slug: string) {
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const post = await getPost(params.slug)
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
   if (!post) {
     return {
@@ -54,23 +55,40 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
   }
 
+  const url = `${baseUrl}/p/${post.slug}`
+  const imageUrl = post.coverImage || `${baseUrl}/og-default.png`
+  const authorName = post.author.profile?.displayName || 'Unknown'
+
   return {
-    title: post.title,
-    description: post.excerpt || undefined,
-    authors: [{ name: post.author.profile?.displayName || 'Unknown' }],
+    title: `${post.title} | Blog App`,
+    description: post.excerpt || `Read ${post.title} by ${authorName}`,
+    authors: [{ name: authorName }],
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt || undefined,
       type: 'article',
+      url,
       publishedTime: post.publishedAt?.toISOString(),
-      authors: [post.author.profile?.displayName || 'Unknown'],
-      images: post.coverImage ? [post.coverImage] : [],
+      modifiedTime: post.updatedAt.toISOString(),
+      authors: [authorName],
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt || undefined,
-      images: post.coverImage ? [post.coverImage] : [],
+      images: [imageUrl],
+      creator: `@${post.author.profile?.username || 'blogapp'}`,
     },
   }
 }
@@ -83,17 +101,56 @@ export default async function PostPage({ params }: { params: { slug: string } })
   }
 
   const authorProfile = post.author.profile
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const url = `${baseUrl}/p/${post.slug}`
+
+  // Generate JSON-LD structured data
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt || undefined,
+    image: post.coverImage || undefined,
+    datePublished: post.publishedAt?.toISOString(),
+    dateModified: post.updatedAt.toISOString(),
+    author: {
+      '@type': 'Person',
+      name: authorProfile?.displayName || 'Unknown',
+      url: authorProfile?.username ? `${baseUrl}/u/${authorProfile.username}` : undefined,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Blog App',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${baseUrl}/logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': url,
+    },
+    keywords: post.tags.map((pt) => pt.tag.name).join(', '),
+  }
 
   return (
-    <article className="min-h-screen bg-white dark:bg-gray-950">
+    <>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      
+      <article className="min-h-screen bg-dark-bg">
       {/* Cover Image */}
       {post.coverImage && (
-        <div className="w-full h-[400px] relative bg-gray-100 dark:bg-gray-900">
+        <div className="w-full h-[400px] relative bg-dark-card">
           <img
             src={post.coverImage}
             alt={post.title}
             className="w-full h-full object-cover"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-dark-bg to-transparent"></div>
         </div>
       )}
 

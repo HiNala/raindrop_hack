@@ -60,6 +60,10 @@ model Post {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   
+  @@index([slug])
+  @@index([published, publishedAt])
+  @@index([authorId, published])
+  @@index([publishedAt(sort: Desc)])
   @@map("posts")
 }
 
@@ -80,6 +84,8 @@ model PostTag {
   tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
   
   @@id([postId, tagId])
+  @@index([tagId])
+  @@index([postId])
   @@map("post_tags")
 }
 
@@ -93,6 +99,8 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
+  @@index([postId, createdAt(sort: Desc)])
+  @@index([authorId])
   @@map("comments")
 }
 
@@ -104,6 +112,8 @@ model Like {
   createdAt DateTime @default(now())
   
   @@id([userId, postId])
+  @@index([postId])
+  @@index([userId])
   @@map("likes")
 }
 

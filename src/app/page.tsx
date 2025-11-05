@@ -188,17 +188,17 @@ export default async function Home() {
       {/* CTA Section */}
       <section className="py-24 relative overflow-hidden">
         {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 via-dark-bg to-orange-500/10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 via-[#0a0a0b] to-orange-500/10"></div>
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
         
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <Sparkles className="w-12 h-12 text-teal-400 mx-auto mb-6 animate-pulse" />
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-text-primary">
             Ready to Share{' '}
-            <span className="text-gradient-primary">Your Story?</span>
+            <span className="text-gradient">Your Story?</span>
           </h2>
           <p className="text-xl text-text-secondary mb-10 max-w-2xl mx-auto leading-relaxed">
             Join thousands of writers sharing their expertise and passion. 

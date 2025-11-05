@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Loader2, Eye } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, Eye, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -153,124 +153,146 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-[#0a0a0b]">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200 dark:border-gray-800">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-          </Link>
+      <div className="sticky top-0 z-40 bg-[#0a0a0b]/95 backdrop-blur-lg border-b border-[#27272a]">
+        <div className="max-w-5xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm" className="text-text-secondary hover:text-text-primary">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
+                </Button>
+              </Link>
 
-          {existingPost?.published && (
-            <Badge variant="secondary">Published</Badge>
-          )}
-          {!existingPost?.published && postId && (
-            <Badge variant="outline">Draft</Badge>
-          )}
+              {existingPost?.published && (
+                <Badge className="bg-teal-500/10 text-teal-400 border-teal-500/30">
+                  Published
+                </Badge>
+              )}
+              {!existingPost?.published && postId && (
+                <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/30">
+                  Draft
+                </Badge>
+              )}
 
-          {lastSaved && (
-            <span className="text-xs text-gray-500">
-              Saved {lastSaved.toLocaleTimeString()}
-            </span>
-          )}
-        </div>
+              {lastSaved && (
+                <span className="text-xs text-text-secondary">
+                  Saved {lastSaved.toLocaleTimeString()}
+                </span>
+              )}
+            </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => handleSave()}
-            disabled={isSaving || !title.trim()}
-          >
-            {isSaving ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Save Draft
-              </>
-            )}
-          </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => handleSave()}
+                disabled={isSaving || !title.trim()}
+                className="border-[#27272a] hover:bg-[#1a1a1d] text-text-primary"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Draft
+                  </>
+                )}
+              </Button>
 
-          <Button
-            onClick={handlePublish}
-            disabled={isPublishing || isSaving || !title.trim() || selectedTags.length === 0}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-          >
-            {isPublishing ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Publishing...
-              </>
-            ) : (
-              <>
-                <Eye className="w-4 h-4 mr-2" />
-                Publish
-              </>
-            )}
-          </Button>
+              <Button
+                onClick={handlePublish}
+                disabled={isPublishing || isSaving || !title.trim() || selectedTags.length === 0}
+                className="bg-teal-500 hover:bg-teal-600 text-white shadow-glow-teal hover:shadow-lg"
+              >
+                {isPublishing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Publishing...
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-4 h-4 mr-2" />
+                    Publish
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Editor */}
-      <div className="space-y-6">
-        {/* Cover Image */}
-        <div>
-          <Label className="mb-2 block">Cover Image (Optional)</Label>
-          <CoverUpload
-            currentImage={coverImage}
-            onUpload={setCoverImage}
-            onRemove={() => setCoverImage(null)}
-          />
-        </div>
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        <div className="space-y-8">
+          {/* Cover Image */}
+          <div>
+            <Label className="mb-3 block text-text-primary font-medium flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-teal-400" />
+              Cover Image (Optional)
+            </Label>
+            <CoverUpload
+              currentImage={coverImage}
+              onUpload={setCoverImage}
+              onRemove={() => setCoverImage(null)}
+            />
+          </div>
 
-        {/* Title */}
-        <div>
-          <Input
-            placeholder="Post title..."
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="text-4xl font-bold border-none focus-visible:ring-0 px-0 placeholder:text-gray-400"
-          />
-        </div>
+          {/* Title */}
+          <div>
+            <Input
+              placeholder="Write a compelling title..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="text-4xl md:text-5xl font-bold border-none bg-transparent focus-visible:ring-0 px-0 placeholder:text-text-muted text-text-primary"
+            />
+          </div>
 
-        {/* Excerpt */}
-        <div>
-          <Label htmlFor="excerpt" className="mb-2 block">
-            Excerpt (Optional)
-          </Label>
-          <Input
-            id="excerpt"
-            placeholder="A brief summary of your post..."
-            value={excerpt}
-            onChange={(e) => setExcerpt(e.target.value)}
-          />
-        </div>
+          {/* Excerpt */}
+          <div>
+            <Label htmlFor="excerpt" className="mb-3 block text-text-primary font-medium">
+              Excerpt (Optional)
+            </Label>
+            <Input
+              id="excerpt"
+              placeholder="A brief summary to hook your readers..."
+              value={excerpt}
+              onChange={(e) => setExcerpt(e.target.value)}
+              className="bg-[#1a1a1d] border-[#27272a] focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 input"
+            />
+          </div>
 
-        {/* Tags */}
-        <TagSelector
-          selectedTags={selectedTags}
-          onTagsChange={setSelectedTags}
-          availableTags={availableTags}
-        />
+          {/* Tags */}
+          <div>
+            <Label className="mb-3 block text-text-primary font-medium">
+              Tags
+            </Label>
+            <TagSelector
+              selectedTags={selectedTags}
+              onTagsChange={setSelectedTags}
+              availableTags={availableTags}
+            />
+          </div>
 
-        {/* Content */}
-        <div>
-          <Label className="mb-2 block">Content</Label>
-          <TiptapEditor
-            content={content}
-            onChange={setContent}
-            placeholder="Start writing your story..."
-          />
+          {/* Content */}
+          <div className="space-y-3">
+            <Label className="text-text-primary font-medium">
+              Content
+            </Label>
+            <div className="glass-effect rounded-xl border border-[#27272a] overflow-hidden">
+              <TiptapEditor
+                content={content}
+                onChange={setContent}
+                placeholder="Start writing your story..."
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
-
-
