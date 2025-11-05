@@ -10,129 +10,487 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Core Models
 model User {
   id            String   @id @default(cuid())
   clerkId       String   @unique
-  email         String   @unique
+  email         String
+  firstName     String?  @default("")
+  lastName      String?  @default("")
+  username      String?  @unique
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  profile       Profile?
+
+  // Relations
+  profile       UserProfile?
   posts         Post[]
   comments      Comment[]
   likes         Like[]
-  
+  bookmarks     Bookmark[]
+  followers     Follow[]         @relation("UserFollowers")
+  following     Follow[]         @relation("UserFollowing")
+  memberships   Membership[]
+
   @@map("users")
-  @@index([clerkId])
 }
 
-model Profile {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  username    String   @unique
-  displayName String
-  bio         String?  @db.Text
-  avatarUrl   String?
-  websiteUrl  String?
-  location    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@map("profiles")
-  @@index([username])
+model UserProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  username      String   @unique
+  displayName   String
+  bio           String?  @default("")
+  avatarUrl     String?
+  websiteUrl    String?
+  location      String?
+  githubUrl     String?
+  twitterUrl    String?
+  linkedinUrl   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  publications  Publication[]
+
+  @@map("user_profiles")
 }
 
+model Publication {
+  id            String    @id @default(cuid())
+  name          String
+  slug          String    @unique
+  description   String?   @default("")
+  logoUrl       String?
+  domain        String?   @unique
+  themeJson     Json?     @default("{}")
+  settings      Json?     @default("{}")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  owner         UserProfile @relation(fields: [ownerId], references: [id])
+  ownerId       String
+  memberships   Membership[]
+  posts         Post[]
+  newsletters   Newsletter[]
+  subscribers   Subscriber[]
+
+  @@map("publications")
+}
+
+model Membership {
+  id            String      @id @default(cuid())
+  userId        String
+  publicationId String
+  role          MembershipRole @default(AUTHOR)
+  joinedAt      DateTime    @default(now())
+
+  // Relations
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, publicationId])
+  @@map("memberships")
+}
+
+enum MembershipRole {
+  OWNER
+  EDITOR
+  AUTHOR
+}
+
+// Content Models
 model Post {
-  id           String    @id @default(cuid())
-  authorId     String
-  author       User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  title        String
-  slug         String    @unique
-  excerpt      String?   @db.Text
-  contentJson  Json
-  contentHtml  String?   @db.Text
-  coverImage   String?
-  published    Boolean   @default(false)
-  publishedAt  DateTime?
-  featured     Boolean   @default(false)
-  readTimeMin  Int?
-  viewCount    Int       @default(0)
-  tags         PostTag[]
-  likes        Like[]
-  comments     Comment[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  
-  @@map("posts")
+  id            String          @id @default(cuid())
+  title         String
+  slug          String          @unique
+  excerpt       String?         @default("")
+  contentJson   Json            @default("{}")
+  contentHtml   String?         @default("")
+  coverImage    String?
+  published     Boolean         @default(false)
+  publishedAt   DateTime?       @default(null)
+  featured      Boolean         @default(false)
+  readTimeMin   Int             @default(5)
+  hnEnabled     Boolean         @default(false)
+  hnCitations   Json?           @default("[]")
+  visibility    PostVisibility  @default(PUBLIC)
+  templateId    String?
+  seriesId      String?
+  seriesPart    Int?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  // Relations
+  authorId      String
+  author        User            @relation(fields: [authorId], references: [id])
+  publicationId String?         @default(null)
+  publication   Publication?    @relation(fields: [publicationId], references: [id])
+  tags          PostTag[]
+  versions      PostVersion[]
+  schedule      Schedule?
+  comments      Comment[]
+  likes         Like[]
+  bookmarks     Bookmark[]
+  analytics     PostAnalytics[]
+  redirects     SlugRedirect[]
+  series        Series?         @relation("SeriesPosts", fields: [seriesId], references: [id])
+  seriesPosts   Post[]          @relation("SeriesPosts")
+
+  // SEO & Discovery
+  seoTitle      String?         @default("")
+  seoDescription String?        @default("")
+  ogImageUrl    String?         @default("")
+  canonicalUrl  String?         @default("")
+
   @@index([slug])
-  @@index([published])
-  @@index([publishedAt])
-  @@index([authorId])
+  @@index([authorId, published])
   @@index([published, publishedAt])
-  @@index([published, featured])
+  @@index([publicationId, published])
+  @@index([featured, published])
+  @@index([visibility, published])
+  @@map("posts")
+}
+
+enum PostVisibility {
+  PUBLIC
+  UNLISTED
+  MEMBERS_ONLY
+  PRIVATE
+}
+
+model PostVersion {
+  id            String   @id @default(cuid())
+  postId        String
+  snapshot      Json     @default("{}")
+  summary       String?  @default("")
+  createdAt     DateTime @default(now())
+
+  // Relations
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId, createdAt])
+  @@map("post_versions")
+}
+
+model Series {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  description   String?  @default("")
+  coverImage    String?
+  authorId      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  author        User     @relation(fields: [authorId], references: [id])
+  posts         Post[]   @relation("SeriesPosts")
+
+  @@map("series")
+}
+
+model Schedule {
+  id            String    @id @default(cuid())
+  postId        String    @unique
+  publishAt     DateTime
+  timezone      String    @default("UTC")
+  status        ScheduleStatus @default(SCHEDULED)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  post          Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("schedules")
+}
+
+enum ScheduleStatus {
+  SCHEDULED
+  PUBLISHED
+  CANCELLED
 }
 
 model Tag {
-  id       String   @id @default(cuid())
-  name     String   @unique
-  slug     String   @unique
-  posts    PostTag[]
-  createdAt DateTime @default(now())
-  
+  id            String   @id @default(cuid())
+  name          String   @unique
+  slug          String   @unique
+  description   String?  @default("")
+  color         String?  @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  posts         PostTag[]
+  follows       Follow[]
+
   @@map("tags")
-  @@index([slug])
 }
 
 model PostTag {
-  postId String
-  tagId  String
-  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
-  
-  @@id([postId, tagId])
-  @@index([tagId])
-  @@index([postId])
+  id            String   @id @default(cuid())
+  postId        String
+  tagId         String
+  createdAt     DateTime @default(now())
+
+  // Relations
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag           Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, tagId])
+  @@index([postId, tagId])
   @@map("post_tags")
 }
 
+// Engagement Models
 model Comment {
-  id        String   @id @default(cuid())
-  postId    String
-  authorId  String
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  body      String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@index([postId, createdAt(sort: Desc)])
+  id            String   @id @default(cuid())
+  body          String
+  postId        String
+  authorId      String
+  parentId      String?
+  status        CommentStatus @default(PUBLISHED)
+  editedAt      DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author        User     @relation(fields: [authorId], references: [id])
+  parent        Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies       Comment[] @relation("CommentReplies")
+
+  @@index([postId, status])
   @@index([authorId])
+  @@index([parentId])
   @@map("comments")
 }
 
+enum CommentStatus {
+  PUBLISHED
+  PENDING
+  REJECTED
+  DELETED
+}
+
 model Like {
-  userId String
-  postId String
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  
-  @@id([userId, postId])
+  id            String   @id @default(cuid())
+  postId        String
+  userId        String
+  createdAt     DateTime @default(now())
+
+  // Relations
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
   @@index([postId])
-  @@index([userId])
   @@map("likes")
 }
 
-model AnonymousPost {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  contentJson Json
-  excerpt     String?  @db.Text
-  contentHtml String?  @db.Text
-  coverImage  String?
-  readTimeMin Int?
-  createdAt   DateTime @default(now())
-  
-  @@map("anonymous_posts")
+model Reaction {
+  id            String       @id @default(cuid())
+  postId        String
+  userId        String
+  type          ReactionType
+  createdAt     DateTime      @default(now())
+
+  // Relations
+  post          Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId, type])
+  @@index([postId])
+  @@map("reactions")
+}
+
+enum ReactionType {
+  CLAP
+  FIRE
+  THINK
+  LOVE
+}
+
+model Bookmark {
+  id            String   @id @default(cuid())
+  postId        String
+  userId        String
+  createdAt     DateTime @default(now())
+
+  // Relations
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([userId])
+  @@map("bookmarks")
+}
+
+model Follow {
+  id            String   @id @default(cuid())
+  followerId    String
+  followingId   String?  // User or null for tag follows
+  tagId         String?  // Tag or null for user follows
+  createdAt     DateTime @default(now())
+
+  // Relations
+  follower      User     @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
+  followingUser User?    @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+  tag           Tag?     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@unique([followerId, tagId])
+  @@map("follows")
+}
+
+// Newsletter Models
+model Newsletter {
+  id            String         @id @default(cuid())
+  publicationId String         @unique
+  name          String
+  subject       String
+  content       String
+  cadence       NewsletterCadence @default(WEEKLY)
+  status        NewsletterStatus @default(DRAFT)
+  scheduledAt   DateTime?
+  sentAt        DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relations
+  publication   Publication    @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+
+  @@map("newsletters")
+}
+
+enum NewsletterCadence {
+  DAILY
+  WEEKLY
+  MONTHLY
+  IMMEDIATE
+}
+
+enum NewsletterStatus {
+  DRAFT
+  SCHEDULED
+  SENDING
+  SENT
+  FAILED
+}
+
+model Subscriber {
+  id            String   @id @default(cuid())
+  email         String
+  publicationId String
+  status        SubscriberStatus @default(ACTIVE)
+  subscribedAt  DateTime @default(now())
+  unsubscribedAt DateTime?
+  source        String?  @default("")
+
+  // Relations
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+
+  @@unique([email, publicationId])
+  @@map("subscribers")
+}
+
+enum SubscriberStatus {
+  ACTIVE
+  UNSUBSCRIBED
+  BOUNCED
+  COMPLAINED
+}
+
+// Analytics Models
+model PostAnalytics {
+  id            String   @id @default(cuid())
+  postId        String
+  date          DateTime @default(now())
+  views         Int      @default(0)
+  reads         Int      @default(0)
+  likes         Int      @default(0)
+  comments      Int      @default(0)
+  shares        Int      @default(0)
+  avgReadTime   Int?     @default(null) // seconds
+  referrers     Json?    @default("{}")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, date])
+  @@index([postId, date])
+  @@map("post_analytics")
+}
+
+model Referrer {
+  id            String   @id @default(cuid())
+  postId        String
+  source        String
+  count         Int      @default(0)
+  firstSeenAt   DateTime @default(now())
+  lastSeenAt    DateTime @default(now())
+
+  // Relations
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, source])
+  @@index([postId])
+  @@map("referrers")
+}
+
+// Utility Models
+model SlugRedirect {
+  id            String   @id @default(cuid())
+  postId        String
+  fromSlug      String
+  toSlug        String
+  createdAt     DateTime @default(now())
+
+  // Relations
+  post          Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([fromSlug])
+  @@index([postId])
+  @@map("slug_redirects")
+}
+
+model Template {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  description   String?  @default("")
+  structure     Json     @default("{}")
+  variables     Json     @default("[]")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("templates")
+}
+
+// Settings Models
+model Setting {
+  id            String   @id @default(cuid())
+  key           String   @unique
+  value         Json     @default("{}")
+  description   String?  @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("settings")
+}
+
+model Webhook {
+  id            String   @id @default(cuid())
+  url           String
+  events        String[] @default([])
+  secret        String?
+  active        Boolean  @default(true)
+  lastTriggered DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("webhooks")
 }

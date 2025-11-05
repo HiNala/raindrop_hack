@@ -39,6 +39,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ImportMarkdownDialog } from '@/components/dashboard/ImportMarkdownDialog'
+import { AnalyticsDashboard } from '@/components/dashboard/AnalyticsDashboard'
 import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
 
@@ -210,7 +211,8 @@ export function Dashboard() {
       description: "Performance insights",
       posts: [],
       icon: BarChart3,
-      count: 0
+      count: mockPosts.length,
+      isAnalytics: true
     }
   ]
 
@@ -422,7 +424,9 @@ export function Dashboard() {
                       )}
                     </div>
 
-                    {section.posts.length === 0 ? (
+                    {section.isAnalytics ? (
+                      <AnalyticsDashboard />
+                    ) : section.posts.length === 0 ? (
                       <Card className="p-12 text-center glass-effect border-[#27272a]">
                         <div className="max-w-md mx-auto">
                           <section.icon className="w-12 h-12 text-text-muted mx-auto mb-4" />
