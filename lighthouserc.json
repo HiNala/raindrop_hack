@@ -5,6 +5,27 @@ module.exports = {
       startServerCommand: 'npm start',
       startServerReadyPattern: 'ready on',
       startServerReadyTimeout: 30000,
+      settings: {
+        // Mobile-specific settings
+        preset: 'desktop',
+        chromeFlags: '--disable-dev-shm-usage',
+        throttling: {
+          rttMs: 40,
+          throughputKbps: 10240,
+          cpuSlowdownMultiplier: 1,
+          requestLatencyMs: 0,
+          downloadThroughputKbps: 0,
+          uploadThroughputKbps: 0
+        },
+        // Screen emulation for mobile
+        screenEmulation: {
+          mobile: false,
+          width: 1200,
+          height: 800,
+          deviceScaleFactor: 1,
+          disabled: false
+        }
+      }
     },
     assert: {
       assertions: {
@@ -12,7 +33,24 @@ module.exports = {
         'categories:accessibility': ['error', { minScore: 0.9 }],
         'categories:best-practices': ['warn', { minScore: 0.9 }],
         'categories:seo': ['warn', { minScore: 0.9 }],
-        'categories:pwa': 'off',
+        'categories:pwa': ['warn', { minScore: 0.8 }],
+        // Mobile-specific audits
+        'audit:viewport': ['error', { score: 1 }],
+        'audit:without-javascript': 'off',
+        'audit:tap-targets': ['warn', { score: 0.9 }],
+        'audit:content-width': ['error', { score: 1 }],
+        'audit:font-size': ['warn', { score: 0.9 }],
+        'audit:maskable-icon': ['warn', { score: 1 }],
+        'audit:splash-screen': ['warn', { score: 1 }],
+        'audit:themed-omnibox': ['warn', { score: 1 }],
+        'audit:installable-manifest': ['warn', { score: 1 }],
+        'audit:service-worker': ['warn', { score: 1 }],
+        'audit:works-offline': ['warn', { score: 0.8 }],
+        'audit:offline-start-url': ['warn', { score: 1 }],
+        'audit:apple-touch-icon': ['warn', { score: 1 }],
+        'audit:performance-budget': 'off',
+        'audit:timing-budget': 'off',
+        'audit:resource-summary': 'off'
       },
     },
     upload: {

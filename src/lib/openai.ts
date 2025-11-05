@@ -1,5 +1,8 @@
 import OpenAI from 'openai'
 import { markdownToTiptapJson, extractTitleFromMarkdown, extractExcerptFromMarkdown } from './markdown'
+import { logger } from './logger'
+import { APIError, ValidationError } from './errors'
+import { sanitizeHtml, sanitizeText } from './security-enhanced'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -207,7 +210,7 @@ IMPORTANT:
       hnSources: extractHNSources(hnContext),
     }
   } catch (error) {
-    console.error('OpenAI generation error:', error)
-    throw new Error('Failed to generate post. Please try again.')
+    logger.error('OpenAI generation error', error)
+    throw new APIError('Failed to generate post. Please try again.', 500, 'OPENAI_ERROR')
   }
 }

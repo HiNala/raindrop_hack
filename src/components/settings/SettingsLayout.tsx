@@ -1,11 +1,9 @@
-import { ReactNode } from 'react'
-
-export default function SettingsLayout({ 
-  title, 
-  children 
-}: { 
+export default function SettingsLayout({
+  title,
+  children,
+}: {
   title: string
-  children: React.ReactNode 
+  children: React.ReactNode
 }) {
   return (
     <div className="mx-auto max-w-3xl p-6">

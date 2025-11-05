@@ -22,7 +22,7 @@ interface AnonymousDraft {
 
 export function AIGenerationHero() {
   const router = useRouter()
-  const { isSignedIn, user } = useUser()
+  const { isSignedIn } = useUser()
   const [prompt, setPrompt] = useState('')
   const [tone, setTone] = useState<'professional' | 'casual' | 'technical'>('professional')
   const [length, setLength] = useState<'short' | 'medium' | 'long'>('medium')

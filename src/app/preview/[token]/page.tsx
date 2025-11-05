@@ -11,7 +11,7 @@ interface PreviewPageProps {
 export default async function PreviewPage({ params }: PreviewPageProps) {
   try {
     const post = await getPostByPreviewToken(params.token)
-    
+
     if (!post) {
       notFound()
     }

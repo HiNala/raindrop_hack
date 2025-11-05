@@ -7,19 +7,10 @@ import {
   Share2,
   Eye,
   MessageCircle,
-  MoreHorizontal,
-  ExternalLink,
   Clock,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 
@@ -48,7 +39,7 @@ interface NextUpPost {
 }
 
 export function PostInteractions({
-  postId,
+  postId: _postId,
   initialLikes,
   initialViews,
   initialComments,
@@ -60,7 +51,7 @@ export function PostInteractions({
 }: PostInteractionsProps) {
   const [likes, setLikes] = useState(initialLikes)
   const [views, setViews] = useState(initialViews)
-  const [comments, setComments] = useState(initialComments)
+  const [comments] = useState(initialComments)
   const [bookmarks, setBookmarks] = useState(initialBookmarks)
   const [isLiked, setIsLiked] = useState(initialIsLiked)
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked)
@@ -228,13 +219,13 @@ export function PostInteractions({
                   'flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200',
                   isLiked
                     ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800',
                 )}
               >
                 <Heart
                   className={cn(
                     'w-5 h-5 transition-transform duration-200',
-                    isLiked && 'fill-current scale-110'
+                    isLiked && 'fill-current scale-110',
                   )}
                 />
                 <span className="font-medium">{likes}</span>
@@ -253,13 +244,13 @@ export function PostInteractions({
                   'flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200',
                   isBookmarked
                     ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800',
                 )}
               >
                 <Bookmark
                   className={cn(
                     'w-5 h-5 transition-transform duration-200',
-                    isBookmarked && 'fill-current scale-110'
+                    isBookmarked && 'fill-current scale-110',
                   )}
                 />
                 <span className="font-medium">{bookmarks}</span>
@@ -309,7 +300,7 @@ export function PostInteractions({
               </div>
 
               <div className="grid gap-4 md:grid-cols-3">
-                {nextUpPosts.map((post, index) => (
+                {nextUpPosts.map((post, _index) => (
                   <a
                     key={post.id}
                     href={`/p/${post.id}`}

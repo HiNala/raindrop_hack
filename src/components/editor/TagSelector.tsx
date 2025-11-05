@@ -36,7 +36,7 @@ export function TagSelector({ selectedTags, onTagsChange, availableTags }: TagSe
       const filtered = availableTags.filter(
         (tag) =>
           tag.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-          !selectedTags.some((st) => st.id === tag.id)
+          !selectedTags.some((st) => st.id === tag.id),
       )
       setFilteredTags(filtered)
     } else {

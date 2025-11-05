@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Bold, Italic, Quote, MessageSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 
 interface InlineToolbarProps {
   selection: {

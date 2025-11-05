@@ -32,7 +32,7 @@ const buttonVariants = cva(
       variant: 'default',
       size: 'default',
     },
-  }
+  },
 )
 
 export interface ButtonProps
@@ -55,7 +55,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       onClick,
       ...props
     },
-    ref
+    ref,
   ) => {
     const Comp = asChild ? Slot : 'button'
     const { ripples, addRipple } = useRipple()
@@ -77,7 +77,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           ref.current = node
         }
       },
-      [elementRef, ref]
+      [elementRef, ref],
     )
 
     if (asChild) {
@@ -92,9 +92,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           noMagnetic
             ? {}
             : {
-                x: position.x,
-                y: position.y,
-              }
+              x: position.x,
+              y: position.y,
+            }
         }
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         className="inline-block"
@@ -110,7 +110,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         </Comp>
       </motion.div>
     )
-  }
+  },
 )
 Button.displayName = 'Button'
 

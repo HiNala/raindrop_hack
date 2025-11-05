@@ -572,7 +572,7 @@ export function SettingsPage() {
                         'w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200',
                         activeSection === section.id
                           ? 'bg-teal-500/10 text-teal-400 shadow-glow-teal border border-teal-500/30'
-                          : 'text-text-secondary hover:text-text-primary hover:bg-dark-card border border-transparent'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-dark-card border border-transparent',
                       )}
                     >
                       <Icon className="w-4 h-4" />

@@ -59,12 +59,66 @@ export default defineConfig({
 
     /* Test against mobile viewports. */
     {
+      name: 'iPhone SE',
+      use: { 
+        ...devices['iPhone SE'],
+        viewport: { width: 375, height: 667 },
+        contextOptions: { permissions: ['notifications'] },
+      },
+    },
+    {
+      name: 'iPhone 12',
+      use: { 
+        ...devices['iPhone 12'],
+        viewport: { width: 390, height: 844 },
+        contextOptions: { permissions: ['notifications'] },
+      },
+    },
+    {
+      name: 'iPhone 14 Pro Max',
+      use: { 
+        ...devices['iPhone 14 Pro Max'],
+        viewport: { width: 430, height: 932 },
+        contextOptions: { permissions: ['notifications'] },
+      },
+    },
+    {
+      name: 'Pixel 5',
+      use: { 
+        ...devices['Pixel 5'],
+        viewport: { width: 393, height: 851 },
+        contextOptions: { permissions: ['notifications'] },
+      },
+    },
+    {
+      name: 'Pixel 7',
+      use: { 
+        ...devices['Pixel 7'],
+        viewport: { width: 412, height: 892 },
+        contextOptions: { permissions: ['notifications'] },
+      },
+    },
+    {
       name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
+      use: { 
+        ...devices['Pixel 5'],
+        contextOptions: { permissions: ['notifications'] },
+      },
     },
     {
       name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
+      use: { 
+        ...devices['iPhone 12'],
+        contextOptions: { permissions: ['notifications'] },
+      },
+    },
+    {
+      name: 'Tablet',
+      use: {
+        ...devices['iPad Pro'],
+        viewport: { width: 1024, height: 1366 },
+        contextOptions: { permissions: ['notifications'] },
+      },
     },
 
     /* Test against branded browsers. */

@@ -55,7 +55,18 @@ async function searchHackerNews(query: string): Promise<HNSearchResult[]> {
 
     const storiesData = await storiesResponse.json()
 
-    return storiesData.hits.map((hit: any) => ({
+    interface HNStoryHit {
+  title?: string
+  story_title?: string
+  url?: string
+  author?: string
+  created_at_i?: number
+  points?: number
+  num_comments?: number
+  objectID: string
+}
+
+    return storiesData.hits.map((hit: HNStoryHit) => ({
       title: hit.title || hit.story_title || '',
       url: hit.url || `https://news.ycombinator.com/item?id=${hit.objectID}`,
       author: hit.author || '',
@@ -228,20 +239,17 @@ export async function POST(request: Request) {
 
     // Check rate limit for HN requests
     if (includeHNContext) {
-      const rateLimitResult = await checkRateLimit(
-        getIdentifier(request),
-        rlHN
-      )
-      
+      const rateLimitResult = await checkRateLimit(getIdentifier(request), rlHN)
+
       if (!rateLimitResult.allowed) {
         return NextResponse.json(
-          { 
+          {
             error: rateLimitResult.error,
             limit: rateLimitResult.limit,
             remaining: rateLimitResult.remaining,
             reset: rateLimitResult.reset,
           },
-          { 
+          {
             status: 429,
             headers: {
               'X-RateLimit-Limit': rateLimitResult.limit.toString(),

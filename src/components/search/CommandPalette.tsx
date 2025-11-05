@@ -1,248 +1,326 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, FileText, Tag, User, Settings, Plus, TrendingUp, Clock } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import {
+  Search,
+  Command,
+  FileText,
+  Hash,
+  User,
+  Calendar,
+  ArrowRight,
+  X
+} from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
-interface CommandItem {
+interface SearchResult {
   id: string
   title: string
+  type: 'post' | 'tag' | 'author' | 'date'
+  url: string
   description?: string
-  icon: React.ReactNode
-  category: 'posts' | 'tags' | 'users' | 'actions'
-  action: () => void
+  metadata?: {
+    readTime?: number
+    author?: string
+    date?: string
+  }
 }
 
-export function CommandPalette() {
-  const router = useRouter()
-  const [isOpen, setIsOpen] = useState(false)
-  const [search, setSearch] = useState('')
+interface CommandPaletteProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
+  const [query, setQuery] = useState('')
+  const [results, setResults] = useState<SearchResult[]>([])
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const [results, setResults] = useState<CommandItem[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
-  // Sample command items (in real app, fetch from API)
-  const allCommands: CommandItem[] = [
-    {
-      id: 'new-post',
-      title: 'Create New Post',
-      icon: <Plus className="w-4 h-4" />,
-      category: 'actions',
-      action: () => router.push('/editor/new'),
-    },
-    {
-      id: 'dashboard',
-      title: 'Go to Dashboard',
-      icon: <TrendingUp className="w-4 h-4" />,
-      category: 'actions',
-      action: () => router.push('/dashboard'),
-    },
-    {
-      id: 'settings',
-      title: 'Settings',
-      icon: <Settings className="w-4 h-4" />,
-      category: 'actions',
-      action: () => router.push('/settings/profile'),
-    },
-  ]
-
-  // Keyboard shortcut handler
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault()
-        setIsOpen((prev) => !prev)
-      }
-
-      if (!isOpen) return
-
-      if (e.key === 'Escape') {
-        setIsOpen(false)
-      } else if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        setSelectedIndex((prev) => (prev + 1) % results.length)
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        setSelectedIndex((prev) => (prev - 1 + results.length) % results.length)
-      } else if (e.key === 'Enter' && results[selectedIndex]) {
-        e.preventDefault()
-        results[selectedIndex].action()
-        setIsOpen(false)
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, results, selectedIndex])
-
-  // Filter results based on search
-  useEffect(() => {
-    if (!search) {
-      setResults(allCommands.slice(0, 5))
+  // Mock search function - replace with actual API call
+  const searchContent = useCallback(async (searchQuery: string) => {
+    if (!searchQuery.trim()) {
+      setResults([])
       return
     }
 
-    const filtered = allCommands.filter((cmd) =>
-      cmd.title.toLowerCase().includes(search.toLowerCase())
-    )
-    setResults(filtered)
-    setSelectedIndex(0)
-  }, [search])
+    setIsLoading(true)
 
-  const categoryIcons = {
-    posts: <FileText className="w-4 h-4" />,
-    tags: <Tag className="w-4 h-4" />,
-    users: <User className="w-4 h-4" />,
-    actions: <Plus className="w-4 h-4" />,
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 300))
+
+    // Mock results
+    const mockResults: SearchResult[] = [
+      {
+        id: '1',
+        title: 'Getting Started with Next.js 15',
+        type: 'post',
+        url: '/p/getting-started-nextjs-15',
+        description: 'A comprehensive guide to Next.js 15',
+        metadata: {
+          readTime: 5,
+          author: 'John Doe',
+          date: '2 days ago'
+        }
+      },
+      {
+        id: '2',
+        title: 'react',
+        type: 'tag',
+        url: '/tag/react',
+        description: 'Posts about React development'
+      },
+      {
+        id: '3',
+        title: 'Jane Smith',
+        type: 'author',
+        url: '/u/jane-smith',
+        description: 'Frontend developer and writer'
+      }
+    ].filter(result =>
+      result.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      result.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+
+    setResults(mockResults)
+    setIsLoading(false)
+  }, [])
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      searchContent(query)
+    }, 300)
+
+    return () => clearTimeout(timeoutId)
+  }, [query, searchContent])
+
+  useEffect(() => {
+    setSelectedIndex(0)
+  }, [results])
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        setSelectedIndex(prev => (prev + 1) % results.length)
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        setSelectedIndex(prev => prev === 0 ? results.length - 1 : prev - 1)
+        break
+      case 'Enter':
+        e.preventDefault()
+        if (results[selectedIndex]) {
+          router.push(results[selectedIndex].url)
+          onClose()
+        }
+        break
+      case 'Escape':
+        onClose()
+        break
+    }
+  }, [results, selectedIndex, router, onClose])
+
+  const getResultIcon = (type: SearchResult['type']) => {
+    switch (type) {
+      case 'post':
+        return <FileText className="w-4 h-4" />
+      case 'tag':
+        return <Hash className="w-4 h-4" />
+      case 'author':
+        return <User className="w-4 h-4" />
+      case 'date':
+        return <Calendar className="w-4 h-4" />
+      default:
+        return <Search className="w-4 h-4" />
+    }
   }
 
-  if (!isOpen) return null
+  const getResultColor = (type: SearchResult['type']) => {
+    switch (type) {
+      case 'post':
+        return 'text-teal-400 bg-teal-500/10 border-teal-500/30'
+      case 'tag':
+        return 'text-orange-400 bg-orange-500/10 border-orange-500/30'
+      case 'author':
+        return 'text-purple-400 bg-purple-500/10 border-purple-500/30'
+      case 'date':
+        return 'text-blue-400 bg-blue-500/10 border-blue-500/30'
+      default:
+        return 'text-text-secondary bg-dark-bg border-dark-border'
+    }
+  }
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
-            onClick={() => setIsOpen(false)}
-          />
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent
+        side="top"
+        className="h-[85vh] max-h-[600px] bg-[#0a0a0b] border-[#27272a] p-0 safe-px safe-pt"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
+        <SheetHeader className="px-4 pt-4 pb-2 border-b border-[#27272a]">
+          <div className="flex items-center justify-between">
+            <SheetTitle className="text-left text-text-primary flex items-center gap-2">
+              <Search className="w-5 h-5 text-teal-400" />
+              Search
+            </SheetTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="text-text-secondary hover:text-text-primary p-2 h-8 w-8"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        </SheetHeader>
 
-          {/* Command Palette */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{
-              type: 'spring',
-              stiffness: 400,
-              damping: 30,
-            }}
-            className="fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-2xl z-50 px-4"
-          >
-            <div className="bg-[#1a1a1d] border border-[#27272a] rounded-xl shadow-2xl shadow-teal-500/10 overflow-hidden glass-effect">
-              {/* Search Input */}
-              <div className="flex items-center gap-3 px-4 py-3 border-b border-[#27272a]">
-                <Search className="w-5 h-5 text-text-tertiary" />
-                <input
-                  type="text"
-                  placeholder="Search posts, tags, users..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="flex-1 bg-transparent border-none outline-none text-text-primary placeholder:text-text-tertiary text-base"
-                  autoFocus
-                />
-                <kbd className="px-2 py-1 text-xs rounded bg-dark-card text-text-tertiary border border-dark-border">
-                  ESC
-                </kbd>
-              </div>
+        <div className="px-4 py-3">
+          {/* Search Input */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text-muted" />
+            <Input
+              placeholder="Search posts, tags, authors..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="pl-10 pr-10 h-12 bg-[#1a1a1d] border-[#27272a] focus:border-teal-500 text-[16px] placeholder:text-text-muted"
+              autoFocus
+            />
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <kbd className="px-2 py-1 text-xs bg-[#27272a] border border-[#3a3a3d] rounded text-text-muted">
+                ⌘K
+              </kbd>
+            </div>
+          </div>
+        </div>
 
-              {/* Results */}
-              <div className="max-h-96 overflow-y-auto py-2">
-                {results.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-text-secondary">
-                    <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>No results found</p>
-                  </div>
-                ) : (
-                  <AnimatePresence mode="popLayout">
-                    {results.map((item, index) => (
-                      <motion.button
-                        key={item.id}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ delay: index * 0.03 }}
-                        onClick={() => {
-                          item.action()
-                          setIsOpen(false)
-                        }}
-                        className={cn(
-                          'w-full flex items-center gap-3 px-4 py-3 text-left transition-colors relative',
-                          selectedIndex === index
-                            ? 'bg-teal-500/10 text-text-primary'
-                            : 'text-text-secondary hover:bg-dark-card'
-                        )}
-                      >
-                        {/* Sliding highlight indicator */}
-                        {selectedIndex === index && (
-                          <motion.div
-                            layoutId="highlight"
-                            className="absolute left-0 top-0 bottom-0 w-1 bg-teal-500"
-                            transition={{
-                              type: 'spring',
-                              stiffness: 400,
-                              damping: 30,
-                            }}
-                          />
-                        )}
-
-                        <div className="flex-shrink-0 text-teal-400">{item.icon}</div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium text-sm">{item.title}</div>
-                          {item.description && (
-                            <div className="text-xs text-text-tertiary truncate">
-                              {item.description}
-                            </div>
-                          )}
-                        </div>
-                        <div className="text-xs text-text-tertiary flex-shrink-0">
-                          {categoryIcons[item.category]}
-                        </div>
-                      </motion.button>
-                    ))}
-                  </AnimatePresence>
-                )}
-              </div>
-
-              {/* Footer */}
-              <div className="px-4 py-2 border-t border-[#27272a] flex items-center gap-4 text-xs text-text-tertiary">
-                <div className="flex items-center gap-1">
-                  <kbd className="px-1.5 py-0.5 rounded bg-dark-card border border-dark-border">
-                    ↑↓
-                  </kbd>
-                  <span>Navigate</span>
+        {/* Search Results */}
+        <div className="flex-1 overflow-y-auto px-4 pb-4">
+          {isLoading ? (
+            <div className="space-y-2">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="p-3 bg-[#1a1a1d] rounded-lg animate-pulse">
+                  <div className="h-4 bg-[#27272a] rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-[#27272a] rounded w-1/2"></div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <kbd className="px-1.5 py-0.5 rounded bg-dark-card border border-dark-border">
-                    ↵
-                  </kbd>
-                  <span>Select</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <kbd className="px-1.5 py-0.5 rounded bg-dark-card border border-dark-border">
-                    ESC
-                  </kbd>
-                  <span>Close</span>
+              ))}
+            </div>
+          ) : results.length === 0 && query ? (
+            <div className="text-center py-12">
+              <Search className="w-12 h-12 text-text-muted mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-text-primary mb-2">
+                No results found
+              </h3>
+              <p className="text-text-secondary text-sm">
+                Try searching for posts, tags, or authors
+              </p>
+            </div>
+          ) : !query ? (
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-sm font-medium text-text-muted mb-2">Quick Actions</h3>
+                <div className="space-y-1">
+                  <Link href="/editor/new" onClick={onClose}>
+                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#1a1a1d] transition-colors cursor-pointer">
+                      <div className="w-8 h-8 bg-teal-500/10 rounded-lg flex items-center justify-center">
+                        <FileText className="w-4 h-4 text-teal-400" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-text-primary">New Post</div>
+                        <div className="text-xs text-text-secondary">Create a new blog post</div>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-text-muted" />
+                    </div>
+                  </Link>
+                  <Link href="/dashboard" onClick={onClose}>
+                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#1a1a1d] transition-colors cursor-pointer">
+                      <div className="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center">
+                        <Command className="w-4 h-4 text-orange-400" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-text-primary">Dashboard</div>
+                        <div className="text-xs text-text-secondary">View your dashboard</div>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-text-muted" />
+                    </div>
+                  </Link>
                 </div>
               </div>
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
-  )
-}
-
-// Trigger button component
-export function CommandPaletteTrigger() {
-  const [, setIsOpen] = useState(false)
-
-  return (
-    <button
-      onClick={() => setIsOpen(true)}
-      className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-dark-card border border-dark-border text-text-secondary hover:border-teal-500/50 hover:text-text-primary transition-colors"
-    >
-      <Search className="w-4 h-4" />
-      <span className="text-sm">Search...</span>
-      <kbd className="ml-auto px-1.5 py-0.5 text-xs rounded bg-dark-bg border border-dark-border">
-        ⌘K
-      </kbd>
-    </button>
+          ) : (
+            <div className="space-y-1">
+              {results.map((result, index) => (
+                <motion.div
+                  key={result.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <Link href={result.url} onClick={onClose}>
+                    <div
+                      className={`flex items-center gap-3 p-3 rounded-lg transition-all cursor-pointer ${
+                        index === selectedIndex
+                          ? 'bg-[#1a1a1d] border border-teal-500/30'
+                          : 'hover:bg-[#1a1a1d]'
+                      }`}
+                      onMouseEnter={() => setSelectedIndex(index)}
+                    >
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getResultColor(result.type)}`}>
+                        {getResultIcon(result.type)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-text-primary truncate">
+                          {result.title}
+                        </div>
+                        {result.description && (
+                          <div className="text-xs text-text-secondary truncate">
+                            {result.description}
+                          </div>
+                        )}
+                        {result.metadata && (
+                          <div className="flex items-center gap-3 mt-1">
+                            {result.metadata.readTime && (
+                              <span className="text-xs text-text-muted">
+                                {result.metadata.readTime} min read
+                              </span>
+                            )}
+                            {result.metadata.author && (
+                              <span className="text-xs text-text-muted">
+                                by {result.metadata.author}
+                              </span>
+                            )}
+                            {result.metadata.date && (
+                              <span className="text-xs text-text-muted">
+                                {result.metadata.date}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <Badge variant="outline" className="text-xs border-[#27272a] text-text-muted">
+                        {result.type}
+                      </Badge>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
   )
 }

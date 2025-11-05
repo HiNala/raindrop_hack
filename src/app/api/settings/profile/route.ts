@@ -58,7 +58,7 @@ export async function PUT(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       )
     }
 

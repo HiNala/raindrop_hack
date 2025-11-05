@@ -1,0 +1,43 @@
+name: raindrop-development
+description: Raindrop Development Workflow for building comprehensive web applications
+version: "1.0"
+states:
+  start:
+    description: Initialize the raindrop development workflow
+    transitions:
+      - to: create_config
+        condition: "always"
+  create_config:
+    description: Create the workflow configuration
+    transitions:
+      - to: investigate
+        condition: "always"
+  investigate:
+    description: Investigate the current codebase and understand requirements
+    transitions:
+      - to: design
+        condition: "always"
+  design:
+    description: Design the implementation plan
+    transitions:
+      - to: implement
+        condition: "always"
+  implement:
+    description: Implement the changes
+    transitions:
+      - to: test
+        condition: "always"
+  test:
+    description: Test the implementation
+    transitions:
+      - to: finish
+        condition: "always"
+  finish:
+    description: Workflow completed successfully
+    is_terminal: true
+  errored:
+    description: Workflow failed
+    is_terminal: true
+  cancel:
+    description: Workflow cancelled
+    is_terminal: true

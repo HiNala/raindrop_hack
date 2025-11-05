@@ -27,7 +27,7 @@ interface NotificationSettingsFormProps {
   userId: string
 }
 
-export default function NotificationSettingsForm({ userId }: NotificationSettingsFormProps) {
+export default function NotificationSettingsForm({ userId: _userId }: NotificationSettingsFormProps) {
   const [isPending, startTransition] = useTransition()
   const [currentValues, setCurrentValues] = useState<NotificationSettingsValues>({
     emailNotifications: true,

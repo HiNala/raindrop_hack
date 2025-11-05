@@ -1,28 +1,24 @@
-import { Skeleton } from '@/components/ui/skeleton'
+/**
+ * Global Loading Page
+ * Shows skeleton loading for all posts
+ */
+
+import { PostCardSkeleton } from '@/components/post/PostCardSkeleton'
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-dark-bg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header skeleton */}
-        <div className="mb-8">
-          <Skeleton className="h-10 w-64 mb-4" />
-          <Skeleton className="h-6 w-96" />
+    <div className="min-h-screen py-24">
+      <div className="container mx-auto px-4">
+        {/* Loading Header */}
+        <div className="mb-8 text-center">
+          <div className="h-8 bg-dark-border rounded w-48 mx-auto mb-4 animate-pulse" />
+          <div className="h-6 bg-dark-border rounded w-96 mx-auto animate-pulse" />
         </div>
 
-        {/* Content skeleton */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="card p-6">
-              <Skeleton className="h-48 w-full mb-4 rounded-lg" />
-              <Skeleton className="h-4 w-20 mb-2" />
-              <Skeleton className="h-6 w-full mb-2" />
-              <Skeleton className="h-6 w-3/4 mb-4" />
-              <div className="flex items-center gap-4">
-                <Skeleton className="h-8 w-8 rounded-full" />
-                <Skeleton className="h-4 w-24" />
-              </div>
-            </div>
+        {/* Loading Grid */}
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <PostCardSkeleton key={i} />
           ))}
         </div>
       </div>

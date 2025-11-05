@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { Heart } from 'lucide-react'
-import { motion, useSpring, useTransform, AnimatePresence } from 'framer-motion'
+import { motion, useSpring, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import toast from 'react-hot-toast'
 
@@ -20,7 +20,7 @@ interface Particle {
 }
 
 export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
-  const { isSignedIn, user } = useUser()
+  const { isSignedIn } = useUser()
   const [likes, setLikes] = useState(initialLikes)
   const [isLiked, setIsLiked] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -30,7 +30,6 @@ export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
 
   // Spring animation for heart scale
   const scale = useSpring(1, { stiffness: 300, damping: 10 })
-  const opacity = useSpring(1)
 
   // Check if user has liked this post
   useEffect(() => {

@@ -1,6 +1,3 @@
-import MarkdownIt from 'markdown-it'
-
-const md = new MarkdownIt()
 
 /**
  * Convert markdown to TipTap/Novel JSON format

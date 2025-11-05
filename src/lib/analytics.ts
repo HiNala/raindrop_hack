@@ -1,9 +1,10 @@
 import { prisma } from './prisma'
+import { logger } from './logger'
 
 /**
  * Track a post view event
  */
-export async function trackPostView(postId: string, userId?: string, referrer?: string) {
+export async function trackPostView(postId: string, _userId?: string, referrer?: string) {
   try {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -55,9 +56,9 @@ export async function trackPostView(postId: string, userId?: string, referrer?: 
       })
     }
 
-    console.log(`Tracked view for post ${postId}`)
+    logger.info('Tracked post view', { postId, userId, referrer })
   } catch (error) {
-    console.error('Error tracking post view:', error)
+    logger.dbError('trackPostView', error, { postId, userId })
     // Don't throw - analytics shouldn't break the app
   }
 }
@@ -102,9 +103,9 @@ export async function trackPostRead(postId: string, userId?: string) {
       },
     })
 
-    console.log(`Tracked read for post ${postId}`)
+    logger.info('Tracked post read', { postId, userId })
   } catch (error) {
-    console.error('Error tracking post read:', error)
+    logger.dbError('trackPostRead', error, { postId, userId })
     // Don't throw - analytics shouldn't break the app
   }
 }
@@ -140,9 +141,9 @@ export async function trackReadingTime(postId: string, timeSpent: number) {
       })
     }
 
-    console.log(`Updated reading time for post ${postId}: ${timeSpent}s`)
+    logger.performanceMetric('trackReadingTime', timeSpent, { postId })
   } catch (error) {
-    console.error('Error tracking reading time:', error)
+    logger.dbError('trackReadingTime', error, { postId, timeSpent })
   }
 }
 
@@ -191,7 +192,7 @@ export async function getPostAnalytics(postId: string) {
       topReferrers,
     }
   } catch (error) {
-    console.error('Error fetching post analytics:', error)
+    logger.dbError('getPostAnalytics', error, { postId })
     return null
   }
 }

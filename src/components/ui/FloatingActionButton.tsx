@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Pen, Sparkles, X } from 'lucide-react'
@@ -109,7 +109,7 @@ export function FloatingActionButton() {
                       }}
                       className={cn(
                         'w-12 h-12 rounded-full bg-gradient-to-br shadow-lg flex items-center justify-center text-white',
-                        action.color || 'from-teal-500 to-teal-600'
+                        action.color || 'from-teal-500 to-teal-600',
                       )}
                     >
                       {action.icon}

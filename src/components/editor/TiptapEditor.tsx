@@ -6,8 +6,6 @@ import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import TextAlign from '@tiptap/extension-text-align'
-import Underline from '@tiptap/extension-underline'
 import { common, createLowlight } from 'lowlight'
 import javascript from 'highlight.js/lib/languages/javascript'
 import typescript from 'highlight.js/lib/languages/typescript'
@@ -34,10 +32,6 @@ lowlight.register('sql', sql)
 import {
   Bold,
   Italic,
-  Underline as UnderlineIcon,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
   List,
   ListOrdered,
   Code,
@@ -88,11 +82,6 @@ export function TiptapEditor({
           class: 'code-block-wrapper',
         },
       }),
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
-        alignments: ['left', 'center', 'right', 'justify'],
-      }),
-      Underline,
     ],
     content: typeof content === 'string' ? content : content,
     editorProps: {
@@ -156,48 +145,6 @@ export function TiptapEditor({
           className={editor.isActive('italic') ? 'bg-gray-200 dark:bg-gray-700' : ''}
         >
           <Italic className="w-4 h-4" />
-        </Button>
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
-          className={editor.isActive('underline') ? 'bg-gray-200 dark:bg-gray-700' : ''}
-        >
-          <UnderlineIcon className="w-4 h-4" />
-        </Button>
-
-        <div className="w-px h-8 bg-gray-300 dark:bg-gray-700 mx-1" />
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => editor.chain().focus().setTextAlign('left').run()}
-          className={editor.isActive({ textAlign: 'left' }) ? 'bg-gray-200 dark:bg-gray-700' : ''}
-        >
-          <AlignLeft className="w-4 h-4" />
-        </Button>
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => editor.chain().focus().setTextAlign('center').run()}
-          className={editor.isActive({ textAlign: 'center' }) ? 'bg-gray-200 dark:bg-gray-700' : ''}
-        >
-          <AlignCenter className="w-4 h-4" />
-        </Button>
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => editor.chain().focus().setTextAlign('right').run()}
-          className={editor.isActive({ textAlign: 'right' }) ? 'bg-gray-200 dark:bg-gray-700' : ''}
-        >
-          <AlignRight className="w-4 h-4" />
         </Button>
 
         <div className="w-px h-8 bg-gray-300 dark:bg-gray-700 mx-1" />

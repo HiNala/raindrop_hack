@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { toast } from 'sonner'
 
 const profileSettingsSchema = z.object({
@@ -26,7 +25,7 @@ interface ProfileSettingsFormProps {
   userId: string
 }
 
-export default function ProfileSettingsForm({ userId }: ProfileSettingsFormProps) {
+export default function ProfileSettingsForm({ userId: _userId }: ProfileSettingsFormProps) {
   const [isPending, startTransition] = useTransition()
   const [currentValues, setCurrentValues] = useState<ProfileSettingsValues>({
     bio: '',
@@ -66,15 +65,18 @@ export default function ProfileSettingsForm({ userId }: ProfileSettingsFormProps
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      <div className="space-y-4">
+      <div className="space-y-4 sm:space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="bio">Bio</Label>
+          <Label htmlFor="bio" className="text-sm font-medium text-text-primary">
+            Bio
+          </Label>
           <Textarea
             id="bio"
             {...form.register('bio')}
             placeholder="Tell us about yourself..."
             disabled={isPending}
             rows={4}
+            className="resize-none min-h-[100px] text-[16px]"
           />
           {form.formState.errors.bio && (
             <p className="text-sm text-red-600">{form.formState.errors.bio.message}</p>
@@ -82,12 +84,15 @@ export default function ProfileSettingsForm({ userId }: ProfileSettingsFormProps
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="websiteUrl">Website URL</Label>
+          <Label htmlFor="websiteUrl" className="text-sm font-medium text-text-primary">
+            Website URL
+          </Label>
           <Input
             id="websiteUrl"
             {...form.register('websiteUrl')}
             placeholder="https://yourwebsite.com"
             disabled={isPending}
+            className="text-[16px]"
           />
           {form.formState.errors.websiteUrl && (
             <p className="text-sm text-red-600">{form.formState.errors.websiteUrl.message}</p>
@@ -95,12 +100,15 @@ export default function ProfileSettingsForm({ userId }: ProfileSettingsFormProps
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="githubUrl">GitHub URL</Label>
+          <Label htmlFor="githubUrl" className="text-sm font-medium text-text-primary">
+            GitHub URL
+          </Label>
           <Input
             id="githubUrl"
             {...form.register('githubUrl')}
             placeholder="https://github.com/username"
             disabled={isPending}
+            className="text-[16px]"
           />
           {form.formState.errors.githubUrl && (
             <p className="text-sm text-red-600">{form.formState.errors.githubUrl.message}</p>
@@ -108,12 +116,15 @@ export default function ProfileSettingsForm({ userId }: ProfileSettingsFormProps
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="twitterUrl">Twitter URL</Label>
+          <Label htmlFor="twitterUrl" className="text-sm font-medium text-text-primary">
+            Twitter URL
+          </Label>
           <Input
             id="twitterUrl"
             {...form.register('twitterUrl')}
             placeholder="https://twitter.com/username"
             disabled={isPending}
+            className="text-[16px]"
           />
           {form.formState.errors.twitterUrl && (
             <p className="text-sm text-red-600">{form.formState.errors.twitterUrl.message}</p>
@@ -121,12 +132,15 @@ export default function ProfileSettingsForm({ userId }: ProfileSettingsFormProps
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="linkedinUrl">LinkedIn URL</Label>
+          <Label htmlFor="linkedinUrl" className="text-sm font-medium text-text-primary">
+            LinkedIn URL
+          </Label>
           <Input
             id="linkedinUrl"
             {...form.register('linkedinUrl')}
             placeholder="https://linkedin.com/in/username"
             disabled={isPending}
+            className="text-[16px]"
           />
           {form.formState.errors.linkedinUrl && (
             <p className="text-sm text-red-600">{form.formState.errors.linkedinUrl.message}</p>
@@ -134,8 +148,12 @@ export default function ProfileSettingsForm({ userId }: ProfileSettingsFormProps
         </div>
       </div>
 
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isPending}>
+      <div className="flex justify-end pt-4 border-t border-dark-border">
+        <Button
+          type="submit"
+          disabled={isPending}
+          className="min-h-[44px] px-6 text-[16px]"
+        >
           {isPending ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>

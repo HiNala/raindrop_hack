@@ -34,7 +34,7 @@ export async function GET(_request: NextRequest) {
   }
 }
 
-export async function PATCH(request: NextRequest) {
+export async function PATCH(_request: NextRequest) {
   try {
     const { userId } = await auth()
     if (!userId) {

@@ -10,9 +10,10 @@ export const ourFileRouter = {
       if (!userId) throw new Error('Unauthorized')
       return { userId }
     })
-    .onUploadComplete(async ({ metadata, file }) => {
-      console.log('Upload complete for userId:', metadata.userId)
-      console.log('file url', file.url)
+    .onUploadComplete(async ({ metadata: _metadata, file }) => {
+      // TODO: Add proper logging service
+      // console.log('Upload complete for userId:', metadata.userId)
+      // console.log('file url', file.url)
       return { url: file.url }
     }),
 
@@ -22,9 +23,10 @@ export const ourFileRouter = {
       if (!userId) throw new Error('Unauthorized')
       return { userId }
     })
-    .onUploadComplete(async ({ metadata, file }) => {
-      console.log('Cover image upload complete for userId:', metadata.userId)
-      console.log('file url', file.url)
+    .onUploadComplete(async ({ metadata: _metadata, file }) => {
+      // TODO: Add proper logging service
+      // console.log('Cover image upload complete for userId:', metadata.userId)
+      // console.log('file url', file.url)
       return { url: file.url }
     }),
 
@@ -34,9 +36,10 @@ export const ourFileRouter = {
       if (!userId) throw new Error('Unauthorized')
       return { userId }
     })
-    .onUploadComplete(async ({ metadata, file }) => {
-      console.log('Avatar upload complete for userId:', metadata.userId)
-      console.log('file url', file.url)
+    .onUploadComplete(async ({ metadata: _metadata, file }) => {
+      // TODO: Add proper logging service
+      // console.log('Avatar upload complete for userId:', metadata.userId)
+      // console.log('file url', file.url)
       return { url: file.url }
     }),
 } satisfies FileRouter

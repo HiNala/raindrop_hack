@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { X, Upload, Loader2, Image as ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useUploadThing } from '@/lib/uploadthing'
@@ -86,7 +87,13 @@ export function CoverUpload({ currentImage, onUpload, onRemove }: CoverUploadPro
     <div className="w-full">
       {currentImage ? (
         <div className="relative group">
-          <img src={currentImage} alt="Cover" className="w-full h-64 object-cover rounded-lg" />
+          <Image 
+            src={currentImage} 
+            alt="Cover" 
+            width={800}
+            height={256}
+            className="w-full h-64 object-cover rounded-lg" 
+          />
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
             <label className="cursor-pointer">
               <input

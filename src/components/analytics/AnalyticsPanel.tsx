@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Eye, Clock, Heart, MessageCircle, TrendingUp } from 'lucide-react'
+import { Eye, Clock, TrendingUp } from 'lucide-react'
 import { flags } from '@/lib/feature-flags'
 
 interface AnalyticsData {
@@ -35,12 +34,12 @@ export default function AnalyticsPanel({ postId, isOwner }: AnalyticsPanelProps)
         if (response.ok) {
           const data = await response.json()
           setAnalytics(data)
-          
+
           // Calculate totals
           const totalViews = data.reduce((sum: number, item: AnalyticsData) => sum + item.views, 0)
           const totalReads = data.reduce((sum: number, item: AnalyticsData) => sum + item.reads, 0)
           const readRate = totalViews > 0 ? (totalReads / totalViews) * 100 : 0
-          
+
           setTotals({
             views: totalViews,
             reads: totalReads,
@@ -100,7 +99,7 @@ export default function AnalyticsPanel({ postId, isOwner }: AnalyticsPanelProps)
             </div>
             <div className="text-2xl font-bold">{totals.views.toLocaleString()}</div>
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-muted-foreground" />
@@ -108,7 +107,7 @@ export default function AnalyticsPanel({ postId, isOwner }: AnalyticsPanelProps)
             </div>
             <div className="text-2xl font-bold">{totals.reads.toLocaleString()}</div>
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-muted-foreground" />

@@ -1,343 +1,391 @@
-'use client'
+/**
+ * Enhanced Editor with Autosave and Debounce
+ */
 
-import { useEditor, EditorContent } from '@tiptap/react'
+import { useEditor, EditorContent, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import Image from '@tiptap/extension-image'
-import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
-import Underline from '@tiptap/extension-underline'
-import TextAlign from '@tiptap/extension-text-align'
+import Link from '@tiptap/extension-link'
+import Image from '@tiptap/extension-image'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { common, createLowlight } from 'lowlight'
 import { useCallback, useEffect, useState } from 'react'
-import { cn } from '@/lib/utils'
+import { useDebouncedCallback } from 'use-debounce'
 import { toast } from 'sonner'
+import { Save, Loader2, Check, AlertCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
-// Create lowlight instance
+// Register syntax highlighting
 const lowlight = createLowlight(common)
+// Note: In production, you'd want to dynamically load these
+// For now, we'll use the basic syntax highlighting provided by common
 
 interface EnhancedEditorProps {
-  content: string
-  onChange: (content: string) => void
+  initialContent?: string
   placeholder?: string
   editable?: boolean
+  onSave?: (content: string) => Promise<void>
+  debounceMs?: number
   className?: string
-  onVersionCreate?: (snapshot: any) => void
-  postId?: string
+  showToolbar?: boolean
 }
 
 export function EnhancedEditor({
-  content,
-  onChange,
-  placeholder = 'Start writing your story...',
+  initialContent = '',
+  placeholder = 'Start writing...',
   editable = true,
-  className,
-  onVersionCreate,
-  postId,
+  onSave,
+  debounceMs = 2000,
+  className = '',
+  showToolbar = true,
 }: EnhancedEditorProps) {
-  const [isCreatingVersion, setIsCreatingVersion] = useState(false)
-  const [wordCount, setWordCount] = useState(0)
-  const [readTime, setReadTime] = useState(0)
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3, 4],
-        },
-      }),
-      Underline,
-      Image.configure({
-        HTMLAttributes: {
-          class: 'rounded-lg max-w-full h-auto',
-        },
-      }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-accent-teal hover:text-accent-teal/80 underline',
-        },
+        codeBlock: false, // Use enhanced code block
       }),
       Placeholder.configure({
         placeholder,
       }),
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-teal-500 hover:text-teal-600 underline',
+        },
+      }),
+      Image.configure({
+        HTMLAttributes: {
+          class: 'max-w-full h-auto rounded-lg',
+        },
       }),
       CodeBlockLowlight.configure({
         lowlight,
         HTMLAttributes: {
-          class: 'bg-surface-100 text-text-primary rounded-lg p-4 my-4',
+          class: 'bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto',
         },
       }),
     ],
-    content,
+    content: initialContent,
     editable,
-    onUpdate: ({ editor }) => {
-      const json = editor.getJSON()
-      const html = editor.getHTML()
-
-      // Update word count and read time
-      const text = editor.getText()
-      const words = text.trim().split(/\s+/).filter(Boolean)
-      setWordCount(words.length)
-      setReadTime(Math.ceil(words.length / 200)) // 200 words per minute
-
-      onChange(html)
-    },
-    editorProps: {
-      attributes: {
-        class: cn(
-          'prose prose-invert max-w-none focus:outline-none',
-          'prose-headings:font-semibold prose-headings:text-text-primary',
-          'prose-p:text-text-primary prose-p:leading-relaxed',
-          'prose-strong:text-text-primary prose-strong:font-semibold',
-          'prose-code:text-accent-teal prose-code:bg-surface-100 prose-code:px-1 prose-code:rounded',
-          'prose-pre:bg-surface-100 prose-pre:border prose-pre:border-surface-300',
-          'prose-blockquote:text-text-secondary prose-blockquote:border-l-accent-teal',
-          'prose-hr:border-surface-300',
-          'min-h-[200px] p-4',
-          editable ? 'cursor-text' : 'cursor-default'
-        ),
-      },
+    onUpdate: ({ editor: _editor }) => {
+      setHasUnsavedChanges(true)
+      setSaveStatus('idle')
     },
   })
 
-  // Auto-create version snapshots
-  const createVersionSnapshot = useCallback(async () => {
-    if (!onVersionCreate || !postId || !editor) return
+  // Debounced save function
+  const debouncedSave = useDebouncedCallback(
+    useCallback(async (content: string) => {
+      if (!onSave || !content || content === initialContent) return
 
-    setIsCreatingVersion(true)
+      setSaveStatus('saving')
+
+      try {
+        await onSave(content)
+        setSaveStatus('saved')
+        setLastSaved(new Date())
+        setHasUnsavedChanges(false)
+
+        // Clear saved status after 2 seconds
+        setTimeout(() => {
+          if (saveStatus === 'saved') {
+            setSaveStatus('idle')
+          }
+        }, 2000)
+      } catch (error) {
+        setSaveStatus('error')
+        toast.error('Failed to save changes')
+      }
+    }, [onSave, initialContent, saveStatus]),
+    debounceMs
+  )
+
+  // Auto-save on content change
+  useEffect(() => {
+    if (!editor) return
+
+    const handleUpdate = () => {
+      const content = editor.getHTML()
+      debouncedSave(content)
+    }
+
+    editor.on('update', handleUpdate)
+    return () => {
+      editor.off('update', handleUpdate)
+    }
+  }, [editor, debouncedSave])
+
+  // Manual save function
+  const handleSave = useCallback(async () => {
+    if (!editor || !onSave) return
+
+    const content = editor.getHTML()
+    setSaveStatus('saving')
 
     try {
-      const snapshot = {
-        content: editor.getJSON(),
-        html: editor.getHTML(),
-        wordCount,
-        readTime,
-        timestamp: new Date().toISOString(),
-      }
+      await onSave(content)
+      setSaveStatus('saved')
+      setLastSaved(new Date())
+      setHasUnsavedChanges(false)
 
-      await onVersionCreate(snapshot)
+      setTimeout(() => {
+        setSaveStatus('idle')
+      }, 2000)
     } catch (error) {
-      console.error('Failed to create version snapshot:', error)
-      toast.error('Failed to save version snapshot')
-    } finally {
-      setIsCreatingVersion(false)
+      setSaveStatus('error')
+      toast.error('Failed to save changes')
     }
-  }, [editor, onVersionCreate, postId, wordCount, readTime])
-
-  // Auto-save version every 5 minutes or every 100 words
-  useEffect(() => {
-    if (!postId || !onVersionCreate) return
-
-    const interval = setInterval(
-      () => {
-        createVersionSnapshot()
-      },
-      5 * 60 * 1000
-    ) // 5 minutes
-
-    return () => clearInterval(interval)
-  }, [createVersionSnapshot, postId, onVersionCreate])
-
-  useEffect(() => {
-    if (wordCount > 0 && wordCount % 100 === 0) {
-      createVersionSnapshot()
-    }
-  }, [wordCount, createVersionSnapshot])
+  }, [editor, onSave])
 
   // Keyboard shortcuts
   useEffect(() => {
     if (!editor) return
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Cmd/Ctrl + S to create version snapshot
+      // Cmd/Ctrl + S to save
       if ((event.metaKey || event.ctrlKey) && event.key === 's') {
         event.preventDefault()
-        createVersionSnapshot()
+        handleSave()
+      }
+
+      // Cmd/Ctrl + Shift + S to force save
+      if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key === 'S') {
+        event.preventDefault()
+        debouncedSave.flush()
       }
     }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [editor, createVersionSnapshot])
+  }, [editor, handleSave, debouncedSave])
 
-  if (!editor) {
+  // Save status indicator
+  const SaveStatusIndicator = () => (
+    <div className="flex items-center gap-2 text-sm">
+      {saveStatus === 'saving' && (
+        <>
+          <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+          <span className="text-blue-500">Saving...</span>
+        </>
+      )}
+
+      {saveStatus === 'saved' && (
+        <>
+          <Check className="w-4 h-4 text-green-500" />
+          <span className="text-green-500">Saved</span>
+          {lastSaved && (
+            <span className="text-gray-500 text-xs">
+              {lastSaved.toLocaleTimeString()}
+            </span>
+          )}
+        </>
+      )}
+
+      {saveStatus === 'error' && (
+        <>
+          <AlertCircle className="w-4 h-4 text-red-500" />
+          <span className="text-red-500">Error</span>
+        </>
+      )}
+
+      {saveStatus === 'idle' && hasUnsavedChanges && (
+        <>
+          <div className="w-2 h-2 bg-orange-500 rounded-full" />
+          <span className="text-gray-500">Unsaved</span>
+        </>
+      )}
+    </div>
+  )
+
+  // Enhanced toolbar
+  const Toolbar = () => {
+    if (!editor || !showToolbar) return null
+
     return (
-      <div className="animate-pulse">
-        <div className="h-4 bg-surface-100 rounded mb-4"></div>
-        <div className="h-4 bg-surface-100 rounded w-3/4 mb-2"></div>
-        <div className="h-4 bg-surface-100 rounded w-1/2"></div>
+      <div className="border-b border-gray-200 pb-3 mb-4 flex flex-wrap gap-2 items-center">
+        {/* Text formatting */}
+        <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            className={editor.isActive('bold') ? 'bg-gray-200' : ''}
+          >
+            <strong className="font-bold">B</strong>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            className={editor.isActive('italic') ? 'bg-gray-200' : ''}
+          >
+            <em className="italic">I</em>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => editor.chain().focus().toggleCode().run()}
+            className={editor.isActive('code') ? 'bg-gray-200' : ''}
+          >
+            &lt;/&gt;
+          </Button>
+        </div>
+
+        {/* Lists */}
+        <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            className={editor.isActive('bulletList') ? 'bg-gray-200' : ''}
+          >
+            • List
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            className={editor.isActive('orderedList') ? 'bg-gray-200' : ''}
+          >
+            1. List
+          </Button>
+        </div>
+
+        {/* Headings */}
+        <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
+          {[1, 2, 3].map((level) => (
+            <Button
+              key={level}
+              variant="ghost"
+              size="sm"
+              onClick={() => editor.chain().focus().toggleHeading({ level }).run()}
+              className={editor.isActive('heading', { level }) ? 'bg-gray-200' : ''}
+            >
+              H{level}
+            </Button>
+          ))}
+        </div>
+
+        {/* Other */}
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            className={editor.isActive('blockquote') ? 'bg-gray-200' : ''}
+          >
+            " Quote
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => editor.chain().focus().undo().run()}
+            disabled={!editor.can().undo()}
+          >
+            ↶
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => editor.chain().focus().redo().run()}
+            disabled={!editor.can().redo()}
+          >
+            ↷
+          </Button>
+        </div>
+
+        {/* Save Status */}
+        <div className="flex-1 flex justify-end">
+          <SaveStatusIndicator />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSave}
+            disabled={saveStatus === 'saving' || !hasUnsavedChanges}
+            className="ml-4"
+          >
+            {saveStatus === 'saving' ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            <span className="ml-2">
+              {saveStatus === 'saving' ? 'Saving...' : 'Save'}
+            </span>
+          </Button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className={cn('relative', className)}>
-      {/* Toolbar */}
-      {editable && (
-        <div className="flex items-center justify-between mb-4 p-2 bg-surface-100 rounded-lg">
-          <div className="flex items-center gap-2">
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleBold().run()}
-              disabled={!editor.can().chain().focus().toggleBold().run()}
-              active={editor.isActive('bold')}
-            >
-              <strong>B</strong>
-            </ToolbarButton>
-
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleItalic().run()}
-              disabled={!editor.can().chain().focus().toggleItalic().run()}
-              active={editor.isActive('italic')}
-            >
-              <em>I</em>
-            </ToolbarButton>
-
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleUnderline().run()}
-              disabled={!editor.can().chain().focus().toggleUnderline().run()}
-              active={editor.isActive('underline')}
-            >
-              <u>U</u>
-            </ToolbarButton>
-
-            <div className="w-px h-4 bg-surface-300"></div>
-
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-              active={editor.isActive('heading', { level: 2 })}
-            >
-              H2
-            </ToolbarButton>
-
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-              active={editor.isActive('heading', { level: 3 })}
-            >
-              H3
-            </ToolbarButton>
-
-            <div className="w-px h-4 bg-surface-300"></div>
-
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleBulletList().run()}
-              active={editor.isActive('bulletList')}
-            >
-              •
-            </ToolbarButton>
-
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              active={editor.isActive('orderedList')}
-            >
-              1.
-            </ToolbarButton>
-
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-              active={editor.isActive('codeBlock')}
-            >
-              {'</>'}
-            </ToolbarButton>
-
-            <div className="w-px h-4 bg-surface-300"></div>
-
-            <ToolbarButton
-              onClick={() => {
-                const url = window.prompt('Enter URL:')
-                if (url) {
-                  editor.chain().focus().setLink({ href: url }).run()
-                }
-              }}
-              active={editor.isActive('link')}
-            >
-              🔗
-            </ToolbarButton>
-
-            <ToolbarButton
-              onClick={() => {
-                const url = window.prompt('Enter image URL:')
-                if (url) {
-                  editor.chain().focus().setImage({ src: url }).run()
-                }
-              }}
-            >
-              🖼️
-            </ToolbarButton>
-          </div>
-
-          <div className="flex items-center gap-4 text-sm text-text-secondary">
-            <span>{wordCount} words</span>
-            <span>≈ {readTime} min read</span>
-            {isCreatingVersion && <span className="text-accent-teal">Saving version...</span>}
-          </div>
-        </div>
-      )}
-
-      {/* Editor Content */}
-      <EditorContent editor={editor} />
-
-      {/* Status Bar */}
-      <div className="mt-4 flex items-center justify-between text-xs text-text-secondary">
-        <div className="flex items-center gap-4">
-          <span>
-            {editor.storage.markdown?.getMarkdown()
-              ? `${editor.storage.markdown?.getMarkdown().length} characters`
-              : `${wordCount * 5} characters (approx)`}
-          </span>
-          {editable && (
-            <button
-              onClick={createVersionSnapshot}
-              disabled={isCreatingVersion}
-              className="hover:text-text-primary transition-colors"
-            >
-              {isCreatingVersion ? 'Saving...' : 'Save version (⌘S)'}
-            </button>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          {editor.isActive('bold') && (
-            <span className="px-2 py-1 bg-surface-100 rounded">Bold</span>
-          )}
-          {editor.isActive('italic') && (
-            <span className="px-2 py-1 bg-surface-100 rounded">Italic</span>
-          )}
-          {editor.isActive('codeBlock') && (
-            <span className="px-2 py-1 bg-surface-100 rounded">Code</span>
-          )}
-        </div>
+    <div className={`enhanced-editor ${className}`}>
+      <Toolbar />
+      <div className="min-h-[400px] prose prose-gray max-w-none focus:outline-none">
+        <EditorContent editor={editor} />
       </div>
     </div>
   )
 }
 
-function ToolbarButton({
-  children,
-  onClick,
-  disabled = false,
-  active = false,
-}: {
-  children: React.ReactNode
-  onClick: () => void
-  disabled?: boolean
-  active?: boolean
-}) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={cn(
-        'px-2 py-1 rounded text-sm font-medium transition-all',
-        'hover:bg-surface-200 hover:text-text-primary',
-        'focus:outline-none focus:ring-2 focus:ring-accent-teal/50',
-        active ? 'bg-accent-teal text-white' : 'text-text-secondary',
-        disabled && 'opacity-50 cursor-not-allowed'
-      )}
-    >
-      {children}
-    </button>
+// Custom hook for editor autosave
+export function useEditorAutosave(
+  editor: Editor | null,
+  saveFunction: (content: string) => Promise<void>,
+  options: {
+    debounceMs?: number
+    autoSave?: boolean
+  } = {}
+) {
+  const { debounceMs = 2000, autoSave = true } = options
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+
+  const debouncedSave = useDebouncedCallback(
+    async (content: string) => {
+      if (!autoSave || !content) return
+
+      setSaveStatus('saving')
+      try {
+        await saveFunction(content)
+        setSaveStatus('saved')
+        setTimeout(() => setSaveStatus('idle'), 2000)
+      } catch (error) {
+        setSaveStatus('error')
+      }
+    },
+    debounceMs
   )
+
+  useEffect(() => {
+    if (!editor) return
+
+    const handleUpdate = () => {
+      const content = editor.getHTML()
+      debouncedSave(content)
+    }
+
+    if (autoSave) {
+      editor.on('update', handleUpdate)
+    }
+
+    return () => {
+      editor.off('update', handleUpdate)
+    }
+  }, [editor, debouncedSave, autoSave])
+
+  return {
+    saveStatus,
+    save: () => {
+      const content = editor.getHTML()
+      debouncedSave(content)
+    },
+    forceSave: () => {
+      const _content = editor.getHTML()
+      debouncedSave.flush()
+    },
+  }
 }

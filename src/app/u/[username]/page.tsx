@@ -4,9 +4,8 @@ import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { PostCard } from '@/components/post/PostCard'
-import { Edit, MapPin, Link as LinkIcon, Calendar } from 'lucide-react'
+import { Edit, Link as LinkIcon, Calendar } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 
@@ -83,8 +82,6 @@ export default async function ProfilePage({ params }: { params: { username: stri
   const isOwnProfile = currentUser?.id === profile.userId
   const posts = profile.user.posts
 
-  // Parse social links
-  const socialLinks = (profile.socialLinks as any) || {}
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

@@ -21,7 +21,7 @@ interface AccountSettingsFormProps {
   userId: string
 }
 
-export default function AccountSettingsForm({ userId }: AccountSettingsFormProps) {
+export default function AccountSettingsForm({ userId: _userId }: AccountSettingsFormProps) {
   const [isPending, startTransition] = useTransition()
   const [currentValues, setCurrentValues] = useState<AccountSettingsValues>({
     displayName: '',

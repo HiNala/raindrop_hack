@@ -23,7 +23,7 @@ export function SlugWarning({ currentSlug, newSlug, onConfirm, onCancel }: SlugW
     const checkImpact = async () => {
       try {
         const response = await fetch(
-          `/api/posts/check-slug-impact?current=${currentSlug}&new=${newSlug}`
+          `/api/posts/check-slug-impact?current=${currentSlug}&new=${newSlug}`,
         )
         const data = await response.json()
         setHasExistingRedirect(data.hasExistingRedirect)
@@ -147,3 +147,5 @@ export function SlugWarning({ currentSlug, newSlug, onConfirm, onCancel }: SlugW
     </motion.div>
   )
 }
+
+

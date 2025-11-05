@@ -40,7 +40,7 @@ const EnhancedInput = React.forwardRef<HTMLInputElement, EnhancedInputProps>(
               error && 'border-red-500 focus:border-red-500 focus:ring-red-500/20',
               success && 'border-green-500 focus:border-green-500 focus:ring-green-500/20',
               showLabel && 'pt-6 pb-2',
-              className
+              className,
             )}
             ref={ref}
             value={value}
@@ -70,7 +70,7 @@ const EnhancedInput = React.forwardRef<HTMLInputElement, EnhancedInputProps>(
                 className={cn(
                   'absolute left-4 pointer-events-none transition-colors duration-200',
                   hasValue ? 'top-2' : 'top-3',
-                  isFocused ? 'text-teal-400' : error ? 'text-red-400' : 'text-text-tertiary'
+                  isFocused ? 'text-teal-400' : error ? 'text-red-400' : 'text-text-tertiary',
                 )}
               >
                 {label}
@@ -118,7 +118,7 @@ const EnhancedInput = React.forwardRef<HTMLInputElement, EnhancedInputProps>(
                 <span
                   className={cn(
                     'text-xs transition-colors ml-auto',
-                    charCount > maxLength * 0.9 ? 'text-orange-400' : 'text-text-tertiary'
+                    charCount > maxLength * 0.9 ? 'text-orange-400' : 'text-text-tertiary',
                   )}
                 >
                   {charCount}/{maxLength}
@@ -129,7 +129,7 @@ const EnhancedInput = React.forwardRef<HTMLInputElement, EnhancedInputProps>(
         </AnimatePresence>
       </div>
     )
-  }
+  },
 )
 EnhancedInput.displayName = 'EnhancedInput'
 

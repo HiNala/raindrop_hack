@@ -24,7 +24,7 @@ interface PostVersion {
   id: string
   postId: string
   snapshot: {
-    content: any
+    content: Record<string, unknown>
     html: string
     wordCount: number
     readTime: number
@@ -54,7 +54,7 @@ export function VersionHistory({
 
   // Sort versions by date (newest first)
   const sortedVersions = [...versions].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   )
 
   useEffect(() => {
@@ -194,8 +194,8 @@ export function VersionHistory({
                       {selectedVersion.id === 'current'
                         ? 'Current Version'
                         : formatDistanceToNow(new Date(selectedVersion.createdAt), {
-                            addSuffix: true,
-                          })}
+                          addSuffix: true,
+                        })}
                     </span>
                   </div>
 
@@ -280,7 +280,7 @@ export function VersionHistory({
                           'p-2 rounded',
                           line.type === 'added' && 'bg-green-500/10 text-green-400',
                           line.type === 'removed' && 'bg-red-500/10 text-red-400',
-                          line.type === 'equal' && 'text-text-secondary'
+                          line.type === 'equal' && 'text-text-secondary',
                         )}
                       >
                         <span className="inline-block w-12 text-right mr-4 text-text-muted">
@@ -332,7 +332,7 @@ function VersionCard({
       className={cn(
         'p-3 cursor-pointer transition-all hover:bg-surface-100',
         isSelected && 'ring-2 ring-accent-teal bg-surface-100',
-        isCurrent && 'border-accent-teal'
+        isCurrent && 'border-accent-teal',
       )}
       onClick={onSelect}
     >

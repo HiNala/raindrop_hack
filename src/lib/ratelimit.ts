@@ -39,10 +39,10 @@ export const rlLikes = new Ratelimit({
 export async function checkRateLimit(
   identifier: string,
   ratelimit: Ratelimit,
-  request?: Request
+  _request?: Request,
 ) {
   const { success, limit, remaining, reset } = await ratelimit.limit(identifier)
-  
+
   if (!success) {
     return {
       allowed: false,
@@ -52,7 +52,7 @@ export async function checkRateLimit(
       error: 'Rate limit exceeded. Please try again later.',
     }
   }
-  
+
   return {
     allowed: true,
     limit,
@@ -64,12 +64,12 @@ export async function checkRateLimit(
 // Get identifier from request (user ID or IP)
 export function getIdentifier(request?: Request, userId?: string): string {
   if (userId) return `user:${userId}`
-  
+
   if (request) {
     const forwarded = request.headers.get('x-forwarded-for')
     const ip = forwarded ? forwarded.split(',')[0] : 'unknown'
     return `ip:${ip}`
   }
-  
+
   return 'anonymous'
 }

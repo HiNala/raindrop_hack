@@ -12,10 +12,10 @@ export function sanitizeHtml(dirty: string): string {
   return DOMPurifyServer.sanitize(dirty, {
     ALLOWED_TAGS: [
       'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-      'blockquote', 'ul', 'ol', 'li', 'code', 'pre', 'a', 'img', 'span', 'div'
+      'blockquote', 'ul', 'ol', 'li', 'code', 'pre', 'a', 'img', 'span', 'div',
     ],
     ALLOWED_ATTR: [
-      'href', 'target', 'rel', 'src', 'alt', 'class', 'id', 'style'
+      'href', 'target', 'rel', 'src', 'alt', 'class', 'id', 'style',
     ],
     ALLOW_DATA_ATTR: false,
   })
@@ -41,7 +41,7 @@ export function sanitizeUserInput(input: string): string {
   // Remove null bytes and other dangerous characters
   return input
     .replace(/\0/g, '') // Remove null bytes
-    .replace(/[\x00-\x1F\x7F-\x9F]/g, '') // Remove control characters
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Remove control characters
     .trim()
     .slice(0, 10000) // Limit length
 }

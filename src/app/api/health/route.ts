@@ -1,31 +1,21 @@
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { healthCheckHandler, readinessCheck, livenessCheck, metricsHandler } from '@/lib/monitoring'
 
-export async function GET() {
-  try {
-    // Test database connection
-    await prisma.$queryRaw`SELECT 1`
+/**
+ * Main health check endpoint
+ * Returns comprehensive health status
+ */
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const type = searchParams.get('type')
 
-    // Check if tables exist
-    const tables = await prisma.$queryRaw`
-      SELECT table_name FROM information_schema.tables 
-      WHERE table_schema = 'public'
-    `
-
-    return NextResponse.json({
-      status: 'healthy',
-      database: 'connected',
-      tables,
-      timestamp: new Date().toISOString(),
-    })
-  } catch (error) {
-    console.error('Health check failed:', error)
-    return NextResponse.json(
-      {
-        status: 'unhealthy',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    )
+  switch (type) {
+    case 'ready':
+      return readinessCheck()
+    case 'alive':
+      return livenessCheck()
+    case 'metrics':
+      return metricsHandler()
+    default:
+      return healthCheckHandler()
   }
 }

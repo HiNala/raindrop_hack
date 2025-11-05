@@ -22,3 +22,4 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Failed to check slug impact' }, { status: 500 })
   }
 }
+

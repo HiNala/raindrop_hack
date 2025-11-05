@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, CSSProperties } from 'react'
+import React, { useState, useCallback, CSSProperties } from 'react'
 
 interface Ripple {
   x: number

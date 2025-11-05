@@ -1,0 +1,14 @@
+{
+  "sessions": {
+    "zero-bug-build-1730701000": {
+      "session_id": "zero-bug-build-1730701000",
+      "timeline_id": "timeline-1730701000", 
+      "created_at": "2025-11-04T12:30:00Z",
+      "current_state": "create_config",
+      "application_name": "blog-app",
+      "mission_count": 20,
+      "status": "in_progress"
+    }
+  },
+  "active_session": "zero-bug-build-1730701000"
+}

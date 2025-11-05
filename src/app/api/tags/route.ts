@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Tag already exists',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -78,13 +78,13 @@ export async function POST(request: NextRequest) {
         success: true,
         data: tag,
       },
-      { status: 201 }
+      { status: 201 },
     )
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       )
     }
 

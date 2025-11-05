@@ -1,0 +1,55 @@
+{
+  "name": "Raindrop - AI-Powered Writing Platform",
+  "short_name": "Raindrop",
+  "description": "Create compelling blog posts in seconds with AI. Share your stories with the world.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0b",
+  "theme_color": "#14b8a6",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["productivity", "social", "writing"],
+  "icons": [],
+  "shortcuts": [
+    {
+      "name": "New Post",
+      "short_name": "Write",
+      "description": "Create a new blog post",
+      "url": "/editor/new"
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your dashboard",
+      "url": "/dashboard"
+    },
+    {
+      "name": "Explore",
+      "short_name": "Explore",
+      "description": "Discover new content",
+      "url": "/explore"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Home screen on desktop"
+    },
+    {
+      "src": "/screenshots/mobile-home.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Home screen on mobile"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
+}

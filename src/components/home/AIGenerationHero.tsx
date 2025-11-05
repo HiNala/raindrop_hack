@@ -9,13 +9,6 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import { generateAuthenticatedPost, generateAnonymousPost } from '@/app/actions/generate-post'
 import toast from 'react-hot-toast'
 
@@ -30,17 +23,22 @@ interface AnonymousDraft {
 
 export function AIGenerationHero() {
   const router = useRouter()
-  const { isSignedIn, user } = useUser()
+  const { isSignedIn } = useUser()
   const [prompt, setPrompt] = useState('')
   const [tone, setTone] = useState<'professional' | 'casual' | 'technical'>('professional')
   const [length, setLength] = useState<'short' | 'medium' | 'long'>('medium')
   const [isGenerating, setIsGenerating] = useState(false)
   const [anonymousCount, setAnonymousCount] = useState(0)
-  const [showOptionsDialog, setShowOptionsDialog] = useState(false)
+  const [isClient, setIsClient] = useState(false)
 
-  // Load anonymous post count from localStorage
+  // Ensure client-side hydration
   useEffect(() => {
-    if (!isSignedIn) {
+    setIsClient(true)
+  }, [])
+
+  // Load anonymous post count from localStorage (client-side only)
+  useEffect(() => {
+    if (!isSignedIn && isClient) {
       const drafts = localStorage.getItem('anonymousDrafts')
       if (drafts) {
         try {
@@ -51,7 +49,7 @@ export function AIGenerationHero() {
         }
       }
     }
-  }, [isSignedIn])
+  }, [isSignedIn, isClient])
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -81,20 +79,22 @@ export function AIGenerationHero() {
         toast.success('Post generated! Opening editor...')
         router.push(`/editor/${result.data.postId}`)
       } else if (!isSignedIn && result.data) {
-        // Anonymous user - save to localStorage
-        const draft: AnonymousDraft = {
-          id: `anon_${Date.now()}`,
-          title: result.data.title,
-          contentJson: result.data.contentJson,
-          excerpt: result.data.excerpt || '',
-          createdAt: new Date().toISOString(),
-          tags: result.data.suggestedTags || [],
-        }
+        // Anonymous user - save to localStorage (client-side only)
+        if (typeof window !== 'undefined') {
+          const draft: AnonymousDraft = {
+            id: `anon_${Date.now()}`,
+            title: result.data.title,
+            contentJson: result.data.contentJson,
+            excerpt: result.data.excerpt || '',
+            createdAt: new Date().toISOString(),
+            tags: result.data.suggestedTags || [],
+          }
 
-        const existingDrafts = localStorage.getItem('anonymousDrafts')
-        const drafts: AnonymousDraft[] = existingDrafts ? JSON.parse(existingDrafts) : []
-        drafts.push(draft)
-        localStorage.setItem('anonymousDrafts', JSON.stringify(drafts))
+          const existingDrafts = localStorage.getItem('anonymousDrafts')
+          const drafts: AnonymousDraft[] = existingDrafts ? JSON.parse(existingDrafts) : []
+          drafts.push(draft)
+          localStorage.setItem('anonymousDrafts', JSON.stringify(drafts))
+        }
 
         setAnonymousCount(drafts.length)
         toast.success('Post generated! Saved to your drafts.')

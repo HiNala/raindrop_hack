@@ -83,7 +83,16 @@ export async function PUT(request: NextRequest, { params }: Params) {
     }
 
     // Handle tag updates
-    const updateData: any = { ...validatedData }
+    const updateData: {
+      title?: string
+      content?: string
+      excerpt?: string
+      coverImage?: string
+      published?: boolean
+      publishedAt?: Date
+      slug?: string
+      canonicalUrl?: string
+    } = { ...validatedData }
 
     if (validatedData.tagIds !== undefined) {
       // Delete existing tag relationships
@@ -92,7 +101,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
       })
 
       updateData.tags = {
-        create: validatedData.tagIds.map((tagId, _index) => ({
+        create: validatedData.tagIds.map((tagId) => ({
           tagId,
           postId: params.id,
         })),

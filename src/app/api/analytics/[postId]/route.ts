@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
+import { handleAPIError, withErrorHandling } from '@/lib/errors'
+import { logger } from '@/lib/logger'
 
 interface Params {
   params: {
@@ -33,7 +35,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 
     // Get 30 days of analytics data
     const since = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30)
-    
+
     const analytics = await prisma.analyticsDaily.findMany({
       where: {
         postId,
@@ -53,7 +55,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 
     return NextResponse.json(analytics)
   } catch (error) {
-    console.error('Error fetching analytics:', error)
+    logger.dbError('fetchAnalytics', error, { postId })
     return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 500 })
   }
 }

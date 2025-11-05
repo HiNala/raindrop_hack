@@ -187,8 +187,25 @@ const config: Config = {
         xl: '16px',
       },
       
+      // Responsive breakpoints (mobile-first)
       screens: {
-        '3xl': '1600px',
+        'sm': '360px',  // Small mobile
+        'md': '640px',  // Tablet
+        'lg': '768px',  // Small desktop
+        'xl': '1024px', // Desktop
+        '2xl': '1280px', // Large desktop
+        '3xl': '1600px', // Extra large
+      },
+      
+      // Mobile-first container
+      container: {
+        center: true,
+        padding: '1rem',
+        screens: {
+          'lg': '768px',
+          'xl': '1024px', 
+          '2xl': '1280px',
+        },
       },
     },
   },

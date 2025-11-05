@@ -12,6 +12,8 @@ export const showToast = {
       loading: string
       success: string | ((data: T) => string)
       error: string | ((error: any) => string)
-    }
+    },
   ) => toast.promise(promise, messages),
 }
+
+

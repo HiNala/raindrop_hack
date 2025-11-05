@@ -69,11 +69,11 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
   const [title, setTitle] = useState(existingPost?.title || '')
   const [excerpt, setExcerpt] = useState(existingPost?.excerpt || '')
   const [content, setContent] = useState<object>(
-    existingPost?.contentJson || { type: 'doc', content: [] }
+    existingPost?.contentJson || { type: 'doc', content: [] },
   )
   const [coverImage, setCoverImage] = useState<string | null>(existingPost?.coverImage || null)
   const [selectedTags, setSelectedTags] = useState<Tag[]>(
-    existingPost?.tags.map((t) => t.tag) || []
+    existingPost?.tags.map((t) => t.tag) || [],
   )
   const [availableTags, setAvailableTags] = useState<Tag[]>([])
 

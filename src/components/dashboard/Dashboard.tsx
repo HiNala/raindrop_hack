@@ -1,13 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   BookOpen,
   PenTool,
   Plus,
   Wand2,
   FileText,
-  Clock,
   BarChart3,
   TrendingUp,
   Bookmark,
@@ -16,11 +15,8 @@ import {
   MessageCircle,
   Sparkles,
   Search,
-  Filter,
   Grid,
   List,
-  Edit,
-  Trash2,
   MoreVertical,
 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -31,16 +27,10 @@ import { Input } from '@/components/ui/input'
 import { PostCard } from '@/components/post/PostCard'
 import { DashboardPostCard } from '@/components/dashboard/DashboardPostCard'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { ImportMarkdownDialog } from '@/components/dashboard/ImportMarkdownDialog'
 import { AnalyticsDashboard } from '@/components/dashboard/AnalyticsDashboard'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useUser } from '@clerk/nextjs'
 
 // Mock data for development
@@ -390,7 +380,7 @@ export function Dashboard() {
                         </div>
                       </Card>
                     ) : (
-                      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                      <div className="grid gap-mobile-safe grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                         {section.posts.map((post) => (
                           <div
                             key={post.id}
@@ -466,7 +456,7 @@ export function Dashboard() {
                       <div
                         className={
                           viewMode === 'grid'
-                            ? 'grid gap-6 md:grid-cols-2 lg:grid-cols-3'
+                            ? 'grid gap-mobile-safe grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                             : 'space-y-4'
                         }
                       >
@@ -510,9 +500,11 @@ export function Dashboard() {
                 <Card className="glass-effect border-[#27272a] overflow-hidden">
                   {selectedPost.coverImage && (
                     <div className="h-48 overflow-hidden">
-                      <img
+                      <Image
                         src={selectedPost.coverImage}
                         alt={selectedPost.title}
+                        width={400}
+                        height={192}
                         className="w-full h-full object-cover"
                       />
                     </div>

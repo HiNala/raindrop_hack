@@ -1,26 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  BarChart3,
   TrendingUp,
   TrendingDown,
   Eye,
   Heart,
   MessageCircle,
-  Clock,
   Calendar,
-  Users,
-  Target,
   Award,
-  Zap,
   Activity,
 } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Select,
   SelectContent,

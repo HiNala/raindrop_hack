@@ -12,7 +12,7 @@ const notificationSettingsSchema = z.object({
   productUpdates: z.boolean(),
 })
 
-export async function PUT(request: NextRequest) {
+export async function PUT(_request: NextRequest) {
   try {
     const { userId } = await auth()
     if (!userId) {
@@ -49,7 +49,7 @@ export async function PUT(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -58,7 +58,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const { userId } = await auth()
     if (!userId) {

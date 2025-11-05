@@ -28,7 +28,117 @@
   --dark-card: #1a1a1d;    /* Card background */
   --dark-border: #27272a;  /* Borders */
   --dark-hover: #2a2a2d;   /* Hover states */
+}
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Custom animations for turbulent flow */
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translate(100px, -100px) rotate(90deg) scale(1.1);
+  }
+  50% {
+    transform: translate(-100px, 100px) rotate(180deg) scale(0.9);
+  }
+  75% {
+    transform: translate(50px, 50px) rotate(270deg) scale(1.05);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Enhanced gradients for turbulent flow integration */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Backdrop blur utilities for content over animated background */
+.content-glass {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.content-glass-light {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Enhanced button styles for turbulent flow */
+.btn-turbulent {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.8), rgba(249, 115, 22, 0.8));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(20, 184, 166, 0.3);
+}
+
+.btn-turbulent:hover {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.9), rgba(249, 115, 22, 0.9));
+  box-shadow: 0 12px 48px rgba(20, 184, 166, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Text shadows for better readability over animated backgrounds */
+.text-shadow-glow {
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
+}
+
+.text-shadow-subtle {
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Enhanced card styles */
+.card-turbulent {
+  background: rgba(26, 26, 29, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
   
+  /* Turbulent flow animations */
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+    25% {
+      transform: translate(100px, -100px) rotate(90deg) scale(1.1);
+    }
+
   /* Text colors */
   --text-primary: #fafafa;
   --text-secondary: #a1a1aa;
@@ -44,6 +154,12 @@
   /* Glow effects */
   --glow-teal: 0 0 20px rgba(20, 184, 166, 0.3);
   --glow-orange: 0 0 20px rgba(249, 115, 22, 0.3);
+  
+  /* Safe area insets for mobile devices */
+  --safe-top: env(safe-area-inset-top, 0);
+  --safe-bottom: env(safe-area-inset-bottom, 0);
+  --safe-left: env(safe-area-inset-left, 0);
+  --safe-right: env(safe-area-inset-right, 0);
 }
 
 .dark {
@@ -63,12 +179,73 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    text-size-adjust: 100%; /* Prevent iOS text zoom */
   }
   
   body {
     font-feature-settings: 'rlig' 1, 'calt' 1;
     background-color: var(--dark-bg);
     color: var(--text-primary);
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    font-size: clamp(15px, 2.5vw, 16px); /* Mobile-first font scaling */
+    line-height: 1.6;
+    /* Ensure proper viewport height on iOS */
+    min-height: 100dvh;
+    /* Prevent pull-to-refresh bouncing in apps */
+    overscroll-behavior-y: contain;
+  }
+  
+  /* Safe area padding utility */
+  .safe-px {
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+  }
+  
+  .safe-pt {
+    padding-top: var(--safe-top);
+  }
+  
+  .safe-pb {
+    padding-bottom: var(--safe-bottom);
+  }
+  
+  .safe-pl {
+    padding-left: var(--safe-left);
+  }
+  
+  .safe-pr {
+    padding-right: var(--safe-right);
+  }
+  
+  /* Enhanced safe area helpers for better mobile support */
+  .pa-safe {
+    padding-top: max(env(safe-area-inset-top), 0);
+    padding-bottom: max(env(safe-area-inset-bottom), 0);
+  }
+  
+  .ma-safe {
+    margin-bottom: max(env(safe-area-inset-bottom), 0);
+  }
+  
+  .px-safe {
+    padding-left: max(env(safe-area-inset-left), 0);
+    padding-right: max(env(safe-area-inset-right), 0);
+  }
+  
+  /* Full height utility that respects safe areas */
+  .min-h-full-screen {
+    min-height: calc(100dvh - var(--safe-top) - var(--safe-bottom, 0px));
+  }
+  
+  /* Safe area aware bottom spacing */
+  .pb-safe-plus {
+    padding-bottom: calc(max(env(safe-area-inset-bottom), 0) + 16px);
+  }
+  
+  .mb-safe-plus {
+    margin-bottom: calc(max(env(safe-area-inset-bottom), 0) + 16px);
   }
   
   /* Force dark mode by default */
@@ -119,11 +296,12 @@
   }
   
   .input {
-    @apply block w-full px-3 py-2 border border-dark-border bg-dark-card text-text-primary rounded-lg shadow-sm placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm;
+    @apply block w-full px-3 py-2 border border-dark-border bg-dark-card text-text-primary rounded-lg shadow-sm placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm text-[16px];
+    min-height: 44px; /* iOS-friendly touch target */
   }
   
   .textarea {
-    @apply input resize-y min-h-[100px];
+    @apply input resize-y min-h-[100px] text-[16px];
   }
   
   .glass-effect {
@@ -147,12 +325,218 @@
 }
 
 @layer utilities {
+  /* Text wrap utilities */
   .text-balance {
     text-wrap: balance;
   }
   
   .text-pretty {
     text-wrap: pretty;
+  }
+
+  /* Responsive typography utilities */
+  .text-responsive-xs { font-size: clamp(0.75rem, 2vw, 0.875rem); }
+  .text-responsive-sm { font-size: clamp(0.875rem, 2.25vw, 1rem); }
+  .text-responsive-base { font-size: clamp(1rem, 2.5vw, 1.125rem); }
+  .text-responsive-lg { font-size: clamp(1.125rem, 2.75vw, 1.25rem); }
+  .text-responsive-xl { font-size: clamp(1.25rem, 3vw, 1.5rem); }
+  .text-responsive-2xl { font-size: clamp(1.5rem, 3.5vw, 2rem); }
+  .text-responsive-3xl { font-size: clamp(1.875rem, 4vw, 2.5rem); }
+  
+  /* Text color utilities */
+  .text-text-primary { color: var(--text-primary); }
+  .text-text-secondary { color: var(--text-secondary); }
+  .text-text-muted { color: var(--text-muted); }
+  .bg-dark-card { background-color: var(--dark-card); }
+  .bg-dark-hover { background-color: var(--dark-hover); }
+  .bg-dark-border { border-color: var(--dark-border); }
+  .border-dark-border { border-color: var(--dark-border); }
+  
+  /* Glow effects */
+  .shadow-glow-teal { box-shadow: var(--glow-teal); }
+  .shadow-glow-orange { box-shadow: var(--glow-orange); }
+  .text-responsive-4xl { font-size: clamp(2.25rem, 4.5vw, 3rem); }
+
+  /* Mobile-first line height utilities */
+  .leading-responsive { line-height: 1.6; }
+  .leading-tight-mobile { line-height: 1.4; }
+  .leading-relaxed-mobile { line-height: 1.8; }
+
+  /* Responsive container for marketing pages */
+  .container-responsive {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12;
+  }
+
+  /* Fluid spacing that scales with viewport */
+  .p-responsive { padding: clamp(1rem, 4vw, 2rem); }
+  .py-responsive { padding-top: clamp(1rem, 4vw, 2rem); padding-bottom: clamp(1rem, 4vw, 2rem); }
+  .px-responsive { padding-left: clamp(1rem, 4vw, 2rem); padding-right: clamp(1rem, 4vw, 2rem); }
+
+  /* Mobile spacing patterns */
+  .space-responsive > * + * {
+    margin-top: clamp(0.5rem, 2vw, 1rem);
+  }
+
+  .space-responsive-y > * + * {
+    margin-top: clamp(0.75rem, 3vw, 1.5rem);
+  }
+
+  /* CLS Prevention Utilities */
+  .cls-stable {
+    /* Reserve space to prevent layout shift */
+    contain-intrinsic-size: 0 500px;
+    contain: layout;
+  }
+
+  /* Image containers with aspect ratios to prevent CLS */
+  .aspect-16-9 {
+    aspect-ratio: 16/9;
+  }
+
+  .aspect-4-3 {
+    aspect-ratio: 4/3;
+  }
+
+  .aspect-1-1 {
+    aspect-ratio: 1/1;
+  }
+
+  .aspect-3-2 {
+    aspect-ratio: 3/2;
+  }
+
+  /* Text overflow prevention */
+  .text-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .break-words-mobile {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .break-all-mobile {
+    word-break: break-all;
+  }
+
+  /* Horizontal scroll prevention */
+  .no-overflow-x {
+    overflow-x: hidden;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Skeleton loading to prevent CLS */
+  .skeleton-text {
+    height: 1em;
+    background: linear-gradient(90deg, #374151 0%, #4b5563 50%, #374151 100%);
+    background-size: 200px 100%;
+    animation: shimmer 2s linear infinite;
+    border-radius: 0.25rem;
+  }
+
+  .skeleton-text-sm {
+    height: 0.875rem;
+  }
+
+  .skeleton-text-lg {
+    height: 1.25rem;
+  }
+
+  .skeleton-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #374151 0%, #4b5563 50%, #374151 100%);
+    background-size: 200px 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  /* Dynamic content space reservation */
+  .reserve-height {
+    min-height: 100px;
+  }
+
+  .reserve-height-sm {
+    min-height: 50px;
+  }
+
+  .reserve-height-lg {
+    min-height: 200px;
+  }
+
+  /* Content visibility for performance */
+  .content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 1000px;
+  }
+
+  /* Touch target utilities */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .touch-target-lg {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  .touch-target-xl {
+    min-height: 52px;
+    min-width: 52px;
+  }
+
+  /* Ensure visible hit areas for touch */
+  .touch-area {
+    position: relative;
+  }
+
+  .touch-area::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    z-index: -1;
+  }
+
+  /* Mobile-specific hover states */
+  @media (hover: none) and (pointer: coarse) {
+    .hover-mobile {
+      opacity: 0.8;
+      transform: scale(0.98);
+      transition: all 0.1s ease;
+    }
+
+    .hover-mobile:active {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Disable hover animations on touch devices */
+  @media (hover: none) {
+    .hover-only {
+      transition: none !important;
+    }
+    
+    .hover-only:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
   }
 
   /* Line clamp utilities */
@@ -354,11 +738,11 @@
 }
 
 .prose code {
-  @apply bg-dark-surface px-1 py-0.5 rounded text-sm text-teal-400;
+  @apply bg-gray-800 px-1 py-0.5 rounded text-sm text-teal-400;
 }
 
 .prose pre {
-  @apply bg-dark-surface text-text-primary p-4 rounded-lg overflow-x-auto mb-4 border border-dark-border;
+  @apply bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto mb-4 border border-gray-700;
 }
 
 .prose a {
@@ -390,6 +774,27 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  
+  /* Disable parallax effects on mobile when reduced motion is preferred */
+  .parallax-container,
+  [data-parallax] {
+    transform: none !important;
+  }
+}
+
+/* Mobile-specific motion reductions */
+@media (max-width: 768px) {
+  .reduce-motion-mobile {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* Reduce hover animations on touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    .hover-only {
+      transition: none !important;
+    }
   }
 }
 
@@ -578,6 +983,19 @@
   color: #14b8a6;
   text-decoration: underline;
   transition: color 0.2s;
+}
+
+/* Backdrop blur utilities for content over animated background */
+.content-glass {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.content-glass-light {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .tiptap-renderer a:hover {

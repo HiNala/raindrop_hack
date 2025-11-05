@@ -1,3 +1,5 @@
+'use client'
+
 import { ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -31,11 +33,7 @@ const settingsNav = [
   },
 ]
 
-export default function SettingsLayout({
-  children,
-}: {
-  children: ReactNode
-}) {
+export default function SettingsLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname()
 
   return (
@@ -69,9 +67,7 @@ export default function SettingsLayout({
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 min-w-0">
-          {children}
-        </div>
+        <div className="flex-1 min-w-0">{children}</div>
       </div>
     </div>
   )

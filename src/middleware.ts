@@ -1,6 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 import { prisma } from './lib/prisma'
+import { SECURITY_HEADERS } from './lib/security-enhanced'
 
 // Define protected routes
 const isProtectedRoute = createRouteMatcher([
@@ -11,9 +12,15 @@ const isProtectedRoute = createRouteMatcher([
   '/admin(.*)',
 ])
 
-// Handle slug redirects
-export async function middleware(request) {
+// Handle slug redirects and add security headers
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const response = NextResponse.next()
+
+  // Add security headers to all responses
+  SECURITY_HEADERS.forEach(({ key, value }) => {
+    response.headers.set(key, value)
+  })
 
   // Check if this is a potential post slug
   if (pathname.startsWith('/p/')) {
@@ -47,7 +54,7 @@ export async function middleware(request) {
   // Apply Clerk middleware for protected routes
   return clerkMiddleware(async (auth, req) => {
     if (isProtectedRoute(req)) {
-      await auth().protect()
+      await auth.protect()
     }
 
     return NextResponse.next()

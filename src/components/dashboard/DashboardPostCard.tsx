@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, Heart, MessageCircle, Clock, Edit, Trash2, Eye, FileText } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'

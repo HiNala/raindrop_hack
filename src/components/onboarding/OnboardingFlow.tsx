@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useUser } from '@clerk/nextjs'
 import {
   X,
@@ -8,7 +8,6 @@ import {
   User,
   Image,
   Heart,
-  Sparkles,
   Code,
   Palette,
   Globe,
@@ -28,7 +27,7 @@ interface OnboardingStep {
   id: string
   title: string
   description: string
-  icon: any
+  icon: React.ComponentType<{ className?: string }>
 }
 
 const onboardingSteps: OnboardingStep[] = [
@@ -72,7 +71,7 @@ export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
   const [displayName, setDisplayName] = useState(user?.fullName || '')
   const [username, setUsername] = useState(user?.username || '')
   const [bio, setBio] = useState('')
-  const [avatarUrl, setAvatarUrl] = useState(user?.imageUrl || '')
+  const [avatarUrl] = useState(user?.imageUrl || '')
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
   const [showConfetti, setShowConfetti] = useState(false)
 
@@ -97,18 +96,19 @@ export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
 
   const saveOnboardingData = async () => {
     // TODO: Save to database
-    console.log('Saving onboarding data:', {
-      displayName,
-      username,
-      bio,
-      avatarUrl,
-      interests: selectedInterests,
-    })
+    // TODO: Add proper logging service
+    // console.log('Saving onboarding data:', {
+    //   displayName,
+    //   username,
+    //   bio,
+    //   avatarUrl,
+    //   interests: selectedInterests,
+    // })
   }
 
   const toggleInterest = (interestId: string) => {
     setSelectedInterests((prev) =>
-      prev.includes(interestId) ? prev.filter((id) => id !== interestId) : [...prev, interestId]
+      prev.includes(interestId) ? prev.filter((id) => id !== interestId) : [...prev, interestId],
     )
   }
 
@@ -248,14 +248,14 @@ export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
                         'p-4 rounded-xl border-2 transition-all duration-200 text-left',
                         isSelected
                           ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600',
                       )}
                     >
                       <div className="flex items-center gap-3 mb-2">
                         <div
                           className={cn(
                             'w-8 h-8 rounded-lg flex items-center justify-center',
-                            interest.color
+                            interest.color,
                           )}
                         >
                           <InterestIcon className="w-4 h-4 text-white" />
@@ -333,7 +333,7 @@ export function OnboardingFlow({ onComplete, onSkip }: OnboardingFlowProps) {
                   ? 'w-8 bg-primary-500'
                   : index < currentStep
                     ? 'bg-primary-300'
-                    : 'bg-gray-300 dark:bg-gray-700'
+                    : 'bg-gray-300 dark:bg-gray-700',
               )}
             />
           ))}

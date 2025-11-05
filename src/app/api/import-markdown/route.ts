@@ -3,18 +3,20 @@ import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import MarkdownIt from 'markdown-it'
 
-const md = new MarkdownIt()
+interface TipTapContent {
+  type: string
+  content?: TipTapContent[]
+  text?: string
+  attrs?: Record<string, any>
+}
 
 // Convert markdown to TipTap JSON
-function markdownToTiptap(markdown: string): any {
-  // Parse markdown to HTML
-  const html = md.render(markdown)
-
+function markdownToTiptap(markdown: string): TipTapContent[] {
   // Convert HTML to TipTap JSON
   // This is a simplified conversion - TipTap's generateJSON would be ideal
   // but we'll create a basic structure
   const lines = markdown.split('\n')
-  const content: any[] = []
+  const content: TipTapContent[] = []
 
   let currentParagraph: string[] = []
 

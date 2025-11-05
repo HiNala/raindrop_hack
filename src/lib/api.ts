@@ -1,10 +1,18 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || ''
 
+type RequestInit = {
+  method?: string
+  headers?: Record<string, string>
+  body?: string | FormData | Blob | ArrayBuffer | ReadableStream
+  signal?: AbortSignal
+  keepalive?: boolean
+}
+
 class ApiError extends Error {
   constructor(
     message: string,
-    public status: number,
-    public data?: any,
+    public _status: number,
+    public _data?: any,
   ) {
     super(message)
     this.name = 'ApiError'
@@ -25,12 +33,14 @@ async function apiRequest<T>(
     ...options,
   }
 
-  // Add auth token if available
-  const token = localStorage.getItem('token')
-  if (token) {
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${token}`,
+  // Add auth token if available (client-side only)
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers = {
+        ...config.headers,
+        Authorization: `Bearer ${token}`,
+      }
     }
   }
 

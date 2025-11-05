@@ -19,7 +19,10 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit
 
-    const where: any = {}
+    const where: {
+  postId?: string
+  parentId?: string | null
+} = {}
 
     if (postId) {
       where.postId = postId
@@ -87,20 +90,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Check rate limit
-    const rateLimitResult = await checkRateLimit(
-      getIdentifier(request, userId),
-      rlComments
-    )
-    
+    const rateLimitResult = await checkRateLimit(getIdentifier(request, userId), rlComments)
+
     if (!rateLimitResult.allowed) {
       return NextResponse.json(
-        { 
+        {
           error: rateLimitResult.error,
           limit: rateLimitResult.limit,
           remaining: rateLimitResult.remaining,
           reset: rateLimitResult.reset,
         },
-        { 
+        {
           status: 429,
           headers: {
             'X-RateLimit-Limit': rateLimitResult.limit.toString(),

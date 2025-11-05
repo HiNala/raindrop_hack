@@ -5,7 +5,11 @@ import { z } from 'zod'
 
 const accountSettingsSchema = z.object({
   displayName: z.string().min(1).max(50),
-  username: z.string().min(3).max(30).regex(/^[a-zA-Z0-9_-]+$/),
+  username: z
+    .string()
+    .min(3)
+    .max(30)
+    .regex(/^[a-zA-Z0-9_-]+$/),
 })
 
 export async function PUT(request: NextRequest) {

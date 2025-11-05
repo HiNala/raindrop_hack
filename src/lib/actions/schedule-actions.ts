@@ -92,7 +92,7 @@ export async function unschedulePost(postId: string) {
 
 export async function publishScheduledPosts() {
   const now = new Date()
-  
+
   // Find all posts that should be published
   const schedulesToPublish = await prisma.schedule.findMany({
     where: {

@@ -146,7 +146,7 @@ export default function SchedulePublish({ postId, currentSchedule }: SchedulePub
 
         <div className="pt-3 border-t">
           <p className="text-xs text-muted-foreground">
-            Posts will be automatically published at the scheduled time. 
+            Posts will be automatically published at the scheduled time.
             You can cancel or reschedule at any time before publication.
           </p>
         </div>

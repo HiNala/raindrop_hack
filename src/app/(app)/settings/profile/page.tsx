@@ -3,9 +3,9 @@ import { flags } from '@/lib/feature-flags'
 import SettingsLayout from '@/components/settings/SettingsLayout'
 import ProfileSettingsForm from '@/components/settings/ProfileSettingsForm'
 
-export default async function ProfileSettingsPage() {
+export default async function ProfileSettingsPage(): Promise<JSX.Element | null> {
   if (!flags.settings) return null
-  
+
   const { userId } = await auth()
   if (!userId) return null
 

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, MouseEvent } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
 export function useMagneticHover(strength: number = 0.3) {
   const [position, setPosition] = useState({ x: 0, y: 0 })

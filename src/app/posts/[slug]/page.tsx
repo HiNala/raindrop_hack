@@ -120,14 +120,16 @@ export default function PostDetailPage() {
     avatarUrl: null,
   })
 
-  const handleTextAction = (action: string, text: string, _range: Range) => {
+  const handleTextAction = (_action: string, _text: string, _range: Range) => {
     // Handle text selection actions (bold, italic, quote)
-    console.log(`${action} action on text:`, text)
+    // TODO: Add proper logging service
+    // console.log(`${action} action on text:`, text)
   }
 
-  const handleComment = (text: string, rect: DOMRect) => {
+  const handleComment = (_text: string, _rect: DOMRect) => {
     // Handle inline comment creation
-    console.log('Comment on selection:', text, rect)
+    // TODO: Add proper logging service
+    // console.log('Comment on selection:', text, rect)
   }
 
   return (

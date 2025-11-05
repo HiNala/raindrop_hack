@@ -1,61 +1,24 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from './prisma'
-import slugify from 'slugify'
+import { logger } from './logger'
+import { AuthenticationError, NotFoundError } from './errors'
+import { isValidUsername, sanitizeText } from './security-enhanced'
 
 export async function requireUser() {
   const { userId } = await auth()
   if (!userId) {
-    throw new Error('Unauthorized')
+    throw new AuthenticationError()
   }
 
-  // Check if user exists, create if not
-  let user = await prisma.user.findUnique({
+  // Check if user exists - DO NOT create automatically
+  const user = await prisma.user.findUnique({
     where: { clerkId: userId },
     include: { profile: true },
   })
 
   if (!user) {
-    const clerkUser = await currentUser()
-    if (!clerkUser) {
-      throw new Error('Unauthorized')
-    }
-
-    // Generate a unique username from Clerk user data
-    const baseUsername = clerkUser.username ||
-                       clerkUser.firstName?.toLowerCase() ||
-                       clerkUser.emailAddresses?.[0]?.emailAddress?.split('@')[0] ||
-                       'user'
-
-    const username = slugify(baseUsername, { lower: true, strict: true })
-
-    // Ensure username is unique
-    let finalUsername = username
-    let counter = 1
-    while (await prisma.profile.findUnique({ where: { username: finalUsername } })) {
-      finalUsername = `${username}${counter}`
-      counter++
-    }
-
-    // Create user and profile
-    user = await prisma.user.create({
-      data: {
-        clerkId: userId,
-        email: clerkUser.emailAddresses?.[0]?.emailAddress || `${userId}@example.dev`,
-        profile: {
-          create: {
-            username: finalUsername,
-            displayName: clerkUser.fullName ||
-                         clerkUser.firstName && clerkUser.lastName
-              ? `${clerkUser.firstName} ${clerkUser.lastName}`
-              : 'New User',
-            avatarUrl: clerkUser.imageUrl,
-          },
-        },
-      },
-      include: { profile: true },
-    })
-
-    console.log(`Created new user: ${user.id} with username: ${finalUsername}`)
+    logger.authError('User profile not found', userId)
+    throw new AuthenticationError('User profile not completed. Please complete onboarding.')
   }
 
   return user
@@ -78,4 +41,141 @@ export async function isSignedIn() {
 
 export function getClerkAuth() {
   return auth()
+}
+
+/**
+ * Create user profile explicitly during onboarding
+ */
+export async function createUserProfile(userId: string, userData: {
+  email: string
+  firstName?: string
+  lastName?: string
+  username?: string
+  displayName?: string
+  avatarUrl?: string
+}) {
+  const clerkUser = await currentUser()
+  if (!clerkUser || clerkUser.id !== userId) {
+    throw new AuthenticationError('Invalid user context')
+  }
+
+  // Check if user already exists
+  const existingUser = await prisma.user.findUnique({
+    where: { clerkId: userId },
+  })
+
+  if (existingUser) {
+    throw new AuthenticationError('User already exists')
+  }
+
+  // Validate and sanitize username
+  let username = userData.username
+  if (username) {
+    if (!isValidUsername(username)) {
+      throw new AuthenticationError('Invalid username format')
+    }
+
+    // Check if username is already taken
+    const existingUsername = await prisma.profile.findUnique({
+      where: { username },
+    })
+
+    if (existingUsername) {
+      throw new AuthenticationError('Username already taken')
+    }
+  } else {
+    // Generate unique username from user data
+    const baseUsername = sanitizeText(
+      userData.firstName?.toLowerCase() ||
+      userData.displayName?.toLowerCase().replace(/\s+/g, '') ||
+      userData.email?.split('@')[0] ||
+      'user',
+    )
+
+    username = await generateUniqueUsername(baseUsername)
+  }
+
+  // Create user and profile
+  const user = await prisma.user.create({
+    data: {
+      clerkId: userId,
+      email: userData.email,
+      profile: {
+        create: {
+          username,
+          displayName: sanitizeText(userData.displayName ||
+            (userData.firstName && userData.lastName
+              ? `${userData.firstName} ${userData.lastName}`
+              : userData.firstName || 'New User')),
+          avatarUrl: userData.avatarUrl,
+        },
+      },
+    },
+    include: { profile: true },
+  })
+
+  logger.info('User profile created', { userId, username })
+  return user
+}
+
+/**
+ * Generate a unique username
+ */
+async function generateUniqueUsername(baseUsername: string): Promise<string> {
+  let username = baseUsername
+  let counter = 1
+
+  while (await prisma.profile.findUnique({ where: { username } })) {
+    username = `${baseUsername}${counter}`
+    counter++
+
+    // Prevent infinite loop
+    if (counter > 1000) {
+      throw new Error('Unable to generate unique username')
+    }
+  }
+
+  return username
+}
+
+/**
+ * Update user profile
+ */
+export async function updateUserProfile(
+  userId: string,
+  updates: {
+    displayName?: string
+    bio?: string
+    websiteUrl?: string
+    location?: string
+    githubUrl?: string
+    twitterUrl?: string
+    linkedinUrl?: string
+  },
+) {
+  const user = await requireUser()
+
+  if (user.clerkId !== userId) {
+    throw new AuthenticationError('Unauthorized')
+  }
+
+  if (!user.profile) {
+    throw new NotFoundError('User profile')
+  }
+
+  // Sanitize text inputs
+  const sanitizedUpdates = {
+    ...updates,
+    displayName: updates.displayName ? sanitizeText(updates.displayName) : undefined,
+    bio: updates.bio ? sanitizeText(updates.bio) : undefined,
+    location: updates.location ? sanitizeText(updates.location) : undefined,
+  }
+
+  const updatedProfile = await prisma.profile.update({
+    where: { userId: user.id },
+    data: sanitizedUpdates,
+  })
+
+  logger.info('User profile updated', { userId, fields: Object.keys(updates) })
+  return updatedProfile
 }

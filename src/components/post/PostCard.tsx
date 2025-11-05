@@ -1,43 +1,21 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import Link from 'next/link'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, Heart, MessageCircle, Clock, ArrowRight } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
+import type { PostWithRelations } from '@/types/global'
 
 interface PostCardProps {
-  post: {
-    id: string
-    title: string
-    slug: string
-    excerpt?: string | null
-    coverImage?: string | null
-    publishedAt: Date | null
-    readTimeMin?: number | null
-    author: {
-      profile: {
-        username: string
-        displayName: string
-        avatarUrl?: string | null
-      } | null
-    }
-    tags?: Array<{
-      tag: {
-        name: string
-        slug: string
-      }
-    }>
-    _count?: {
-      likes: number
-      comments: number
-    }
-  }
+  post: PostWithRelations
+  className?: string
+  priority?: boolean
 }
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post, className, priority = false }: PostCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [isHovered, setIsHovered] = useState(false)
 
@@ -72,10 +50,10 @@ export function PostCard({ post }: PostCardProps) {
       .toUpperCase() || '?'
 
   return (
-    <Link href={`/p/${post.slug}`}>
+    <Link href={`/p/${post.slug}`} aria-label={`Read post: ${post.title}`}>
       <motion.article
         ref={cardRef}
-        className="card-hover h-full flex flex-col group relative"
+        className="card-hover h-full flex flex-col group relative rounded-2xl overflow-hidden"
         style={{
           rotateX,
           rotateY,
@@ -89,7 +67,7 @@ export function PostCard({ post }: PostCardProps) {
         {/* Shimmer overlay */}
         {isHovered && (
           <motion.div
-            className="absolute inset-0 pointer-events-none rounded-xl overflow-hidden z-10"
+            className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden z-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -108,7 +86,7 @@ export function PostCard({ post }: PostCardProps) {
         )}
         {/* Cover Image */}
         {post.coverImage && (
-          <div className="relative h-48 overflow-hidden">
+          <div className="relative aspect-video overflow-hidden">
             <motion.img
               src={post.coverImage}
               alt={post.title}
@@ -117,6 +95,8 @@ export function PostCard({ post }: PostCardProps) {
                 transform: `translateZ(20px) scale(${isHovered ? 1.1 : 1})`,
               }}
               transition={{ duration: 0.5 }}
+              loading={priority ? 'eager' : 'lazy'}
+              sizes={priority ? "100vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
             />
             {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-dark-card/20 to-transparent"></div>
@@ -124,7 +104,7 @@ export function PostCard({ post }: PostCardProps) {
         )}
 
         {/* Content */}
-        <div className="p-6 flex-1 flex flex-col">
+        <div className="p-4 sm:p-6 flex-1 flex flex-col">
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (
             <motion.div
@@ -138,13 +118,13 @@ export function PostCard({ post }: PostCardProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: isHovered ? idx * 0.05 : 0 }}
                 >
-                  <Badge className="px-2.5 py-0.5 text-xs bg-teal-500/10 text-teal-400 border-teal-500/30 hover:bg-teal-500/20 transition-colors">
+                  <Badge className="px-2 py-1 text-xs bg-teal-500/10 text-teal-400 border-teal-500/30 hover:bg-teal-500/20 transition-colors">
                     {postTag.tag.name}
                   </Badge>
                 </motion.div>
               ))}
               {post.tags.length > 2 && (
-                <Badge className="px-2.5 py-0.5 text-xs bg-dark-bg text-text-tertiary border-dark-border">
+                <Badge className="px-2 py-1 text-xs bg-dark-bg text-text-tertiary border-dark-border">
                   +{post.tags.length - 2}
                 </Badge>
               )}
@@ -152,40 +132,40 @@ export function PostCard({ post }: PostCardProps) {
           )}
 
           {/* Title */}
-          <h3 className="text-xl font-bold text-text-primary mb-2 line-clamp-2 group-hover:text-gradient-teal transition-colors">
+          <h3 className="text-responsive-lg font-bold text-text-primary mb-2 line-clamp-2 text-balance group-hover:text-gradient-teal transition-colors">
             {post.title}
           </h3>
 
           {/* Excerpt */}
           {post.excerpt && (
-            <p className="text-text-secondary text-sm mb-4 line-clamp-3 flex-1 leading-relaxed">
+            <p className="text-text-secondary text-sm mb-4 line-clamp-2 sm:line-clamp-3 flex-1 leading-relaxed text-pretty">
               {post.excerpt}
             </p>
           )}
 
           {/* Footer */}
-          <div className="pt-4 border-t border-dark-border">
+          <div className="pt-3 sm:pt-4 border-t border-dark-border">
             {/* Author */}
             <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Avatar className="w-8 h-8 ring-2 ring-dark-border group-hover:ring-teal-500/30 transition-all">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <Avatar className="w-7 h-7 sm:w-8 sm:h-8 ring-2 ring-dark-border group-hover:ring-teal-500/30 transition-all flex-shrink-0">
                   <AvatarFallback className="bg-dark-bg text-text-primary text-xs font-semibold">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-text-primary group-hover:text-teal-400 transition-colors">
+                <div className="flex flex-col min-w-0">
+                  <span className="text-sm font-medium text-text-primary group-hover:text-teal-400 transition-colors truncate">
                     {post.author.profile?.displayName}
                   </span>
-                  <span className="text-xs text-text-tertiary">
+                  <span className="text-xs text-text-tertiary truncate">
                     @{post.author.profile?.username}
                   </span>
                 </div>
               </div>
 
-              {/* Read More */}
+              {/* Read More - Hide on small screens */}
               <motion.div
-                className="flex items-center gap-1 text-teal-400"
+                className="hidden sm:flex items-center gap-1 text-teal-400"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : -10 }}
                 transition={{ duration: 0.2 }}
@@ -202,12 +182,12 @@ export function PostCard({ post }: PostCardProps) {
 
             {/* Meta */}
             <div className="flex items-center justify-between text-xs text-text-tertiary">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
                 {/* Date */}
                 {post.publishedAt && (
                   <div className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" />
-                    <span>
+                    <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                    <span className="truncate max-w-[80px] sm:max-w-none">
                       {formatDistanceToNow(new Date(post.publishedAt), { addSuffix: true })}
                     </span>
                   </div>
@@ -216,21 +196,21 @@ export function PostCard({ post }: PostCardProps) {
                 {/* Reading Time */}
                 {post.readTimeMin && (
                   <div className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>{post.readTimeMin} min</span>
+                    <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                    <span>{post.readTimeMin}m</span>
                   </div>
                 )}
               </div>
 
               {/* Engagement */}
               {post._count && (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <div className="flex items-center gap-1 text-text-tertiary group-hover:text-orange-400 transition-colors">
-                    <Heart className="w-3.5 h-3.5" />
+                    <Heart className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     <span>{post._count.likes}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <MessageCircle className="w-3.5 h-3.5" />
+                    <MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     <span>{post._count.comments}</span>
                   </div>
                 </div>

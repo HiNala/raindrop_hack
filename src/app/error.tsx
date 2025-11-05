@@ -1,9 +1,13 @@
+/**
+ * Enhanced Error Page
+ * Better error handling with recovery options
+ */
+
 'use client'
 
 import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { AlertCircle, Home, RefreshCw } from 'lucide-react'
-import Link from 'next/link'
+import { AlertCircle, RefreshCcw, Home, Bug } from 'lucide-react'
 
 export default function Error({
   error,
@@ -13,39 +17,68 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    // Log error to error reporting service
-    console.error('Application error:', error)
+    console.error(error)
   }, [error])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-dark-bg px-4">
-      <div className="max-w-md w-full glass-card p-8 text-center">
-        <div className="w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <AlertCircle className="w-8 h-8 text-orange-400" />
-        </div>
+    <div className="flex min-h-screen items-center justify-center bg-dark-bg">
+      <div className="max-w-md w-full">
+        <div className="text-center">
+          {/* Error Icon */}
+          <div className="mb-6 inline-flex rounded-full bg-red-400/10 p-6">
+            <AlertCircle className="h-12 w-12 text-red-400" />
+          </div>
 
-        <h1 className="text-2xl font-bold text-text-primary mb-2">Something went wrong</h1>
+          {/* Error Title */}
+          <h1 className="mb-4 text-2xl font-bold text-text-primary">
+            Something went wrong
+          </h1>
 
-        <p className="text-text-secondary mb-6">
-          {error.message || 'An unexpected error occurred. Please try again.'}
-        </p>
+          {/* Error Message */}
+          <p className="mb-6 text-text-secondary">
+            We&apos;re sorry for the inconvenience. An unexpected error occurred while
+            processing your request.
+          </p>
 
-        {error.digest && (
-          <p className="text-xs text-text-tertiary mb-6 font-mono">Error ID: {error.digest}</p>
-        )}
+          {/* Error Details (Development Only) */}
+          {process.env.NODE_ENV === 'development' && error.message && (
+            <div className="mb-6 rounded-lg border border-dark-border bg-dark-card p-4 text-left">
+              <p className="mb-2 text-sm font-medium text-text-muted">Error Details:</p>
+              <p className="text-sm text-text-secondary font-mono break-all">
+                {error.message}
+              </p>
+              {error.digest && (
+                <p className="mt-2 text-xs text-text-muted">
+                  Error ID: {error.digest}
+                </p>
+              )}
+            </div>
+          )}
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button onClick={reset} className="btn-primary">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Try Again
-          </Button>
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button onClick={reset} className="flex items-center gap-2">
+              <RefreshCcw className="h-4 w-4" />
+              Try Again
+            </Button>
 
-          <Link href="/">
-            <Button className="btn-secondary">
-              <Home className="w-4 h-4 mr-2" />
+            <Button variant="outline" onClick={() => window.location.href = '/'}>
+              <Home className="mr-2 h-4 w-4" />
               Go Home
             </Button>
-          </Link>
+
+            {process.env.NODE_ENV === 'development' && (
+              <Button variant="outline" onClick={() => window.location.reload()}>
+                <Bug className="mr-2 h-4 w-4" />
+                Refresh Page
+              </Button>
+            )}
+          </div>
+
+          {/* Help Text */}
+          <p className="mt-8 text-sm text-text-muted">
+            If the problem persists, please contact our support team.
+          </p>
         </div>
       </div>
     </div>

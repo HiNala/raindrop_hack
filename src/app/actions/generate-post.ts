@@ -4,6 +4,8 @@ import { generatePost as generatePostWithAI, GeneratePostOptions } from '@/lib/o
 import { getCurrentUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { enrichWithHN, formatCitationsMarkdown } from '@/lib/hn-search'
+import { logger } from '@/lib/logger'
+import { sanitizeText } from '@/lib/security-enhanced'
 
 // Rate limiting tracking (in-memory for simplicity, use Redis in production)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
@@ -68,7 +70,9 @@ async function fetchHNContext(prompt: string, includeHNContext: boolean = false)
       citationsMarkdown: formatCitationsMarkdown(citations),
     }
   } catch (error) {
-    console.error('Error fetching HN context:', error)
+    logger.error('Error fetching HN context', error, {
+      prompt: sanitizeText(prompt).substring(0, 100),
+    })
     return null
   }
 }
@@ -138,7 +142,10 @@ export async function generateAuthenticatedPost(
       },
     }
   } catch (error) {
-    console.error('Error generating post:', error)
+    logger.error('Error generating post', error, {
+      userId: user?.id,
+      prompt: sanitizeText(prompt).substring(0, 100),
+    })
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to generate post',
@@ -177,7 +184,9 @@ export async function generateAnonymousPost(
       },
     }
   } catch (error) {
-    console.error('Error generating anonymous post:', error)
+    logger.error('Error generating anonymous post', error, {
+      prompt: sanitizeText(prompt).substring(0, 100),
+    })
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to generate post',

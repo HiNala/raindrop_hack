@@ -4,6 +4,30 @@ import { Tag, ArrowRight, BookOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
+interface Category {
+  id: string
+  name: string
+  slug: string
+  description: string
+}
+
+interface Post {
+  id: string
+  title: string
+  slug: string
+  excerpt?: string
+  coverImage?: string
+  publishedAt: string
+  author: {
+    displayName: string
+    username: string
+  }
+  category?: {
+    name: string
+  }
+  readTimeMin?: number
+}
+
 async function getCategories() {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/categories`, {
@@ -27,7 +51,7 @@ async function getRecentPosts() {
       `${process.env.NEXT_PUBLIC_API_URL || ''}/api/posts?published=true&limit=6`,
       {
         cache: 'no-store',
-      }
+      },
     )
 
     if (!response.ok) {
@@ -73,7 +97,7 @@ export default async function CategoriesPage() {
             </div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {categories.map((category: any, index: number) => (
+              {categories.map((category: Category, index: number) => (
                 <Link key={category.id} href={`/categories/${category.slug}`} className="group">
                   <Card
                     className="hover:shadow-lg transition-all duration-300 h-full group-hover:border-primary-300 animate-slide-up"
@@ -123,7 +147,7 @@ export default async function CategoriesPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {recentPosts.slice(0, 6).map((post: any, _index: number) => (
+              {recentPosts.slice(0, 6).map((post: Post) => (
                 <Card key={post.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-3">
