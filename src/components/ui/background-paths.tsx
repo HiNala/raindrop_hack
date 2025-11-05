@@ -1,7 +1,7 @@
-'use client';
+'use client'
 
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion'
+import { Button } from '@/components/ui/button'
 
 function FloatingPaths({ position }: { position: number }) {
   const paths = Array.from({ length: 36 }, (_, i) => ({
@@ -15,7 +15,7 @@ function FloatingPaths({ position }: { position: number }) {
     } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
     color: `rgba(15,23,42,${0.1 + i * 0.03})`,
     width: 0.5 + i * 0.03,
-  }));
+  }))
 
   return (
     <div className="absolute inset-0 pointer-events-none">
@@ -47,15 +47,11 @@ function FloatingPaths({ position }: { position: number }) {
         ))}
       </svg>
     </div>
-  );
+  )
 }
 
-export function BackgroundPaths({
-  title = 'Background Paths',
-}: {
-    title?: string;
-}) {
-  const words = title.split(' ');
+export function BackgroundPaths({ title = 'Background Paths' }: { title?: string }) {
+  const words = title.split(' ')
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-950">
       <div className="absolute inset-0">
@@ -71,19 +67,14 @@ export function BackgroundPaths({
         >
           <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold mb-8 tracking-tighter">
             {words.map((word, wordIndex) => (
-              <span
-                key={wordIndex}
-                className="inline-block mr-4 last:mr-0"
-              >
+              <span key={wordIndex} className="inline-block mr-4 last:mr-0">
                 {word.split('').map((letter, letterIndex) => (
                   <motion.span
                     key={`${wordIndex}-${letterIndex}`}
                     initial={{ y: 100, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{
-                      delay:
-                                                wordIndex * 0.1 +
-                                                letterIndex * 0.03,
+                      delay: wordIndex * 0.1 + letterIndex * 0.03,
                       type: 'spring',
                       stiffness: 150,
                       damping: 25,
@@ -112,20 +103,18 @@ export function BackgroundPaths({
                             hover:shadow-md dark:hover:shadow-neutral-800/50"
             >
               <span className="opacity-90 group-hover:opacity-100 transition-opacity">
-                                Discover Excellence
+                Discover Excellence
               </span>
               <span
                 className="ml-3 opacity-70 group-hover:opacity-100 group-hover:translate-x-1.5
                                 transition-all duration-300"
               >
-                                →
+                →
               </span>
             </Button>
           </div>
         </motion.div>
       </div>
     </div>
-  );
+  )
 }
-
-

@@ -3,7 +3,7 @@ import { prisma } from './prisma'
 import slugify from 'slugify'
 
 export async function requireUser() {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) {
     throw new Error('Unauthorized')
   }
@@ -62,7 +62,7 @@ export async function requireUser() {
 }
 
 export async function getCurrentUser() {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) return null
 
   return await prisma.user.findUnique({
@@ -72,7 +72,7 @@ export async function getCurrentUser() {
 }
 
 export async function isSignedIn() {
-  const { userId } = auth()
+  const { userId } = await auth()
   return !!userId
 }
 

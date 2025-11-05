@@ -109,7 +109,7 @@ export function FloatingActionButton() {
                       }}
                       className={cn(
                         'w-12 h-12 rounded-full bg-gradient-to-br shadow-lg flex items-center justify-center text-white',
-                        action.color || 'from-teal-500 to-teal-600',
+                        action.color || 'from-teal-500 to-teal-600'
                       )}
                     >
                       {action.icon}
@@ -127,10 +127,7 @@ export function FloatingActionButton() {
             onClick={() => setIsOpen(!isOpen)}
             className="w-14 h-14 rounded-full bg-gradient-to-br from-teal-500 to-orange-500 shadow-2xl shadow-teal-500/50 flex items-center justify-center text-white relative"
           >
-            <motion.div
-              animate={{ rotate: isOpen ? 45 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
+            <motion.div animate={{ rotate: isOpen ? 45 : 0 }} transition={{ duration: 0.2 }}>
               {isOpen ? <X className="w-6 h-6" /> : <Plus className="w-6 h-6" />}
             </motion.div>
 
@@ -154,4 +151,3 @@ export function FloatingActionButton() {
     </AnimatePresence>
   )
 }
-

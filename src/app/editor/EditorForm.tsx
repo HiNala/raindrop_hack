@@ -2,14 +2,31 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Loader2, Eye, Wand2, Sparkles, Clock, CheckCircle, AlertCircle } from 'lucide-react'
+import {
+  ArrowLeft,
+  Save,
+  Loader2,
+  Eye,
+  Wand2,
+  Sparkles,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { TiptapEditor } from '@/components/editor/TiptapEditor'
@@ -51,10 +68,12 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
   // Core state
   const [title, setTitle] = useState(existingPost?.title || '')
   const [excerpt, setExcerpt] = useState(existingPost?.excerpt || '')
-  const [content, setContent] = useState<object>(existingPost?.contentJson || { type: 'doc', content: [] })
+  const [content, setContent] = useState<object>(
+    existingPost?.contentJson || { type: 'doc', content: [] }
+  )
   const [coverImage, setCoverImage] = useState<string | null>(existingPost?.coverImage || null)
   const [selectedTags, setSelectedTags] = useState<Tag[]>(
-    existingPost?.tags.map((t) => t.tag) || [],
+    existingPost?.tags.map((t) => t.tag) || []
   )
   const [availableTags, setAvailableTags] = useState<Tag[]>([])
 
@@ -205,12 +224,12 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
 
         // Add suggested tags
         if (result.data.suggestedTags && result.data.suggestedTags.length > 0) {
-          const newTags = result.data.suggestedTags.slice(0, 3).map(tagName => ({
+          const newTags = result.data.suggestedTags.slice(0, 3).map((tagName) => ({
             id: `temp_${Date.now()}_${tagName}`,
             name: tagName,
             slug: tagName.toLowerCase().replace(/\s+/g, '-'),
           }))
-          setSelectedTags(prev => [...prev, ...newTags])
+          setSelectedTags((prev) => [...prev, ...newTags])
         }
 
         setShowAISheet(false)
@@ -300,7 +319,11 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
             {/* Left Section */}
             <div className="flex items-center gap-4">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="text-text-secondary hover:text-text-primary">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-text-secondary hover:text-text-primary"
+                >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Dashboard
                 </Button>
@@ -332,7 +355,11 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
               {/* AI Assist */}
               <Sheet open={showAISheet} onOpenChange={setShowAISheet}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" size="sm" className="border-[#27272a] hover:bg-[#1a1a1d] hover:text-teal-400 text-text-primary">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-[#27272a] hover:bg-[#1a1a1d] hover:text-teal-400 text-text-primary"
+                  >
                     <Wand2 className="w-4 h-4 mr-2" />
                     AI Assist
                   </Button>
@@ -362,13 +389,14 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
 
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
-                        <Label className="text-text-primary text-sm">Include Hacker News context</Label>
-                        <p className="text-xs text-text-secondary">Enrich with relevant discussions and insights</p>
+                        <Label className="text-text-primary text-sm">
+                          Include Hacker News context
+                        </Label>
+                        <p className="text-xs text-text-secondary">
+                          Enrich with relevant discussions and insights
+                        </p>
                       </div>
-                      <Switch
-                        checked={includeHNContext}
-                        onCheckedChange={setIncludeHNContext}
-                      />
+                      <Switch checked={includeHNContext} onCheckedChange={setIncludeHNContext} />
                     </div>
 
                     <Button
@@ -434,13 +462,9 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
                   <div className="space-y-6 mt-6">
                     {/* Post Preview */}
                     <Card className="p-4 bg-[#0a0a0b] border-[#27272a]">
-                      <h3 className="font-semibold text-text-primary mb-2 line-clamp-2">
-                        {title}
-                      </h3>
+                      <h3 className="font-semibold text-text-primary mb-2 line-clamp-2">{title}</h3>
                       {excerpt && (
-                        <p className="text-sm text-text-secondary mb-3 line-clamp-3">
-                          {excerpt}
-                        </p>
+                        <p className="text-sm text-text-secondary mb-3 line-clamp-3">{excerpt}</p>
                       )}
                       <div className="flex flex-wrap gap-2">
                         {selectedTags.map((tag) => (
@@ -456,12 +480,14 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
                       <div className="flex items-center justify-between">
                         <div className="space-y-1">
                           <Label className="text-text-primary text-sm">Publish now</Label>
-                          <p className="text-xs text-text-secondary">Make post visible immediately</p>
+                          <p className="text-xs text-text-secondary">
+                            Make post visible immediately
+                          </p>
                         </div>
                         <Switch
                           checked={publishOptions.publishNow}
                           onCheckedChange={(checked) =>
-                            setPublishOptions(prev => ({ ...prev, publishNow: checked }))
+                            setPublishOptions((prev) => ({ ...prev, publishNow: checked }))
                           }
                         />
                       </div>
@@ -469,12 +495,14 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
                       <div className="flex items-center justify-between">
                         <div className="space-y-1">
                           <Label className="text-text-primary text-sm">Notify followers</Label>
-                          <p className="text-xs text-text-secondary">Send notification to your followers</p>
+                          <p className="text-xs text-text-secondary">
+                            Send notification to your followers
+                          </p>
                         </div>
                         <Switch
                           checked={publishOptions.notifyFollowers}
                           onCheckedChange={(checked) =>
-                            setPublishOptions(prev => ({ ...prev, notifyFollowers: checked }))
+                            setPublishOptions((prev) => ({ ...prev, notifyFollowers: checked }))
                           }
                         />
                       </div>
@@ -491,7 +519,9 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
                       {selectedTags.length > 0 && (
                         <div className="flex items-center gap-2 text-sm text-teal-400">
                           <CheckCircle className="w-4 h-4" />
-                          <span>{selectedTags.length} tag{selectedTags.length > 1 ? 's' : ''} added</span>
+                          <span>
+                            {selectedTags.length} tag{selectedTags.length > 1 ? 's' : ''} added
+                          </span>
                         </div>
                       )}
                       {content && JSON.stringify(content) !== '{"type":"doc","content":[]}' && (
@@ -569,9 +599,7 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
 
           {/* Tags */}
           <div>
-            <Label className="mb-3 block text-text-primary font-medium">
-              Tags
-            </Label>
+            <Label className="mb-3 block text-text-primary font-medium">Tags</Label>
             <TagSelector
               selectedTags={selectedTags}
               onTagsChange={setSelectedTags}
@@ -581,9 +609,7 @@ export default function EditorForm({ existingPost }: EditorFormProps) {
 
           {/* Content */}
           <div className="space-y-3">
-            <Label className="text-text-primary font-medium">
-              Content
-            </Label>
+            <Label className="text-text-primary font-medium">Content</Label>
             <div className="glass-effect rounded-xl border border-[#27272a] overflow-hidden">
               <TiptapEditor
                 content={content}

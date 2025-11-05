@@ -81,11 +81,7 @@ export function ProgressRing({
   const offset = circumference - (progress / 100) * circumference
 
   return (
-    <svg
-      width={size}
-      height={size}
-      className={cn('transform -rotate-90', className)}
-    >
+    <svg width={size} height={size} className={cn('transform -rotate-90', className)}>
       {/* Background circle */}
       <circle
         cx={size / 2}
@@ -121,4 +117,3 @@ export function ProgressRing({
     </svg>
   )
 }
-

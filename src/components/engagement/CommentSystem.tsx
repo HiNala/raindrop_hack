@@ -77,9 +77,10 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
     { id: '3', username: 'design_guru', displayName: 'Design Guru' },
   ]
 
-  const filteredMentions = mockUsers.filter(user =>
-    user.username.toLowerCase().includes(mentionQuery.toLowerCase()) ||
-    user.displayName.toLowerCase().includes(mentionQuery.toLowerCase()),
+  const filteredMentions = mockUsers.filter(
+    (user) =>
+      user.username.toLowerCase().includes(mentionQuery.toLowerCase()) ||
+      user.displayName.toLowerCase().includes(mentionQuery.toLowerCase())
   )
 
   const handleCommentSubmit = async () => {
@@ -98,7 +99,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
       _count: { replies: 0 },
     }
 
-    setComments(prev => [comment, ...prev])
+    setComments((prev) => [comment, ...prev])
     setNewComment('')
   }
 
@@ -118,18 +119,20 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
       replies: [],
     }
 
-    setComments(prev => prev.map(comment => {
-      if (comment.id === parentId) {
-        return {
-          ...comment,
-          replies: [...(comment.replies || []), reply],
-          _count: {
-            replies: (comment._count?.replies || 0) + 1,
-          },
+    setComments((prev) =>
+      prev.map((comment) => {
+        if (comment.id === parentId) {
+          return {
+            ...comment,
+            replies: [...(comment.replies || []), reply],
+            _count: {
+              replies: (comment._count?.replies || 0) + 1,
+            },
+          }
         }
-      }
-      return comment
-    }))
+        return comment
+      })
+    )
 
     setReplyText('')
     setReplyingTo(null)
@@ -137,26 +140,32 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
   }
 
   const handleLike = async (commentId: string) => {
-    setComments(prev => prev.map(comment => {
-      if (comment.id === commentId) {
-        return {
-          ...comment,
-          isLiked: !comment.isLiked,
-          likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1,
+    setComments((prev) =>
+      prev.map((comment) => {
+        if (comment.id === commentId) {
+          return {
+            ...comment,
+            isLiked: !comment.isLiked,
+            likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1,
+          }
         }
-      }
-      if (comment.replies) {
-        return {
-          ...comment,
-          replies: comment.replies.map(reply =>
-            reply.id === commentId
-              ? { ...reply, isLiked: !reply.isLiked, likes: reply.isLiked ? reply.likes - 1 : reply.likes + 1 }
-              : reply,
-          ),
+        if (comment.replies) {
+          return {
+            ...comment,
+            replies: comment.replies.map((reply) =>
+              reply.id === commentId
+                ? {
+                    ...reply,
+                    isLiked: !reply.isLiked,
+                    likes: reply.isLiked ? reply.likes - 1 : reply.likes + 1,
+                  }
+                : reply
+            ),
+          }
         }
-      }
-      return comment
-    }))
+        return comment
+      })
+    )
   }
 
   const handleTextareaChange = (value: string, isReply = false) => {
@@ -197,7 +206,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
 
     if (mentionMatch) {
       const beforeMention = textBeforeCursor.slice(0, -mentionMatch[0].length)
-      const newText = `${beforeMention + mention  } ${  textAfterCursor}`
+      const newText = `${beforeMention + mention} ${textAfterCursor}`
 
       if (isReply) {
         setReplyText(newText)
@@ -205,7 +214,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
           replyTextareaRef.current?.focus()
           replyTextareaRef.current?.setSelectionRange(
             beforeMention.length + mention.length + 1,
-            beforeMention.length + mention.length + 1,
+            beforeMention.length + mention.length + 1
           )
         }, 0)
       } else {
@@ -214,7 +223,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
           commentTextareaRef.current?.focus()
           commentTextareaRef.current?.setSelectionRange(
             beforeMention.length + mention.length + 1,
-            beforeMention.length + mention.length + 1,
+            beforeMention.length + mention.length + 1
           )
         }, 0)
       }
@@ -230,11 +239,11 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault()
-        setMentionIndex(prev => (prev + 1) % filteredMentions.length)
+        setMentionIndex((prev) => (prev + 1) % filteredMentions.length)
         break
       case 'ArrowUp':
         e.preventDefault()
-        setMentionIndex(prev => prev === 0 ? filteredMentions.length - 1 : prev - 1)
+        setMentionIndex((prev) => (prev === 0 ? filteredMentions.length - 1 : prev - 1))
         break
       case 'Enter':
         e.preventDefault()
@@ -290,7 +299,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
               onClick={() => handleLike(comment.id)}
               className={cn(
                 'text-xs gap-1 px-2 py-1',
-                comment.isLiked && 'text-red-600 dark:text-red-400',
+                comment.isLiked && 'text-red-600 dark:text-red-400'
               )}
             >
               <Heart className={cn('w-3 h-3', comment.isLiked && 'fill-current')} />
@@ -311,7 +320,11 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-xs p-1 opacity-0 group-hover:opacity-100">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs p-1 opacity-0 group-hover:opacity-100"
+                >
                   <MoreHorizontal className="w-3 h-3" />
                 </Button>
               </DropdownMenuTrigger>
@@ -352,7 +365,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
                         onClick={() => insertMention(user, true)}
                         className={cn(
                           'w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800',
-                          index === mentionIndex && 'bg-gray-50 dark:bg-gray-800',
+                          index === mentionIndex && 'bg-gray-50 dark:bg-gray-800'
                         )}
                       >
                         <Avatar className="w-6 h-6">
@@ -395,7 +408,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
           {/* Replies */}
           {comment.replies && comment.replies.length > 0 && (
             <div className="mt-4 space-y-4">
-              {comment.replies.map(reply => (
+              {comment.replies.map((reply) => (
                 <CommentItem key={reply.id} comment={reply} isReply />
               ))}
             </div>
@@ -430,7 +443,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
                     onClick={() => insertMention(user)}
                     className={cn(
                       'w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800',
-                      index === mentionIndex && 'bg-gray-50 dark:bg-gray-800',
+                      index === mentionIndex && 'bg-gray-50 dark:bg-gray-800'
                     )}
                   >
                     <Avatar className="w-6 h-6">
@@ -462,9 +475,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
       ) : (
         <div className="text-center py-8 border border-gray-200 dark:border-gray-700 rounded-lg">
           <User className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Sign in to join the conversation
-          </p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Sign in to join the conversation</p>
           <Button>Sign In</Button>
         </div>
       )}
@@ -476,9 +487,7 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
             No comments yet. Be the first to share your thoughts!
           </div>
         ) : (
-          comments.map(comment => (
-            <CommentItem key={comment.id} comment={comment} />
-          ))
+          comments.map((comment) => <CommentItem key={comment.id} comment={comment} />)
         )}
       </div>
     </div>

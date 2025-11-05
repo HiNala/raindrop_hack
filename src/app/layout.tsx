@@ -9,21 +9,19 @@ const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfa
 
 export const metadata: Metadata = {
   title: 'Raindrop - AI-Powered Writing Platform',
-  description: 'Create compelling blog posts in seconds with AI. Share your stories with the world.',
+  description:
+    'Create compelling blog posts in seconds with AI. Share your stories with the world.',
   keywords: 'blog, writing, publishing, AI, nextjs, react',
   authors: [{ name: 'Raindrop Team' }],
   openGraph: {
     title: 'Raindrop - AI-Powered Writing Platform',
-    description: 'Create compelling blog posts in seconds with AI. Share your stories with the world.',
+    description:
+      'Create compelling blog posts in seconds with AI. Share your stories with the world.',
     type: 'website',
   },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider
       appearance={{

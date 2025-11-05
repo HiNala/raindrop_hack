@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string; commentId: string } },
+  { params }: { params: { id: string; commentId: string } }
 ) {
   try {
     const user = await requireUser()
@@ -48,7 +48,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string; commentId: string } },
+  { params }: { params: { id: string; commentId: string } }
 ) {
   try {
     const user = await requireUser()
@@ -83,5 +83,3 @@ export async function DELETE(
     return NextResponse.json({ error: 'Failed to delete comment' }, { status: 500 })
   }
 }
-
-

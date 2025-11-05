@@ -23,9 +23,12 @@ async function getCategories() {
 
 async function getRecentPosts() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/posts?published=true&limit=6`, {
-      cache: 'no-store',
-    })
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || ''}/api/posts?published=true&limit=6`,
+      {
+        cache: 'no-store',
+      }
+    )
 
     if (!response.ok) {
       return []
@@ -49,9 +52,7 @@ export default async function CategoriesPage() {
       <section className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Browse Categories
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Browse Categories</h1>
             <p className="text-xl text-gray-600">
               Explore our organized collection of articles across different topics and interests
             </p>
@@ -68,19 +69,16 @@ export default async function CategoriesPage() {
                 <Tag className="w-8 h-8 text-gray-400" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">No categories available</h3>
-              <p className="text-gray-600">
-                Categories will appear here once they are created.
-              </p>
+              <p className="text-gray-600">Categories will appear here once they are created.</p>
             </div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {categories.map((category: any, index: number) => (
-                <Link
-                  key={category.id}
-                  href={`/categories/${category.slug}`}
-                  className="group"
-                >
-                  <Card className="hover:shadow-lg transition-all duration-300 h-full group-hover:border-primary-300 animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                <Link key={category.id} href={`/categories/${category.slug}`} className="group">
+                  <Card
+                    className="hover:shadow-lg transition-all duration-300 h-full group-hover:border-primary-300 animate-slide-up"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
                         <div className="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -118,9 +116,7 @@ export default async function CategoriesPage() {
         <section className="py-16 bg-white border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Recent Articles
-              </h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Recent Articles</h2>
               <p className="text-xl text-gray-600">
                 Check out the latest content from our community
               </p>
@@ -148,9 +144,7 @@ export default async function CategoriesPage() {
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">{post.excerpt}</p>
 
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">
-                        {post.author?.name || 'Anonymous'}
-                      </span>
+                      <span className="text-gray-500">{post.author?.name || 'Anonymous'}</span>
                       <span className="text-gray-500">
                         {format(new Date(post.createdAt), 'MMM d')}
                       </span>

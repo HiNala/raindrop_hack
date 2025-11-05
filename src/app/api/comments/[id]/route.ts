@@ -11,10 +11,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     const { approved } = body
 
     if (typeof approved !== 'boolean') {
-      return NextResponse.json(
-        { error: 'approved must be a boolean' },
-        { status: 400 },
-      )
+      return NextResponse.json({ error: 'approved must be a boolean' }, { status: 400 })
     }
 
     const comment = await prisma.comment.update({
@@ -34,10 +31,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     return NextResponse.json(comment)
   } catch (error) {
     console.error('Error updating comment:', error)
-    return NextResponse.json(
-      { error: 'Failed to update comment' },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: 'Failed to update comment' }, { status: 500 })
   }
 }
 
@@ -50,9 +44,6 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     return NextResponse.json({ message: 'Comment deleted successfully' })
   } catch (error) {
     console.error('Error deleting comment:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete comment' },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: 'Failed to delete comment' }, { status: 500 })
   }
 }

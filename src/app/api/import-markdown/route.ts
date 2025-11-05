@@ -176,8 +176,7 @@ export async function POST(req: NextRequest) {
     console.error('Import markdown error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Import failed' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }
-

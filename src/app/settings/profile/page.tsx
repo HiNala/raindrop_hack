@@ -16,9 +16,7 @@ export default async function ProfileSettingsPage() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Profile Settings
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage your public profile information
-          </p>
+          <p className="text-gray-600 dark:text-gray-400">Manage your public profile information</p>
         </div>
 
         <ProfileSettingsForm profile={user.profile} />
@@ -26,5 +24,3 @@ export default async function ProfileSettingsPage() {
     </div>
   )
 }
-
-

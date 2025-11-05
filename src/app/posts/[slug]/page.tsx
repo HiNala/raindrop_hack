@@ -2,15 +2,7 @@
 
 import { useState } from 'react'
 import { useParams } from 'next/navigation'
-import {
-  Calendar,
-  Clock,
-  Eye,
-  Heart,
-  MessageCircle,
-  ArrowLeft,
-  User,
-} from 'lucide-react'
+import { Calendar, Clock, Eye, Heart, MessageCircle, ArrowLeft, User } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -288,20 +280,14 @@ export default function PostDetailPage() {
             Discussion ({comments.length})
           </h2>
 
-          <CommentSystem
-            postId={post.id}
-            initialComments={comments}
-            currentUser={currentUser}
-          />
+          <CommentSystem postId={post.id} initialComments={comments} currentUser={currentUser} />
         </div>
       </section>
 
       {/* Related Posts */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
-            Related Posts
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">Related Posts</h2>
 
           <div className="grid gap-6 md:grid-cols-2">
             <Card className="p-6">

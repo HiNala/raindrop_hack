@@ -15,12 +15,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: 'bg-primary-600 text-white hover:bg-primary-700',
-        destructive:
-          'bg-red-600 text-white hover:bg-red-700',
-        outline:
-          'border border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900',
-        secondary:
-          'bg-gray-600 text-white hover:bg-gray-700',
+        destructive: 'bg-red-600 text-white hover:bg-red-700',
+        outline: 'border border-gray-300 bg-white hover:bg-gray-50 hover:text-gray-900',
+        secondary: 'bg-gray-600 text-white hover:bg-gray-700',
         ghost: 'hover:bg-gray-100 hover:text-gray-900',
         link: 'text-primary-600 underline-offset-4 hover:underline',
       },
@@ -35,7 +32,7 @@ const buttonVariants = cva(
       variant: 'default',
       size: 'default',
     },
-  },
+  }
 )
 
 export interface ButtonProps
@@ -47,7 +44,19 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, noRipple = false, noMagnetic = false, onClick, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      noRipple = false,
+      noMagnetic = false,
+      onClick,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : 'button'
     const { ripples, addRipple } = useRipple()
     const { elementRef, position } = useMagneticHover(0.15)
@@ -68,16 +77,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           ref.current = node
         }
       },
-      [elementRef, ref],
+      [elementRef, ref]
     )
 
     if (asChild) {
       return (
-        <Comp
-          className={cn(buttonVariants({ variant, size, className }))}
-          ref={ref}
-          {...props}
-        />
+        <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
       )
     }
 
@@ -87,9 +92,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           noMagnetic
             ? {}
             : {
-              x: position.x,
-              y: position.y,
-            }
+                x: position.x,
+                y: position.y,
+              }
         }
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         className="inline-block"
@@ -105,7 +110,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         </Comp>
       </motion.div>
     )
-  },
+  }
 )
 Button.displayName = 'Button'
 

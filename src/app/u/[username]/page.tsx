@@ -55,7 +55,11 @@ async function getProfile(username: string) {
   return { ...profile, totalViews: totalViews._sum.viewCount || 0 }
 }
 
-export async function generateMetadata({ params }: { params: { username: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { username: string }
+}): Promise<Metadata> {
   const profile = await getProfile(params.username)
 
   if (!profile) {
@@ -80,7 +84,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
   const posts = profile.user.posts
 
   // Parse social links
-  const socialLinks = profile.socialLinks as any || {}
+  const socialLinks = (profile.socialLinks as any) || {}
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -104,9 +108,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
                   <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                     {profile.displayName}
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-400 mb-3">
-                    @{profile.username}
-                  </p>
+                  <p className="text-gray-600 dark:text-gray-400 mb-3">@{profile.username}</p>
                 </div>
 
                 {isOwnProfile && (
@@ -120,9 +122,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
               </div>
 
               {profile.bio && (
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
-                  {profile.bio}
-                </p>
+                <p className="text-gray-700 dark:text-gray-300 mb-4">{profile.bio}</p>
               )}
 
               <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
@@ -149,9 +149,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {posts.length}
-              </div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{posts.length}</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Posts</div>
             </div>
             <div className="text-center">
@@ -171,9 +169,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
 
         {/* Posts */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            Published Posts
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Published Posts</h2>
 
           {posts.length === 0 ? (
             <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl">
@@ -210,4 +206,3 @@ export default async function ProfilePage({ params }: { params: { username: stri
     </div>
   )
 }
-

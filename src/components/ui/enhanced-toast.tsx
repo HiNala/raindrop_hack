@@ -99,7 +99,7 @@ export function EnhancedToast({
       className={cn(
         'flex gap-3 p-4 rounded-lg border backdrop-blur-lg shadow-2xl min-w-[320px] max-w-md cursor-grab active:cursor-grabbing relative overflow-hidden',
         'bg-[#1a1a1d]',
-        colors[type].border,
+        colors[type].border
       )}
     >
       {/* Animated icon */}
@@ -194,4 +194,3 @@ export function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
     </div>
   )
 }
-

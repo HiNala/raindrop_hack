@@ -226,11 +226,7 @@ export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
               )}
             </Button>
 
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.back()}
-            >
+            <Button type="button" variant="outline" onClick={() => router.back()}>
               Cancel
             </Button>
           </div>
@@ -239,5 +235,3 @@ export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
     </form>
   )
 }
-
-

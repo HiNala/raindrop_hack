@@ -12,7 +12,10 @@ export default function SignUpPage() {
 
       {/* Floating Orbs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      <div
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse"
+        style={{ animationDelay: '1s' }}
+      ></div>
 
       {/* Content */}
       <div className="w-full max-w-md relative z-10">
@@ -24,12 +27,9 @@ export default function SignUpPage() {
             <Sparkles className="w-4 h-4 text-orange-400" />
           </div>
           <h1 className="text-3xl font-bold text-text-primary mb-2">
-            Join{' '}
-            <span className="text-gradient-primary">Blog App</span>
+            Join <span className="text-gradient-primary">Blog App</span>
           </h1>
-          <p className="text-text-secondary">
-            Start writing and sharing your stories today
-          </p>
+          <p className="text-text-secondary">Start writing and sharing your stories today</p>
         </div>
 
         {/* Clerk Sign Up Component */}
@@ -53,8 +53,10 @@ export default function SignUpPage() {
                 card: 'bg-dark-card shadow-none border-0',
                 headerTitle: 'text-text-primary',
                 headerSubtitle: 'text-text-secondary',
-                socialButtonsBlockButton: 'bg-dark-bg border-dark-border text-text-primary hover:bg-dark-hover hover:border-teal-500/50',
-                formFieldInput: 'bg-dark-bg border-dark-border text-text-primary focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20',
+                socialButtonsBlockButton:
+                  'bg-dark-bg border-dark-border text-text-primary hover:bg-dark-hover hover:border-teal-500/50',
+                formFieldInput:
+                  'bg-dark-bg border-dark-border text-text-primary focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20',
                 formButtonPrimary: 'bg-teal-500 hover:bg-teal-600 shadow-lg hover:shadow-glow-teal',
                 footerActionLink: 'text-teal-400 hover:text-teal-300',
               },

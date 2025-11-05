@@ -48,7 +48,11 @@ async function getTagWithPosts(slug: string) {
   return tag
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string }
+}): Promise<Metadata> {
   const tag = await getTagWithPosts(params.slug)
 
   if (!tag) {
@@ -86,9 +90,7 @@ export default async function TagPage({ params }: { params: { slug: string } }) 
                 </div>
                 <div>
                   <div className="flex items-center gap-3 mb-2">
-                    <h1 className="text-4xl md:text-5xl font-bold text-text-primary">
-                      {tag.name}
-                    </h1>
+                    <h1 className="text-4xl md:text-5xl font-bold text-text-primary">{tag.name}</h1>
                     <Sparkles className="w-6 h-6 text-teal-400 animate-pulse" />
                   </div>
                   <p className="text-text-secondary text-lg">
@@ -112,9 +114,7 @@ export default async function TagPage({ params }: { params: { slug: string } }) 
             <div className="inline-flex items-center justify-center w-24 h-24 bg-dark-card rounded-full mb-6">
               <Tag className="w-12 h-12 text-text-tertiary" />
             </div>
-            <h2 className="text-2xl font-bold text-text-primary mb-3">
-              No posts yet
-            </h2>
+            <h2 className="text-2xl font-bold text-text-primary mb-3">No posts yet</h2>
             <p className="text-lg text-text-secondary max-w-md mx-auto">
               Be the first to write about {tag.name}!
             </p>
@@ -130,5 +130,3 @@ export default async function TagPage({ params }: { params: { slug: string } }) 
     </div>
   )
 }
-
-

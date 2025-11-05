@@ -77,7 +77,7 @@ export function PostInteractions({
       {
         id: '1',
         title: 'Understanding React Server Components',
-        excerpt: 'A deep dive into React\'s new paradigm',
+        excerpt: "A deep dive into React's new paradigm",
         author: 'React Expert',
         readTime: 12,
         coverImage: '/api/placeholder/400/200',
@@ -110,7 +110,7 @@ export function PostInteractions({
       if (scrolled > 100) {
         // User has scrolled down, increment views if not already counted
         if (views === initialViews) {
-          setViews(prev => prev + 1)
+          setViews((prev) => prev + 1)
         }
       }
 
@@ -128,7 +128,7 @@ export function PostInteractions({
   const handleLike = useCallback(() => {
     const newLikedState = !isLiked
     setIsLiked(newLikedState)
-    setLikes(prev => newLikedState ? prev + 1 : prev - 1)
+    setLikes((prev) => (newLikedState ? prev + 1 : prev - 1))
 
     setLastAction('like')
     setShowUndo(true)
@@ -137,16 +137,15 @@ export function PostInteractions({
     setTimeout(() => setShowUndo(false), 3000)
 
     // Show toast
-    toast.success(
-      newLikedState ? 'Post liked!' : 'Like removed',
-      { description: newLikedState ? 'Added to your likes' : 'Removed from your likes' },
-    )
+    toast.success(newLikedState ? 'Post liked!' : 'Like removed', {
+      description: newLikedState ? 'Added to your likes' : 'Removed from your likes',
+    })
   }, [isLiked, toast])
 
   const handleBookmark = useCallback(() => {
     const newBookmarkedState = !isBookmarked
     setIsBookmarked(newBookmarkedState)
-    setBookmarks(prev => newBookmarkedState ? prev + 1 : prev - 1)
+    setBookmarks((prev) => (newBookmarkedState ? prev + 1 : prev - 1))
 
     setLastAction('bookmark')
     setShowUndo(true)
@@ -155,22 +154,23 @@ export function PostInteractions({
     setTimeout(() => setShowUndo(false), 3000)
 
     // Show toast
-    toast.success(
-      newBookmarkedState ? 'Post saved!' : 'Bookmark removed',
-      { description: newBookmarkedState ? 'Added to your reading list' : 'Removed from your reading list' },
-    )
+    toast.success(newBookmarkedState ? 'Post saved!' : 'Bookmark removed', {
+      description: newBookmarkedState
+        ? 'Added to your reading list'
+        : 'Removed from your reading list',
+    })
   }, [isBookmarked, toast])
 
   const handleUndo = useCallback(() => {
     if (lastAction === 'like') {
       const revertLiked = !isLiked
       setIsLiked(revertLiked)
-      setLikes(prev => revertLiked ? prev + 1 : prev - 1)
+      setLikes((prev) => (revertLiked ? prev + 1 : prev - 1))
       toast.info('Like action undone')
     } else if (lastAction === 'bookmark') {
       const revertBookmarked = !isBookmarked
       setIsBookmarked(revertBookmarked)
-      setBookmarks(prev => revertBookmarked ? prev + 1 : prev - 1)
+      setBookmarks((prev) => (revertBookmarked ? prev + 1 : prev - 1))
       toast.info('Bookmark action undone')
     }
     setShowUndo(false)
@@ -207,12 +207,7 @@ export function PostInteractions({
         <span className="text-sm text-gray-600 dark:text-gray-300">
           {lastAction === 'like' ? 'Post liked' : 'Post saved'}
         </span>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleUndo}
-          className="text-xs"
-        >
+        <Button variant="outline" size="sm" onClick={handleUndo} className="text-xs">
           Undo
         </Button>
       </div>
@@ -233,13 +228,15 @@ export function PostInteractions({
                   'flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200',
                   isLiked
                     ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800',
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                 )}
               >
-                <Heart className={cn(
-                  'w-5 h-5 transition-transform duration-200',
-                  isLiked && 'fill-current scale-110',
-                )} />
+                <Heart
+                  className={cn(
+                    'w-5 h-5 transition-transform duration-200',
+                    isLiked && 'fill-current scale-110'
+                  )}
+                />
                 <span className="font-medium">{likes}</span>
               </button>
 
@@ -256,13 +253,15 @@ export function PostInteractions({
                   'flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200',
                   isBookmarked
                     ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800',
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                 )}
               >
-                <Bookmark className={cn(
-                  'w-5 h-5 transition-transform duration-200',
-                  isBookmarked && 'fill-current scale-110',
-                )} />
+                <Bookmark
+                  className={cn(
+                    'w-5 h-5 transition-transform duration-200',
+                    isBookmarked && 'fill-current scale-110'
+                  )}
+                />
                 <span className="font-medium">{bookmarks}</span>
               </button>
 
@@ -288,9 +287,7 @@ export function PostInteractions({
                   <span>{readingTime} min read</span>
                 </div>
               )}
-              {author && (
-                <span>by {author.name}</span>
-              )}
+              {author && <span>by {author.name}</span>}
             </div>
           </div>
         </div>
@@ -305,14 +302,8 @@ export function PostInteractions({
           <div className="max-w-4xl mx-auto">
             <Card className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Next up
-                </h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowNextUp(false)}
-                >
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Next up</h3>
+                <Button variant="ghost" size="sm" onClick={() => setShowNextUp(false)}>
                   ×
                 </Button>
               </div>

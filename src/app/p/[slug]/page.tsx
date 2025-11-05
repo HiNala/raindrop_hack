@@ -47,7 +47,11 @@ async function getPost(slug: string) {
   return post
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string }
+}): Promise<Metadata> {
   const post = await getPost(params.slug)
 
   if (!post) {
@@ -129,14 +133,15 @@ export default async function PostPage({ params }: { params: { slug: string } })
 
           {/* Excerpt */}
           {post.excerpt && (
-            <p className="text-xl text-text-secondary mb-8 leading-relaxed">
-              {post.excerpt}
-            </p>
+            <p className="text-xl text-text-secondary mb-8 leading-relaxed">{post.excerpt}</p>
           )}
 
           {/* Meta Information */}
           <div className="flex items-center justify-between mb-8 pb-8 border-b border-[#27272a]">
-            <Link href={`/u/${authorProfile?.username}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <Link
+              href={`/u/${authorProfile?.username}`}
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            >
               <Avatar className="h-12 w-12 ring-2 ring-[#27272a] hover:ring-teal-500/50 transition-all">
                 <AvatarImage src={authorProfile?.avatarUrl || undefined} />
                 <AvatarFallback className="bg-gradient-to-br from-teal-500 to-teal-600 text-white">
@@ -188,19 +193,20 @@ export default async function PostPage({ params }: { params: { slug: string } })
                 </Avatar>
                 <div className="flex-1">
                   <h3 className="font-bold text-xl mb-2 flex items-center gap-2">
-                    <Link href={`/u/${authorProfile.username}`} className="hover:text-teal-400 transition-colors text-text-primary">
+                    <Link
+                      href={`/u/${authorProfile.username}`}
+                      className="hover:text-teal-400 transition-colors text-text-primary"
+                    >
                       {authorProfile.displayName}
                     </Link>
                     <Sparkles className="w-5 h-5 text-teal-400" />
                   </h3>
                   {authorProfile.bio && (
-                    <p className="text-text-secondary mb-3 leading-relaxed">
-                      {authorProfile.bio}
-                    </p>
+                    <p className="text-text-secondary mb-3 leading-relaxed">{authorProfile.bio}</p>
                   )}
                   <Link href={`/u/${authorProfile.username}`}>
                     <span className="text-sm text-teal-400 hover:text-teal-300 font-medium inline-flex items-center gap-1 group">
-                    View Profile
+                      View Profile
                       <span className="group-hover:translate-x-1 transition-transform">→</span>
                     </span>
                   </Link>

@@ -102,7 +102,10 @@ export function ImportMarkdownDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="border-[#27272a] hover:bg-[#1a1a1d] hover:text-teal-400 text-text-primary">
+        <Button
+          variant="outline"
+          className="border-[#27272a] hover:bg-[#1a1a1d] hover:text-teal-400 text-text-primary"
+        >
           <FileText className="w-4 h-4 mr-2" />
           Import Markdown
         </Button>
@@ -157,11 +160,7 @@ export function ImportMarkdownDialog() {
                 </Button>
               )}
             </div>
-            {file && (
-              <p className="text-sm text-teal-400">
-                Selected: {file.name}
-              </p>
-            )}
+            {file && <p className="text-sm text-teal-400">Selected: {file.name}</p>}
           </div>
 
           {/* Or Divider */}
@@ -188,7 +187,8 @@ export function ImportMarkdownDialog() {
               className="bg-[#0a0a0b] border-[#27272a] focus:border-teal-500 text-text-primary font-mono text-sm"
             />
             <p className="text-xs text-text-muted">
-              {markdown.split(/\s+/).length} words • ~{Math.ceil(markdown.split(/\s+/).length / 200)} min read
+              {markdown.split(/\s+/).length} words • ~
+              {Math.ceil(markdown.split(/\s+/).length / 200)} min read
             </p>
           </div>
 
@@ -225,4 +225,3 @@ export function ImportMarkdownDialog() {
     </Dialog>
   )
 }
-

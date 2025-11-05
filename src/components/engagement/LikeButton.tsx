@@ -121,38 +121,36 @@ export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
     <div className="relative inline-block">
       {/* Particle burst effect */}
       <AnimatePresence>
-        {showBurst && particles.map((particle) => (
-          <motion.div
-            key={particle.id}
-            initial={{
-              x: 0,
-              y: 0,
-              opacity: 1,
-              scale: 0,
-            }}
-            animate={{
-              x: Math.cos((particle.angle * Math.PI) / 180) * 40,
-              y: Math.sin((particle.angle * Math.PI) / 180) * 40,
-              opacity: 0,
-              scale: [0, 1, 0],
-            }}
-            exit={{ opacity: 0 }}
-            transition={{
-              duration: 0.8,
-              ease: [0.23, 1, 0.32, 1],
-            }}
-            className="absolute top-1/2 left-1/2 pointer-events-none"
-            style={{ transformOrigin: 'center' }}
-          >
-            <Heart className="w-2 h-2 fill-red-500 text-red-500" />
-          </motion.div>
-        ))}
+        {showBurst &&
+          particles.map((particle) => (
+            <motion.div
+              key={particle.id}
+              initial={{
+                x: 0,
+                y: 0,
+                opacity: 1,
+                scale: 0,
+              }}
+              animate={{
+                x: Math.cos((particle.angle * Math.PI) / 180) * 40,
+                y: Math.sin((particle.angle * Math.PI) / 180) * 40,
+                opacity: 0,
+                scale: [0, 1, 0],
+              }}
+              exit={{ opacity: 0 }}
+              transition={{
+                duration: 0.8,
+                ease: [0.23, 1, 0.32, 1],
+              }}
+              className="absolute top-1/2 left-1/2 pointer-events-none"
+              style={{ transformOrigin: 'center' }}
+            >
+              <Heart className="w-2 h-2 fill-red-500 text-red-500" />
+            </motion.div>
+          ))}
       </AnimatePresence>
 
-      <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
+      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
         <Button
           ref={buttonRef}
           variant={isLiked ? 'default' : 'outline'}
@@ -179,10 +177,7 @@ export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
             />
           )}
 
-          <motion.div
-            style={{ scale }}
-            className="flex items-center gap-2"
-          >
+          <motion.div style={{ scale }} className="flex items-center gap-2">
             <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
             <motion.span
               key={likes}
@@ -198,5 +193,3 @@ export function LikeButton({ postId, initialLikes }: LikeButtonProps) {
     </div>
   )
 }
-
-

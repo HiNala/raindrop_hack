@@ -2,10 +2,7 @@ import { NextResponse } from 'next/server'
 import { requireUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
     const comments = await prisma.comment.findMany({
       where: { postId: params.id },
@@ -26,10 +23,7 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function POST(request: Request, { params }: { params: { id: string } }) {
   try {
     const user = await requireUser()
     const { body } = await request.json()
@@ -59,5 +53,3 @@ export async function POST(
     return NextResponse.json({ error: 'Failed to create comment' }, { status: 500 })
   }
 }
-
-

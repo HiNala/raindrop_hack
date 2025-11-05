@@ -6,6 +6,7 @@ import { z } from 'zod'
 const createCommentSchema = z.object({
   body: z.string().min(1).max(2000),
   postId: z.string(),
+  parentId: z.string().optional(),
 })
 
 export async function GET(request: NextRequest) {
@@ -42,6 +43,21 @@ export async function GET(request: NextRequest) {
               profile: true,
             },
           },
+          replies: {
+            include: {
+              author: {
+                include: {
+                  profile: true,
+                },
+              },
+            },
+            orderBy: { createdAt: 'asc' },
+          },
+          _count: {
+            select: {
+              replies: true,
+            },
+          },
         },
       }),
       prisma.comment.count({ where }),
@@ -64,7 +80,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -102,7 +118,7 @@ export async function POST(request: NextRequest) {
     if (existingComment) {
       return NextResponse.json(
         { error: 'You have already commented on this post' },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
@@ -111,6 +127,7 @@ export async function POST(request: NextRequest) {
         body: validatedData.body,
         postId: validatedData.postId,
         authorId: user.id,
+        parentId: validatedData.parentId,
       },
       include: {
         post: {
@@ -125,6 +142,15 @@ export async function POST(request: NextRequest) {
             profile: true,
           },
         },
+        parent: {
+          include: {
+            author: {
+              include: {
+                profile: true,
+              },
+            },
+          },
+        },
       },
     })
 
@@ -133,7 +159,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 },
+        { status: 400 }
       )
     }
 

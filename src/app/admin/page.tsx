@@ -113,7 +113,8 @@ export default function AdminDashboard() {
   const recentComments = [
     {
       id: '1',
-      content: 'This is an incredibly comprehensive overview of the trends! I particularly appreciate the practical examples.',
+      content:
+        'This is an incredibly comprehensive overview of the trends! I particularly appreciate the practical examples.',
       author: 'John Doe',
       email: 'john@example.com',
       post: 'The Future of Web Development: Trends to Watch in 2024',
@@ -123,7 +124,8 @@ export default function AdminDashboard() {
     },
     {
       id: '2',
-      content: 'Great article! I\'m curious about your thoughts on the practical challenges of implementing edge computing.',
+      content:
+        "Great article! I'm curious about your thoughts on the practical challenges of implementing edge computing.",
       author: 'Jane Smith',
       email: 'jane@example.com',
       post: 'Building Scalable Applications with Microservices Architecture',
@@ -133,7 +135,8 @@ export default function AdminDashboard() {
     },
     {
       id: '3',
-      content: 'The WebAssembly section is particularly interesting. We\'ve been experimenting with Rust...',
+      content:
+        "The WebAssembly section is particularly interesting. We've been experimenting with Rust...",
       author: 'Bob Wilson',
       email: 'bob@example.com',
       post: 'The Future of Web Development: Trends to Watch in 2024',
@@ -157,7 +160,9 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-gray-600 mt-1">Welcome back! Here\'s what\'s happening with your blog today.</p>
+            <p className="text-gray-600 mt-1">
+              Welcome back! Here\'s what\'s happening with your blog today.
+            </p>
           </div>
           <div className="flex items-center space-x-3">
             <select className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
@@ -177,14 +182,21 @@ export default function AdminDashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {stats.map((stat) => (
-          <div key={stat.name} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div
+            key={stat.name}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+          >
             <div className="flex items-center justify-between mb-4">
-              <div className={`w-12 h-12 bg-${stat.color}-100 rounded-lg flex items-center justify-center`}>
+              <div
+                className={`w-12 h-12 bg-${stat.color}-100 rounded-lg flex items-center justify-center`}
+              >
                 <stat.icon className={`w-6 h-6 text-${stat.color}-600`} />
               </div>
-              <div className={`flex items-center text-sm font-medium ${
-                stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
-              }`}>
+              <div
+                className={`flex items-center text-sm font-medium ${
+                  stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
+                }`}
+              >
                 {stat.changeType === 'increase' ? (
                   <ArrowUp className="w-4 h-4 mr-1" />
                 ) : (
@@ -209,7 +221,10 @@ export default function AdminDashboard() {
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">Recent Posts</h2>
-                <Link href="/admin/posts" className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                <Link
+                  href="/admin/posts"
+                  className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                >
                   View all →
                 </Link>
               </div>
@@ -221,18 +236,22 @@ export default function AdminDashboard() {
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          post.status === 'Published'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
+                        <span
+                          className={`px-2 py-1 text-xs font-medium rounded-full ${
+                            post.status === 'Published'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}
+                        >
                           {post.status}
                         </span>
                         <span className="text-sm text-gray-500">{post.category}</span>
                         {post.trend !== 'neutral' && (
-                          <div className={`flex items-center text-sm ${
-                            post.trend === 'up' ? 'text-green-600' : 'text-red-600'
-                          }`}>
+                          <div
+                            className={`flex items-center text-sm ${
+                              post.trend === 'up' ? 'text-green-600' : 'text-red-600'
+                            }`}
+                          >
                             {post.trend === 'up' ? (
                               <TrendingUp className="w-4 h-4" />
                             ) : (
@@ -292,7 +311,10 @@ export default function AdminDashboard() {
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">Recent Comments</h2>
-                <Link href="/admin/comments" className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                <Link
+                  href="/admin/comments"
+                  className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                >
                   View all →
                 </Link>
               </div>
@@ -302,11 +324,13 @@ export default function AdminDashboard() {
               {recentComments.map((comment) => (
                 <div key={comment.id} className="p-4">
                   <div className="flex items-start space-x-3 mb-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      comment.status === 'Approved'
-                        ? 'bg-green-100 text-green-600'
-                        : 'bg-yellow-100 text-yellow-600'
-                    }`}>
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        comment.status === 'Approved'
+                          ? 'bg-green-100 text-green-600'
+                          : 'bg-yellow-100 text-yellow-600'
+                      }`}
+                    >
                       <span className="text-xs font-medium">{comment.avatar}</span>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -314,11 +338,13 @@ export default function AdminDashboard() {
                         <h4 className="text-sm font-medium text-gray-900 truncate">
                           {comment.author}
                         </h4>
-                        <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-                          comment.status === 'Approved'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
+                        <span
+                          className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                            comment.status === 'Approved'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}
+                        >
                           {comment.status}
                         </span>
                       </div>
@@ -355,9 +381,11 @@ export default function AdminDashboard() {
                     <p className="text-sm text-gray-600">{item.metric}</p>
                     <p className="text-lg font-semibold text-gray-900">{item.value}</p>
                   </div>
-                  <div className={`text-sm font-medium ${
-                    item.change.startsWith('+') ? 'text-green-600' : 'text-red-600'
-                  }`}>
+                  <div
+                    className={`text-sm font-medium ${
+                      item.change.startsWith('+') ? 'text-green-600' : 'text-red-600'
+                    }`}
+                  >
                     {item.change}
                   </div>
                 </div>
@@ -384,7 +412,10 @@ export default function AdminDashboard() {
             <div className="flex-1">
               <p className="text-sm text-gray-700">
                 <span className="font-medium">Sarah Chen</span> published a new post
-                <span className="text-primary-600 font-medium"> "The Future of Web Development"</span>
+                <span className="text-primary-600 font-medium">
+                  {' '}
+                  "The Future of Web Development"
+                </span>
               </p>
               <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
             </div>
@@ -395,7 +426,10 @@ export default function AdminDashboard() {
             <div className="flex-1">
               <p className="text-sm text-gray-700">
                 <span className="font-medium">John Doe</span> commented on
-                <span className="text-primary-600 font-medium"> "Building Scalable Applications"</span>
+                <span className="text-primary-600 font-medium">
+                  {' '}
+                  "Building Scalable Applications"
+                </span>
               </p>
               <p className="text-xs text-gray-500 mt-1">5 hours ago</p>
             </div>

@@ -86,11 +86,7 @@ export function CoverUpload({ currentImage, onUpload, onRemove }: CoverUploadPro
     <div className="w-full">
       {currentImage ? (
         <div className="relative group">
-          <img
-            src={currentImage}
-            alt="Cover"
-            className="w-full h-64 object-cover rounded-lg"
-          />
+          <img src={currentImage} alt="Cover" className="w-full h-64 object-cover rounded-lg" />
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
             <label className="cursor-pointer">
               <input
@@ -100,13 +96,7 @@ export function CoverUpload({ currentImage, onUpload, onRemove }: CoverUploadPro
                 className="hidden"
                 disabled={isUploading}
               />
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                disabled={isUploading}
-                asChild
-              >
+              <Button type="button" variant="secondary" size="sm" disabled={isUploading} asChild>
                 <span>
                   {isUploading ? (
                     <>
@@ -179,9 +169,7 @@ export function CoverUpload({ currentImage, onUpload, onRemove }: CoverUploadPro
                     </>
                   )}
                 </p>
-                <p className="text-xs text-text-secondary">
-                  PNG, JPG, WEBP or GIF • Max 8MB
-                </p>
+                <p className="text-xs text-text-secondary">PNG, JPG, WEBP or GIF • Max 8MB</p>
                 <p className="text-xs text-text-tertiary mt-1">
                   Recommended: 1200×630px for optimal display
                 </p>
@@ -193,5 +181,3 @@ export function CoverUpload({ currentImage, onUpload, onRemove }: CoverUploadPro
     </div>
   )
 }
-
-

@@ -56,7 +56,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
       {
         rootMargin: '-80px 0px -80% 0px',
         threshold: 1,
-      },
+      }
     )
 
     headings.forEach(({ id }) => {
@@ -123,7 +123,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
                       ? 'text-teal-400 font-medium'
                       : 'text-text-secondary hover:text-text-primary',
                     heading.level === 2 && 'pl-2',
-                    heading.level === 3 && 'pl-6 text-xs',
+                    heading.level === 3 && 'pl-6 text-xs'
                   )}
                   whileHover={{ x: 4 }}
                   transition={{ duration: 0.2 }}
@@ -155,14 +155,19 @@ export function TableOfContents({ content }: TableOfContentsProps) {
             <div className="mt-4 pt-3 border-t border-dark-border">
               <div className="flex items-center justify-between text-xs text-text-tertiary mb-1.5">
                 <span>Reading progress</span>
-                <span>{Math.round((headings.findIndex(h => h.id === activeId) + 1) / headings.length * 100)}%</span>
+                <span>
+                  {Math.round(
+                    ((headings.findIndex((h) => h.id === activeId) + 1) / headings.length) * 100
+                  )}
+                  %
+                </span>
               </div>
               <div className="h-1 bg-dark-border rounded-full overflow-hidden">
                 <motion.div
                   className="h-full bg-gradient-to-r from-teal-500 to-orange-500 rounded-full"
                   initial={{ width: 0 }}
                   animate={{
-                    width: `${((headings.findIndex(h => h.id === activeId) + 1) / headings.length) * 100}%`,
+                    width: `${((headings.findIndex((h) => h.id === activeId) + 1) / headings.length) * 100}%`,
                   }}
                   transition={{ duration: 0.3 }}
                 />
@@ -174,4 +179,3 @@ export function TableOfContents({ content }: TableOfContentsProps) {
     </AnimatePresence>
   )
 }
-

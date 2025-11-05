@@ -43,9 +43,9 @@ export async function saveDraft(postId: string | undefined, data: SaveDraftData)
           readTimeMin: calculateReadingTime(data.contentJson),
           tags: data.tagIds
             ? {
-              deleteMany: {},
-              create: data.tagIds.map((tagId) => ({ tagId })),
-            }
+                deleteMany: {},
+                create: data.tagIds.map((tagId) => ({ tagId })),
+              }
             : undefined,
         },
       })
@@ -66,8 +66,8 @@ export async function saveDraft(postId: string | undefined, data: SaveDraftData)
           published: false,
           tags: data.tagIds
             ? {
-              create: data.tagIds.map((tagId) => ({ tagId })),
-            }
+                create: data.tagIds.map((tagId) => ({ tagId })),
+              }
             : undefined,
         },
       })
@@ -265,5 +265,3 @@ export async function getOrCreateTags(tagNames: string[]) {
     }
   }
 }
-
-

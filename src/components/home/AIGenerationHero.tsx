@@ -164,7 +164,8 @@ export function AIGenerationHero() {
           </h1>
 
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-            Describe your idea and let AI craft a compelling blog post. Edit, refine, and publish in minutes.
+            Describe your idea and let AI craft a compelling blog post. Edit, refine, and publish in
+            minutes.
           </p>
 
           {!isSignedIn && (
@@ -292,5 +293,3 @@ export function AIGenerationHero() {
     </section>
   )
 }
-
-

@@ -21,7 +21,13 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { NumberCounter } from '@/components/animations/NumberCounter'
 
 // Mock analytics data
@@ -114,9 +120,24 @@ const mockAnalytics = {
   ],
   recentActivity: [
     { type: 'view', post: 'Getting Started with Next.js 15', timestamp: '2 minutes ago', count: 3 },
-    { type: 'like', post: 'TypeScript Best Practices in 2024', timestamp: '5 minutes ago', count: 1 },
-    { type: 'comment', post: 'Building Scalable React Applications', timestamp: '12 minutes ago', count: 1 },
-    { type: 'view', post: 'Getting Started with Next.js 15', timestamp: '18 minutes ago', count: 7 },
+    {
+      type: 'like',
+      post: 'TypeScript Best Practices in 2024',
+      timestamp: '5 minutes ago',
+      count: 1,
+    },
+    {
+      type: 'comment',
+      post: 'Building Scalable React Applications',
+      timestamp: '12 minutes ago',
+      count: 1,
+    },
+    {
+      type: 'view',
+      post: 'Getting Started with Next.js 15',
+      timestamp: '18 minutes ago',
+      count: 7,
+    },
   ],
 }
 
@@ -126,12 +147,14 @@ interface MiniChartProps {
 }
 
 function MiniChart({ data, className }: MiniChartProps) {
-  const maxValue = Math.max(...data.map(d => d.views))
-  const points = data.map((d, i) => {
-    const x = (i / (data.length - 1)) * 100
-    const y = ((maxValue - d.views) / maxValue) * 100
-    return `${x},${y}`
-  }).join(' ')
+  const maxValue = Math.max(...data.map((d) => d.views))
+  const points = data
+    .map((d, i) => {
+      const x = (i / (data.length - 1)) * 100
+      const y = ((maxValue - d.views) / maxValue) * 100
+      return `${x},${y}`
+    })
+    .join(' ')
 
   return (
     <svg viewBox="0 0 100 100" className={`w-full h-16 ${className}`}>
@@ -174,9 +197,7 @@ export function AnalyticsDashboard() {
           <Card className="p-6 glass-effect border-[#27272a] hover:border-teal-500/30 transition-all">
             <div className="flex items-center justify-between mb-4">
               <Eye className="w-8 h-8 text-teal-400" />
-              <Badge className="bg-teal-500/10 text-teal-400 border-teal-500/30">
-                +12%
-              </Badge>
+              <Badge className="bg-teal-500/10 text-teal-400 border-teal-500/30">+12%</Badge>
             </div>
             <div className="space-y-1">
               <p className="text-sm text-text-secondary">Total Views</p>
@@ -196,9 +217,7 @@ export function AnalyticsDashboard() {
           <Card className="p-6 glass-effect border-[#27272a] hover:border-orange-500/30 transition-all">
             <div className="flex items-center justify-between mb-4">
               <Activity className="w-8 h-8 text-orange-400" />
-              <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/30">
-                +8%
-              </Badge>
+              <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/30">+8%</Badge>
             </div>
             <div className="space-y-1">
               <p className="text-sm text-text-secondary">Total Reads</p>
@@ -218,9 +237,7 @@ export function AnalyticsDashboard() {
           <Card className="p-6 glass-effect border-[#27272a] hover:border-red-500/30 transition-all">
             <div className="flex items-center justify-between mb-4">
               <Heart className="w-8 h-8 text-red-400" />
-              <Badge className="bg-red-500/10 text-red-400 border-red-500/30">
-                +15%
-              </Badge>
+              <Badge className="bg-red-500/10 text-red-400 border-red-500/30">+15%</Badge>
             </div>
             <div className="space-y-1">
               <p className="text-sm text-text-secondary">Total Likes</p>
@@ -240,9 +257,7 @@ export function AnalyticsDashboard() {
           <Card className="p-6 glass-effect border-[#27272a] hover:border-blue-500/30 transition-all">
             <div className="flex items-center justify-between mb-4">
               <MessageCircle className="w-8 h-8 text-blue-400" />
-              <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/30">
-                +22%
-              </Badge>
+              <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/30">+22%</Badge>
             </div>
             <div className="space-y-1">
               <p className="text-sm text-text-secondary">Total Comments</p>
@@ -315,7 +330,10 @@ export function AnalyticsDashboard() {
         <Card className="p-6 glass-effect border-[#27272a]">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-text-primary">Post Performance</h2>
-            <Button variant="outline" className="border-[#27272a] hover:bg-[#1a1a1d] text-text-primary">
+            <Button
+              variant="outline"
+              className="border-[#27272a] hover:bg-[#1a1a1d] text-text-primary"
+            >
               Export Report
             </Button>
           </div>
@@ -331,9 +349,7 @@ export function AnalyticsDashboard() {
                 onClick={() => setSelectedPost(post)}
               >
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-text-primary mb-1 truncate">
-                    {post.title}
-                  </h4>
+                  <h4 className="font-semibold text-text-primary mb-1 truncate">{post.title}</h4>
                   <div className="flex items-center gap-4 text-sm text-text-secondary">
                     <span className="flex items-center gap-1">
                       <Eye className="w-3 h-3" />
@@ -361,10 +377,13 @@ export function AnalyticsDashboard() {
                     ) : (
                       <TrendingDown className="w-4 h-4 text-red-400" />
                     )}
-                    <span className={`text-sm font-medium ${
-                      post.viewTrend === 'up' ? 'text-green-400' : 'text-red-400'
-                    }`}>
-                      {post.viewChange > 0 ? '+' : ''}{post.viewChange}%
+                    <span
+                      className={`text-sm font-medium ${
+                        post.viewTrend === 'up' ? 'text-green-400' : 'text-red-400'
+                      }`}
+                    >
+                      {post.viewChange > 0 ? '+' : ''}
+                      {post.viewChange}%
                     </span>
                   </div>
 
@@ -398,18 +417,26 @@ export function AnalyticsDashboard() {
                   transition={{ delay: 0.1 * index }}
                   className="flex items-center gap-4 p-3 rounded-lg bg-[#1a1a1d] border border-[#27272a]"
                 >
-                  <div className={`p-2 rounded-full ${
-                    activity.type === 'view' ? 'bg-teal-500/10' :
-                      activity.type === 'like' ? 'bg-red-500/10' : 'bg-blue-500/10'
-                  }`}>
+                  <div
+                    className={`p-2 rounded-full ${
+                      activity.type === 'view'
+                        ? 'bg-teal-500/10'
+                        : activity.type === 'like'
+                          ? 'bg-red-500/10'
+                          : 'bg-blue-500/10'
+                    }`}
+                  >
                     {activity.type === 'view' && <Eye className="w-4 h-4 text-teal-400" />}
                     {activity.type === 'like' && <Heart className="w-4 h-4 text-red-400" />}
-                    {activity.type === 'comment' && <MessageCircle className="w-4 h-4 text-blue-400" />}
+                    {activity.type === 'comment' && (
+                      <MessageCircle className="w-4 h-4 text-blue-400" />
+                    )}
                   </div>
 
                   <div className="flex-1">
                     <p className="text-sm text-text-primary">
-                      {activity.count} {activity.type}{activity.count > 1 ? 's' : ''} on{' '}
+                      {activity.count} {activity.type}
+                      {activity.count > 1 ? 's' : ''} on{' '}
                       <span className="font-medium">"{activity.post}"</span>
                     </p>
                     <p className="text-xs text-text-tertiary">{activity.timestamp}</p>

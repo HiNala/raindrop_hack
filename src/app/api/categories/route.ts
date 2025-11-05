@@ -13,8 +13,5 @@ export async function GET() {
 }
 
 export async function POST() {
-  return NextResponse.json(
-    { error: 'Category creation temporarily disabled' },
-    { status: 503 },
-  )
+  return NextResponse.json({ error: 'Category creation temporarily disabled' }, { status: 503 })
 }

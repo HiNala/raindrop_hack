@@ -153,18 +153,15 @@ export function AIGenerationHero() {
           </div>
 
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight">
-            <span className="text-gradient">
-              Write Your Story
-            </span>
+            <span className="text-gradient">Write Your Story</span>
             <br />
-            <span className="text-text-primary">
-              In Seconds
-            </span>
+            <span className="text-text-primary">In Seconds</span>
           </h1>
 
           <p className="text-xl text-text-secondary mb-8 max-w-2xl mx-auto leading-relaxed">
             Describe your idea and let AI craft a compelling blog post.
-            <span className="text-teal-400 font-medium"> Edit, refine, and publish</span> in minutes.
+            <span className="text-teal-400 font-medium"> Edit, refine, and publish</span> in
+            minutes.
           </p>
 
           {!isSignedIn && remainingPosts !== null && (
@@ -190,7 +187,10 @@ export function AIGenerationHero() {
         >
           <div className="space-y-6">
             <div>
-              <label htmlFor="prompt" className="text-base font-semibold mb-3 block text-text-primary flex items-center gap-2">
+              <label
+                htmlFor="prompt"
+                className="text-base font-semibold mb-3 block text-text-primary flex items-center gap-2"
+              >
                 <Wand2 className="w-5 h-5 text-teal-400" />
                 What would you like to write about?
               </label>

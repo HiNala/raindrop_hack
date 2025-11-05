@@ -24,25 +24,18 @@ export default function Error({
           <AlertCircle className="w-8 h-8 text-orange-400" />
         </div>
 
-        <h1 className="text-2xl font-bold text-text-primary mb-2">
-          Something went wrong
-        </h1>
+        <h1 className="text-2xl font-bold text-text-primary mb-2">Something went wrong</h1>
 
         <p className="text-text-secondary mb-6">
           {error.message || 'An unexpected error occurred. Please try again.'}
         </p>
 
         {error.digest && (
-          <p className="text-xs text-text-tertiary mb-6 font-mono">
-            Error ID: {error.digest}
-          </p>
+          <p className="text-xs text-text-tertiary mb-6 font-mono">Error ID: {error.digest}</p>
         )}
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button
-            onClick={reset}
-            className="btn-primary"
-          >
+          <Button onClick={reset} className="btn-primary">
             <RefreshCw className="w-4 h-4 mr-2" />
             Try Again
           </Button>
@@ -58,4 +51,3 @@ export default function Error({
     </div>
   )
 }
-

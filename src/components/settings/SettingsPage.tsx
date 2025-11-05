@@ -79,7 +79,7 @@ export function SettingsPage() {
             <Input
               id="displayName"
               value={formData.displayName}
-              onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, displayName: e.target.value }))}
               placeholder="Your display name"
             />
           </div>
@@ -88,7 +88,7 @@ export function SettingsPage() {
             <Input
               id="username"
               value={formData.username}
-              onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, username: e.target.value }))}
               placeholder="username"
             />
           </div>
@@ -98,7 +98,7 @@ export function SettingsPage() {
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
               placeholder="your@email.com"
             />
           </div>
@@ -107,7 +107,7 @@ export function SettingsPage() {
             <select
               id="timezone"
               value={formData.timezone}
-              onChange={(e) => setFormData(prev => ({ ...prev, timezone: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, timezone: e.target.value }))}
               className="w-full mt-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
             >
               <option value="UTC">UTC</option>
@@ -147,19 +147,11 @@ export function SettingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="newPassword">New Password</Label>
-              <Input
-                id="newPassword"
-                type="password"
-                placeholder="Enter new password"
-              />
+              <Input id="newPassword" type="password" placeholder="Enter new password" />
             </div>
             <div>
               <Label htmlFor="confirmPassword">Confirm New Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Confirm new password"
-              />
+              <Input id="confirmPassword" type="password" placeholder="Confirm new password" />
             </div>
           </div>
         </div>
@@ -196,7 +188,7 @@ export function SettingsPage() {
             <Textarea
               id="bio"
               value={formData.bio}
-              onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, bio: e.target.value }))}
               placeholder="Tell us about yourself..."
               rows={4}
             />
@@ -209,7 +201,7 @@ export function SettingsPage() {
             <Input
               id="website"
               value={formData.website}
-              onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, website: e.target.value }))}
               placeholder="https://yourwebsite.com"
             />
           </div>
@@ -218,7 +210,7 @@ export function SettingsPage() {
             <Input
               id="location"
               value={formData.location}
-              onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, location: e.target.value }))}
               placeholder="City, Country"
             />
           </div>
@@ -245,17 +237,11 @@ export function SettingsPage() {
                 @{formData.username || 'username'}
               </p>
               {formData.bio && (
-                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                  {formData.bio}
-                </p>
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{formData.bio}</p>
               )}
               <div className="flex flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-400">
-                {formData.website && (
-                  <span>🌐 {formData.website}</span>
-                )}
-                {formData.location && (
-                  <span>📍 {formData.location}</span>
-                )}
+                {formData.website && <span>🌐 {formData.website}</span>}
+                {formData.location && <span>📍 {formData.location}</span>}
               </div>
             </div>
           </div>
@@ -278,7 +264,9 @@ export function SettingsPage() {
             </div>
             <Switch
               checked={formData.commentEmails}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, commentEmails: checked }))}
+              onCheckedChange={(checked) =>
+                setFormData((prev) => ({ ...prev, commentEmails: checked }))
+              }
             />
           </div>
           <div className="flex items-center justify-between">
@@ -290,7 +278,9 @@ export function SettingsPage() {
             </div>
             <Switch
               checked={formData.likeEmails}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, likeEmails: checked }))}
+              onCheckedChange={(checked) =>
+                setFormData((prev) => ({ ...prev, likeEmails: checked }))
+              }
             />
           </div>
           <div className="flex items-center justify-between">
@@ -302,7 +292,9 @@ export function SettingsPage() {
             </div>
             <Switch
               checked={formData.followerEmails}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, followerEmails: checked }))}
+              onCheckedChange={(checked) =>
+                setFormData((prev) => ({ ...prev, followerEmails: checked }))
+              }
             />
           </div>
           <div className="flex items-center justify-between">
@@ -314,7 +306,9 @@ export function SettingsPage() {
             </div>
             <Switch
               checked={formData.weeklyDigest}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, weeklyDigest: checked }))}
+              onCheckedChange={(checked) =>
+                setFormData((prev) => ({ ...prev, weeklyDigest: checked }))
+              }
             />
           </div>
         </div>
@@ -334,7 +328,9 @@ export function SettingsPage() {
             </div>
             <Switch
               checked={formData.inAppNotifications}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, inAppNotifications: checked }))}
+              onCheckedChange={(checked) =>
+                setFormData((prev) => ({ ...prev, inAppNotifications: checked }))
+              }
             />
           </div>
           <div className="flex items-center justify-between">
@@ -346,7 +342,9 @@ export function SettingsPage() {
             </div>
             <Switch
               checked={formData.desktopNotifications}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, desktopNotifications: checked }))}
+              onCheckedChange={(checked) =>
+                setFormData((prev) => ({ ...prev, desktopNotifications: checked }))
+              }
             />
           </div>
         </div>
@@ -396,7 +394,9 @@ export function SettingsPage() {
                   <p className="text-sm text-gray-500">Last active 2 hours ago • IP: 192.168.1.2</p>
                 </div>
               </div>
-              <Button variant="outline" size="sm">Revoke</Button>
+              <Button variant="outline" size="sm">
+                Revoke
+              </Button>
             </div>
           </Card>
         </div>
@@ -448,9 +448,7 @@ export function SettingsPage() {
         <p className="text-gray-600 dark:text-gray-400 mb-4">
           You're currently on our free plan. Upgrade to unlock premium features.
         </p>
-        <Button className="bg-gradient-to-r from-primary-600 to-primary-700">
-          Upgrade to Pro
-        </Button>
+        <Button className="bg-gradient-to-r from-primary-600 to-primary-700">Upgrade to Pro</Button>
       </Card>
     </div>
   )
@@ -532,13 +530,20 @@ export function SettingsPage() {
 
   const renderSectionContent = () => {
     switch (activeSection) {
-      case 'account': return renderAccountSection()
-      case 'profile': return renderProfileSection()
-      case 'notifications': return renderNotificationsSection()
-      case 'security': return renderSecuritySection()
-      case 'billing': return renderBillingSection()
-      case 'export': return renderExportSection()
-      default: return null
+      case 'account':
+        return renderAccountSection()
+      case 'profile':
+        return renderProfileSection()
+      case 'notifications':
+        return renderNotificationsSection()
+      case 'security':
+        return renderSecuritySection()
+      case 'billing':
+        return renderBillingSection()
+      case 'export':
+        return renderExportSection()
+      default:
+        return null
     }
   }
 
@@ -546,9 +551,7 @@ export function SettingsPage() {
     <div className="min-h-screen bg-[#0a0a0b]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-12">
-          <h1 className="text-4xl font-bold text-text-primary mb-3">
-            Settings
-          </h1>
+          <h1 className="text-4xl font-bold text-text-primary mb-3">Settings</h1>
           <p className="text-text-secondary text-lg">
             Manage your account settings and preferences
           </p>
@@ -569,7 +572,7 @@ export function SettingsPage() {
                         'w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200',
                         activeSection === section.id
                           ? 'bg-teal-500/10 text-teal-400 shadow-glow-teal border border-teal-500/30'
-                          : 'text-text-secondary hover:text-text-primary hover:bg-dark-card border border-transparent',
+                          : 'text-text-secondary hover:text-text-primary hover:bg-dark-card border border-transparent'
                       )}
                     >
                       <Icon className="w-4 h-4" />
@@ -605,7 +608,11 @@ export function SettingsPage() {
                       <div className="w-4 h-4 bg-green-500 rounded-full" />
                     )}
                     {saveStatus === 'idle' && <Save className="w-4 h-4" />}
-                    {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved!' : 'Save Changes'}
+                    {saveStatus === 'saving'
+                      ? 'Saving...'
+                      : saveStatus === 'saved'
+                        ? 'Saved!'
+                        : 'Save Changes'}
                   </Button>
                 </div>
               </div>

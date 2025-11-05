@@ -47,7 +47,7 @@ export function Header({ onSearchOpen }: HeaderProps) {
     { name: 'Tags', href: '/tags', icon: Bookmark },
   ]
 
-  const activeNav = mainNav.find(item => pathname === item.href)
+  const activeNav = mainNav.find((item) => pathname === item.href)
 
   const userMenu = [
     { name: 'Profile', href: '/profile', icon: User },
@@ -178,7 +178,9 @@ export function Header({ onSearchOpen }: HeaderProps) {
                       <Avatar className="h-full w-full">
                         <AvatarImage src={user?.imageUrl} alt={user?.fullName || ''} />
                         <AvatarFallback className="bg-gradient-to-br from-teal-400 to-teal-600 text-white font-semibold">
-                          {user?.firstName?.charAt(0) || user?.emailAddresses[0]?.emailAddress?.charAt(0) || 'U'}
+                          {user?.firstName?.charAt(0) ||
+                            user?.emailAddresses[0]?.emailAddress?.charAt(0) ||
+                            'U'}
                         </AvatarFallback>
                       </Avatar>
                     </Button>

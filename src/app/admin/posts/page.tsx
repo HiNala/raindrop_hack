@@ -49,14 +49,12 @@ export default function PostsManagement() {
   const [showCreateModal, setShowCreateModal] = useState(false)
 
   const handleStatusChange = (postId: string, newStatus: string) => {
-    setPosts(posts.map(post =>
-      post.id === postId ? { ...post, status: newStatus } : post,
-    ))
+    setPosts(posts.map((post) => (post.id === postId ? { ...post, status: newStatus } : post)))
   }
 
   const handleDelete = (postId: string) => {
     if (confirm('Are you sure you want to delete this post?')) {
-      setPosts(posts.filter(post => post.id !== postId))
+      setPosts(posts.filter((post) => post.id !== postId))
     }
   }
 
@@ -120,11 +118,13 @@ export default function PostsManagement() {
                     {post.author}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      post.status === 'Published'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        post.status === 'Published'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}
+                    >
                       {post.status}
                     </span>
                   </td>
@@ -139,10 +139,12 @@ export default function PostsManagement() {
                       <button className="text-blue-600 hover:text-blue-900">Edit</button>
                       <button className="text-gray-600 hover:text-gray-900">View</button>
                       <button
-                        onClick={() => handleStatusChange(
-                          post.id,
-                          post.status === 'Published' ? 'Draft' : 'Published',
-                        )}
+                        onClick={() =>
+                          handleStatusChange(
+                            post.id,
+                            post.status === 'Published' ? 'Draft' : 'Published'
+                          )
+                        }
                         className="text-green-600 hover:text-green-900"
                       >
                         {post.status === 'Published' ? 'Unpublish' : 'Publish'}
@@ -178,9 +180,7 @@ export default function PostsManagement() {
 
             <form className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
                 <input
                   type="text"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -190,9 +190,7 @@ export default function PostsManagement() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Category
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                   <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option>Development</option>
                     <option>Design</option>
@@ -201,9 +199,7 @@ export default function PostsManagement() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Status
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                   <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option>Draft</option>
                     <option>Published</option>
@@ -212,9 +208,7 @@ export default function PostsManagement() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Excerpt
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Excerpt</label>
                 <textarea
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -223,9 +217,7 @@ export default function PostsManagement() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Content
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
                 <textarea
                   rows={10}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

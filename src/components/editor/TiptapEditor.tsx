@@ -51,7 +51,11 @@ interface TiptapEditorProps {
   placeholder?: string
 }
 
-export function TiptapEditor({ content, onChange, placeholder = 'Start writing...' }: TiptapEditorProps) {
+export function TiptapEditor({
+  content,
+  onChange,
+  placeholder = 'Start writing...',
+}: TiptapEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -211,12 +215,7 @@ export function TiptapEditor({ content, onChange, placeholder = 'Start writing..
           <LinkIcon className="w-4 h-4" />
         </Button>
 
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={addImage}
-        >
+        <Button type="button" variant="ghost" size="sm" onClick={addImage}>
           <ImageIcon className="w-4 h-4" />
         </Button>
 
@@ -248,5 +247,3 @@ export function TiptapEditor({ content, onChange, placeholder = 'Start writing..
     </div>
   )
 }
-
-

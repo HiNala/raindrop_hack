@@ -65,7 +65,11 @@ interface AnalyticsPanelProps {
   compact?: boolean
 }
 
-export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }: AnalyticsPanelProps) {
+export function AnalyticsPanel({
+  authorId,
+  timeRange = '30d',
+  compact = false,
+}: AnalyticsPanelProps) {
   const [data, setData] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedTimeRange, setSelectedTimeRange] = useState(timeRange)
@@ -179,29 +183,33 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
       <Card className={cn('p-6', compact && 'p-4')}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              {title}
-            </p>
-            <p className={cn(
-              'text-2xl font-bold mt-2',
-              colorClasses[color as keyof typeof colorClasses]?.split(' ')[0],
-            )}>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{title}</p>
+            <p
+              className={cn(
+                'text-2xl font-bold mt-2',
+                colorClasses[color as keyof typeof colorClasses]?.split(' ')[0]
+              )}
+            >
               {formatValue(value)}
             </p>
             {change !== undefined && (
-              <div className={cn(
-                'flex items-center gap-1 mt-2 text-sm',
-                change >= 0 ? 'text-green-600' : 'text-red-600',
-              )}>
+              <div
+                className={cn(
+                  'flex items-center gap-1 mt-2 text-sm',
+                  change >= 0 ? 'text-green-600' : 'text-red-600'
+                )}
+              >
                 <TrendingUp className="w-4 h-4" />
                 <span>{Math.abs(change)}% from last period</span>
               </div>
             )}
           </div>
-          <div className={cn(
-            'w-12 h-12 rounded-lg flex items-center justify-center',
-            colorClasses[color as keyof typeof colorClasses],
-          )}>
+          <div
+            className={cn(
+              'w-12 h-12 rounded-lg flex items-center justify-center',
+              colorClasses[color as keyof typeof colorClasses]
+            )}
+          >
             <Icon className="w-6 h-6" />
           </div>
         </div>
@@ -210,23 +218,21 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
   }
 
   const SparklineChart = ({ data }: { data: { date: string; value: number }[] }) => {
-    const max = Math.max(...data.map(d => d.value))
-    const min = Math.min(...data.map(d => d.value))
+    const max = Math.max(...data.map((d) => d.value))
+    const min = Math.min(...data.map((d) => d.value))
     const range = max - min || 1
 
-    const points = data.map((point, index) => {
-      const x = (index / (data.length - 1)) * 100
-      const y = 100 - ((point.value - min) / range) * 100
-      return `${x},${y}`
-    }).join(' ')
+    const points = data
+      .map((point, index) => {
+        const x = (index / (data.length - 1)) * 100
+        const y = 100 - ((point.value - min) / range) * 100
+        return `${x},${y}`
+      })
+      .join(' ')
 
     return (
       <div className="relative h-20">
-        <svg
-          className="w-full h-full"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-        >
+        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
           <polyline
             points={points}
             fill="none"
@@ -269,11 +275,19 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
     <div className="space-y-6">
       {/* Time Range Selector */}
       <div className="flex items-center justify-between">
-        <h2 className={cn('font-bold text-gray-900 dark:text-white', compact ? 'text-lg' : 'text-2xl')}>
+        <h2
+          className={cn(
+            'font-bold text-gray-900 dark:text-white',
+            compact ? 'text-lg' : 'text-2xl'
+          )}
+        >
           {compact ? 'Performance' : 'Analytics Dashboard'}
         </h2>
         <div className="flex items-center gap-3">
-          <Select value={selectedTimeRange} onValueChange={(value: any) => setSelectedTimeRange(value)}>
+          <Select
+            value={selectedTimeRange}
+            onValueChange={(value: any) => setSelectedTimeRange(value)}
+          >
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
@@ -291,31 +305,15 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
       </div>
 
       {/* Key Metrics */}
-      <div className={cn(
-        'grid gap-6',
-        compact ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
-      )}>
-        <MetricCard
-          title="Total Views"
-          value={data.views}
-          change={12.5}
-          icon={Eye}
-          color="blue"
-        />
-        <MetricCard
-          title="Reads"
-          value={data.reads}
-          change={8.3}
-          icon={Clock}
-          color="green"
-        />
-        <MetricCard
-          title="Likes"
-          value={data.likes}
-          change={15.7}
-          icon={Heart}
-          color="purple"
-        />
+      <div
+        className={cn(
+          'grid gap-6',
+          compact ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+        )}
+      >
+        <MetricCard title="Total Views" value={data.views} change={12.5} icon={Eye} color="blue" />
+        <MetricCard title="Reads" value={data.reads} change={8.3} icon={Clock} color="green" />
+        <MetricCard title="Likes" value={data.likes} change={15.7} icon={Heart} color="purple" />
         <MetricCard
           title="Comments"
           value={data.comments}
@@ -330,9 +328,17 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
           {/* Views Over Time */}
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">Views Over Time</h3>
-            <SparklineChart data={data.viewsByDay.map(d => ({ date: d.date, value: d.views }))} />
+            <SparklineChart data={data.viewsByDay.map((d) => ({ date: d.date, value: d.views }))} />
             <div className="flex items-center justify-between mt-4 text-sm text-gray-600 dark:text-gray-400">
-              <span>{format(subDays(new Date(), selectedTimeRange === '7d' ? 7 : selectedTimeRange === '30d' ? 30 : 90), 'MMM d')}</span>
+              <span>
+                {format(
+                  subDays(
+                    new Date(),
+                    selectedTimeRange === '7d' ? 7 : selectedTimeRange === '30d' ? 30 : 90
+                  ),
+                  'MMM d'
+                )}
+              </span>
               <span>{format(new Date(), 'MMM d')}</span>
             </div>
           </Card>
@@ -347,7 +353,10 @@ export function AnalyticsPanel({ authorId, timeRange = '30d', compact = false }:
             </div>
             <div className="space-y-4">
               {data.topPosts.map((post, index) => (
-                <div key={post.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div
+                  key={post.id}
+                  className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                >
                   <div className="flex-1">
                     <h4 className="font-medium text-gray-900 dark:text-white mb-2 line-clamp-1">
                       {post.title}

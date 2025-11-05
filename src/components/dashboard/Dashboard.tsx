@@ -49,7 +49,8 @@ const mockPosts = [
     id: '1',
     title: 'Getting Started with Next.js 15',
     slug: 'getting-started-nextjs-15',
-    excerpt: 'A comprehensive guide to building modern web applications with Next.js 15, including the latest App Router features.',
+    excerpt:
+      'A comprehensive guide to building modern web applications with Next.js 15, including the latest App Router features.',
     coverImage: null,
     publishedAt: new Date(),
     readTimeMin: 5,
@@ -61,17 +62,15 @@ const mockPosts = [
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo',
       },
     },
-    tags: [
-      { tag: { name: 'nextjs', slug: 'nextjs' } },
-      { tag: { name: 'react', slug: 'react' } },
-    ],
+    tags: [{ tag: { name: 'nextjs', slug: 'nextjs' } }, { tag: { name: 'react', slug: 'react' } }],
     _count: { likes: 15, comments: 3 },
   },
   {
     id: '2',
     title: 'TypeScript Best Practices in 2024',
     slug: 'typescript-best-practices-2024',
-    excerpt: 'Learn the essential TypeScript patterns and practices that will make your code more maintainable and type-safe.',
+    excerpt:
+      'Learn the essential TypeScript patterns and practices that will make your code more maintainable and type-safe.',
     coverImage: null,
     publishedAt: new Date(),
     readTimeMin: 7,
@@ -93,7 +92,8 @@ const mockPosts = [
     id: '3',
     title: 'Building Scalable React Applications',
     slug: 'building-scalable-react-applications',
-    excerpt: 'Discover the architectural patterns and best practices for building React applications that can scale.',
+    excerpt:
+      'Discover the architectural patterns and best practices for building React applications that can scale.',
     coverImage: null,
     publishedAt: new Date(),
     readTimeMin: 8,
@@ -149,10 +149,7 @@ const mockDrafts = [
         avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo',
       },
     },
-    tags: [
-      { tag: { name: 'react', slug: 'react' } },
-      { tag: { name: 'hooks', slug: 'hooks' } },
-    ],
+    tags: [{ tag: { name: 'react', slug: 'react' } }, { tag: { name: 'hooks', slug: 'hooks' } }],
     _count: { likes: 0, comments: 0 },
   },
 ]
@@ -254,7 +251,10 @@ export function Dashboard() {
               </Button>
             </Link>
             <Link href="/editor/new?ai=true">
-              <Button variant="outline" className="border-[#27272a] hover:bg-[#1a1a1d] hover:text-teal-400 text-text-primary">
+              <Button
+                variant="outline"
+                className="border-[#27272a] hover:bg-[#1a1a1d] hover:text-teal-400 text-text-primary"
+              >
                 <Wand2 className="w-4 h-4 mr-2" />
                 Start with AI
               </Button>
@@ -301,7 +301,11 @@ export function Dashboard() {
                     variant={viewMode === 'grid' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setViewMode('grid')}
-                    className={viewMode === 'grid' ? 'bg-teal-500 text-white' : 'border-[#27272a] text-text-primary'}
+                    className={
+                      viewMode === 'grid'
+                        ? 'bg-teal-500 text-white'
+                        : 'border-[#27272a] text-text-primary'
+                    }
                   >
                     <Grid className="w-4 h-4" />
                   </Button>
@@ -309,7 +313,11 @@ export function Dashboard() {
                     variant={viewMode === 'list' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setViewMode('list')}
-                    className={viewMode === 'list' ? 'bg-teal-500 text-white' : 'border-[#27272a] text-text-primary'}
+                    className={
+                      viewMode === 'list'
+                        ? 'bg-teal-500 text-white'
+                        : 'border-[#27272a] text-text-primary'
+                    }
                   >
                     <List className="w-4 h-4" />
                   </Button>
@@ -353,9 +361,7 @@ export function Dashboard() {
                             </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-text-secondary">
-                          {section.description}
-                        </p>
+                        <p className="text-sm text-text-secondary">{section.description}</p>
                       </div>
                     </div>
 
@@ -367,9 +373,12 @@ export function Dashboard() {
                             No posts yet
                           </h3>
                           <p className="text-text-secondary mb-4">
-                            {section.id === 'foryou' && 'Start following authors and tags to see personalized content'}
-                            {section.id === 'following' && 'Follow authors and tags to see their latest posts here'}
-                            {section.id === 'trending' && 'Popular posts will appear here as they gain traction'}
+                            {section.id === 'foryou' &&
+                              'Start following authors and tags to see personalized content'}
+                            {section.id === 'following' &&
+                              'Follow authors and tags to see their latest posts here'}
+                            {section.id === 'trending' &&
+                              'Popular posts will appear here as they gain traction'}
                           </p>
                           {section.id === 'foryou' && (
                             <Link href="/tags">
@@ -412,13 +421,15 @@ export function Dashboard() {
                             {section.count}
                           </Badge>
                         </div>
-                        <p className="text-sm text-text-secondary">
-                          {section.description}
-                        </p>
+                        <p className="text-sm text-text-secondary">{section.description}</p>
                       </div>
 
                       {section.id === 'drafts' && section.count > 0 && (
-                        <Button size="sm" variant="outline" className="border-[#27272a] hover:bg-[#1a1a1d] text-text-primary">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-[#27272a] hover:bg-[#1a1a1d] text-text-primary"
+                        >
                           View All
                         </Button>
                       )}
@@ -434,9 +445,12 @@ export function Dashboard() {
                             No {section.title.toLowerCase()}
                           </h3>
                           <p className="text-text-secondary mb-4">
-                            {section.id === 'drafts' && 'Start writing your first draft and it will appear here'}
-                            {section.id === 'published' && 'Your published posts will appear here for easy access'}
-                            {section.id === 'analytics' && 'Publish some posts to see analytics and insights'}
+                            {section.id === 'drafts' &&
+                              'Start writing your first draft and it will appear here'}
+                            {section.id === 'published' &&
+                              'Your published posts will appear here for easy access'}
+                            {section.id === 'analytics' &&
+                              'Publish some posts to see analytics and insights'}
                           </p>
                           {section.id === 'drafts' && (
                             <Link href="/editor/new">
@@ -449,7 +463,13 @@ export function Dashboard() {
                         </div>
                       </Card>
                     ) : (
-                      <div className={viewMode === 'grid' ? 'grid gap-6 md:grid-cols-2 lg:grid-cols-3' : 'space-y-4'}>
+                      <div
+                        className={
+                          viewMode === 'grid'
+                            ? 'grid gap-6 md:grid-cols-2 lg:grid-cols-3'
+                            : 'space-y-4'
+                        }
+                      >
                         {section.posts.map((post) => (
                           <div
                             key={post.id}
@@ -500,11 +520,13 @@ export function Dashboard() {
 
                   <div className="p-6">
                     <div className="flex items-center gap-2 mb-3">
-                      <Badge className={`${
-                        selectedPost.published
-                          ? 'bg-teal-500/10 text-teal-400 border-teal-500/30'
-                          : 'bg-orange-500/10 text-orange-400 border-orange-500/30'
-                      }`}>
+                      <Badge
+                        className={`${
+                          selectedPost.published
+                            ? 'bg-teal-500/10 text-teal-400 border-teal-500/30'
+                            : 'bg-orange-500/10 text-orange-400 border-orange-500/30'
+                        }`}
+                      >
                         {selectedPost.published ? 'Published' : 'Draft'}
                       </Badge>
                     </div>
@@ -532,12 +554,25 @@ export function Dashboard() {
                     </div>
 
                     <div className="flex gap-2">
-                      <Link href={selectedPost.published ? `/p/${selectedPost.slug}` : `/editor/${selectedPost.id}`}>
-                        <Button size="sm" className="flex-1 bg-teal-500 hover:bg-teal-600 text-white">
+                      <Link
+                        href={
+                          selectedPost.published
+                            ? `/p/${selectedPost.slug}`
+                            : `/editor/${selectedPost.id}`
+                        }
+                      >
+                        <Button
+                          size="sm"
+                          className="flex-1 bg-teal-500 hover:bg-teal-600 text-white"
+                        >
                           {selectedPost.published ? 'View' : 'Edit'}
                         </Button>
                       </Link>
-                      <Button variant="outline" size="sm" className="border-[#27272a] text-text-primary">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-[#27272a] text-text-primary"
+                      >
                         <MoreVertical className="w-4 h-4" />
                       </Button>
                     </div>

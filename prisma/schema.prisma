@@ -30,6 +30,8 @@ model User {
   followers     Follow[]         @relation("UserFollowers")
   following     Follow[]         @relation("UserFollowing")
   memberships   Membership[]
+  series        Series[]
+  reactions     Reaction[]
 
   @@map("users")
 }
@@ -110,7 +112,7 @@ model Post {
   contentHtml   String?         @default("")
   coverImage    String?
   published     Boolean         @default(false)
-  publishedAt   DateTime?       @default(null)
+  publishedAt   DateTime?
   featured      Boolean         @default(false)
   readTimeMin   Int             @default(5)
   hnEnabled     Boolean         @default(false)
@@ -125,7 +127,7 @@ model Post {
   // Relations
   authorId      String
   author        User            @relation(fields: [authorId], references: [id])
-  publicationId String?         @default(null)
+  publicationId String?
   publication   Publication?    @relation(fields: [publicationId], references: [id])
   tags          PostTag[]
   versions      PostVersion[]
@@ -136,7 +138,8 @@ model Post {
   analytics     PostAnalytics[]
   redirects     SlugRedirect[]
   series        Series?         @relation("SeriesPosts", fields: [seriesId], references: [id])
-  seriesPosts   Post[]          @relation("SeriesPosts")
+  reactions     Reaction[]
+  referrers     Referrer[]
 
   // SEO & Discovery
   seoTitle      String?         @default("")
@@ -412,7 +415,7 @@ model PostAnalytics {
   likes         Int      @default(0)
   comments      Int      @default(0)
   shares        Int      @default(0)
-  avgReadTime   Int?     @default(null) // seconds
+  avgReadTime   Int? // seconds
   referrers     Json?    @default("{}")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

@@ -173,9 +173,7 @@ export function CommentSection({ postId }: CommentSectionProps) {
         </form>
       ) : (
         <Card className="p-6 mb-8 text-center">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Sign in to leave a comment
-          </p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Sign in to leave a comment</p>
           <Button asChild>
             <a href="/sign-in">Sign In</a>
           </Button>
@@ -304,5 +302,3 @@ export function CommentSection({ postId }: CommentSectionProps) {
     </div>
   )
 }
-
-

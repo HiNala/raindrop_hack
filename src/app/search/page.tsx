@@ -68,11 +68,7 @@ export const metadata: Metadata = {
   description: 'Search for blog posts',
 }
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams: { q?: string }
-}) {
+export default async function SearchPage({ searchParams }: { searchParams: { q?: string } }) {
   const query = searchParams.q || ''
   const posts = await searchPosts(query)
 
@@ -81,9 +77,7 @@ export default async function SearchPage({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Search Results
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Search Results</h1>
 
           {query && (
             <p className="text-lg text-gray-600 dark:text-gray-400">
@@ -106,9 +100,7 @@ export default async function SearchPage({
             <p className="text-xl text-gray-600 dark:text-gray-400">
               No posts found for &ldquo;{query}&rdquo;
             </p>
-            <p className="text-gray-500 dark:text-gray-500 mt-2">
-              Try different keywords
-            </p>
+            <p className="text-gray-500 dark:text-gray-500 mt-2">Try different keywords</p>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -121,5 +113,3 @@ export default async function SearchPage({
     </div>
   )
 }
-
-

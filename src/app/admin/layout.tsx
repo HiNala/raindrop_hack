@@ -18,11 +18,7 @@ import {
   ChevronDown,
 } from 'lucide-react'
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const navigation = [
@@ -89,10 +85,12 @@ export default function AdminLayout({
 
       <div className="flex">
         {/* Sidebar */}
-        <div className={`
+        <div
+          className={`
           fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        `}>
+        `}
+        >
           <div className="flex flex-col h-full">
             {/* Logo */}
             <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-white">
@@ -134,16 +132,19 @@ export default function AdminLayout({
                   href={item.href}
                   className={`
                     group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200
-                    ${item.current
-                  ? 'bg-primary-50 text-primary-700 border-r-2 border-primary-600'
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                }
+                    ${
+                      item.current
+                        ? 'bg-primary-50 text-primary-700 border-r-2 border-primary-600'
+                        : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                    }
                   `}
                 >
-                  <item.icon className={`
+                  <item.icon
+                    className={`
                     mr-3 h-5 w-5 flex-shrink-0
                     ${item.current ? 'text-primary-600' : 'text-gray-400 group-hover:text-gray-500'}
-                  `} />
+                  `}
+                  />
                   <div className="flex-1">
                     <p className="font-medium">{item.name}</p>
                     <p className="text-xs text-gray-500 mt-0.5">{item.description}</p>
@@ -220,17 +221,29 @@ export default function AdminLayout({
                   {/* Dropdown menu */}
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
                     <div className="py-1">
-                      <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      <a
+                        href="#"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
                         Profile
                       </a>
-                      <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      <a
+                        href="#"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
                         Settings
                       </a>
                       <hr className="my-1 border-gray-200" />
-                      <a href="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      <a
+                        href="/"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
                         View Site
                       </a>
-                      <a href="#" className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                      <a
+                        href="#"
+                        className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                      >
                         Sign Out
                       </a>
                     </div>
@@ -241,9 +254,7 @@ export default function AdminLayout({
           </header>
 
           {/* Page content */}
-          <main className="flex-1">
-            {children}
-          </main>
+          <main className="flex-1">{children}</main>
         </div>
       </div>
     </div>

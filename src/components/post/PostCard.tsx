@@ -64,11 +64,12 @@ export function PostCard({ post }: PostCardProps) {
     setIsHovered(false)
   }
 
-  const initials = post.author.profile?.displayName
-    ?.split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase() || '?'
+  const initials =
+    post.author.profile?.displayName
+      ?.split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase() || '?'
 
   return (
     <Link href={`/p/${post.slug}`}>

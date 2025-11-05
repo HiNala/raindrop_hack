@@ -104,10 +104,7 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      orderBy: [
-        { publishedAt: 'desc' },
-        { featured: 'desc' },
-      ],
+      orderBy: [{ publishedAt: 'desc' }, { featured: 'desc' }],
       skip: (page - 1) * limit,
       take: limit,
     })
@@ -125,16 +122,13 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Posts API error:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch posts' },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -177,14 +171,17 @@ export async function POST(request: NextRequest) {
         coverImage: validatedData.coverImage,
         authorId: user.id,
         published: false, // Start as draft
-        readTimeMin: validatedData.contentHtml ?
-          Math.ceil(validatedData.contentHtml.split(' ').length / 200) : 5,
-        tags: validatedData.tagIds ? {
-          create: validatedData.tagIds.map((tagId, _index) => ({
-            tagId,
-            postId: post.id, // This will be set after post creation
-          })),
-        } : undefined,
+        readTimeMin: validatedData.contentHtml
+          ? Math.ceil(validatedData.contentHtml.split(' ').length / 200)
+          : 5,
+        tags: validatedData.tagIds
+          ? {
+              create: validatedData.tagIds.map((tagId, _index) => ({
+                tagId,
+                postId: post.id, // This will be set after post creation
+              })),
+            }
+          : undefined,
       },
       include: {
         author: {
@@ -210,13 +207,10 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid input data', details: error.errors },
-        { status: 400 },
+        { status: 400 }
       )
     }
 
-    return NextResponse.json(
-      { error: 'Failed to create post' },
-      { status: 500 },
-    )
+    return NextResponse.json({ error: 'Failed to create post' }, { status: 500 })
   }
 }

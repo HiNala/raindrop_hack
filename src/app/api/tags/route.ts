@@ -29,7 +29,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -43,9 +43,12 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingTag) {
-      return NextResponse.json({
-        error: 'Tag already exists',
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          error: 'Tag already exists',
+        },
+        { status: 400 }
+      )
     }
 
     // Generate slug from name
@@ -70,15 +73,18 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({
-      success: true,
-      data: tag,
-    }, { status: 201 })
+    return NextResponse.json(
+      {
+        success: true,
+        data: tag,
+      },
+      { status: 201 }
+    )
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 },
+        { status: 400 }
       )
     }
 

@@ -73,5 +73,3 @@ export function TiptapRenderer({ content }: TiptapRendererProps) {
     </div>
   )
 }
-
-

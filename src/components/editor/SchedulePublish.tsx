@@ -123,7 +123,7 @@ export function SchedulePublish({
 
     const localDate = format(scheduledDate, 'MMM d, yyyy')
     const localTime = format(scheduledDate, 'h:mm a')
-    const timezoneInfo = TIMEZONES.find(tz => tz.value === timezone)
+    const timezoneInfo = TIMEZONES.find((tz) => tz.value === timezone)
 
     return `${localDate} at ${localTime} (${timezoneInfo?.label || timezone})`
   }
@@ -159,8 +159,8 @@ export function SchedulePublish({
   // Get user's timezone
   useEffect(() => {
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    const matchingTimezone = TIMEZONES.find(tz =>
-      tz.value.toLowerCase().includes(userTimezone.toLowerCase().split('/')[0]),
+    const matchingTimezone = TIMEZONES.find((tz) =>
+      tz.value.toLowerCase().includes(userTimezone.toLowerCase().split('/')[0])
     )
     if (matchingTimezone && !existingSchedule) {
       setTimezone(matchingTimezone.value)
@@ -178,8 +178,7 @@ export function SchedulePublish({
           <DialogDescription>
             {existingSchedule
               ? 'Update when your post will be published'
-              : 'Choose a date and time to publish your post automatically'
-            }
+              : 'Choose a date and time to publish your post automatically'}
           </DialogDescription>
         </DialogHeader>
 
@@ -261,12 +260,8 @@ export function SchedulePublish({
               <div className="flex items-start gap-3">
                 <CheckCircle className="w-5 h-5 text-accent-teal mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-text-primary">
-                    Post will be published:
-                  </p>
-                  <p className="text-sm text-text-secondary mt-1">
-                    {formatScheduleDate()}
-                  </p>
+                  <p className="text-sm font-medium text-text-primary">Post will be published:</p>
+                  <p className="text-sm text-text-secondary mt-1">{formatScheduleDate()}</p>
                 </div>
               </div>
             </Card>
@@ -274,18 +269,15 @@ export function SchedulePublish({
         </div>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isScheduling}
-          >
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isScheduling}>
             Cancel
           </Button>
-          <Button
-            onClick={handleSchedule}
-            disabled={!getScheduleDateTime() || isScheduling}
-          >
-            {isScheduling ? 'Scheduling...' : existingSchedule ? 'Update Schedule' : 'Schedule Publish'}
+          <Button onClick={handleSchedule} disabled={!getScheduleDateTime() || isScheduling}>
+            {isScheduling
+              ? 'Scheduling...'
+              : existingSchedule
+                ? 'Update Schedule'
+                : 'Schedule Publish'}
           </Button>
         </DialogFooter>
       </DialogContent>

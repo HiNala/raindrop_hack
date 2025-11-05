@@ -45,7 +45,7 @@ async function searchHackerNews(query: string): Promise<HNSearchResult[]> {
           advancedSyntax: true,
           analyticsTags: ['production'],
         }),
-      },
+      }
     )
 
     if (!storiesResponse.ok) {
@@ -74,11 +74,40 @@ async function searchHackerNews(query: string): Promise<HNSearchResult[]> {
  */
 function extractKeywords(text: string): string[] {
   // Simple keyword extraction - can be enhanced with NLP
-  const words = text.toLowerCase()
+  const words = text
+    .toLowerCase()
     .replace(/[^\w\s]/g, ' ')
     .split(/\s+/)
-    .filter(word => word.length > 3)
-    .filter(word => !['the', 'and', 'for', 'are', 'with', 'this', 'that', 'from', 'have', 'they', 'been', 'said', 'each', 'which', 'their', 'time', 'will', 'about', 'been', 'call', 'who', 'oil', 'its', 'now'].includes(word))
+    .filter((word) => word.length > 3)
+    .filter(
+      (word) =>
+        ![
+          'the',
+          'and',
+          'for',
+          'are',
+          'with',
+          'this',
+          'that',
+          'from',
+          'have',
+          'they',
+          'been',
+          'said',
+          'each',
+          'which',
+          'their',
+          'time',
+          'will',
+          'about',
+          'been',
+          'call',
+          'who',
+          'oil',
+          'its',
+          'now',
+        ].includes(word)
+    )
 
   // Remove duplicates and return top keywords
   return [...new Set(words)].slice(0, 5)
@@ -89,18 +118,19 @@ function extractKeywords(text: string): string[] {
  */
 function rankAndFilterResults(results: HNSearchResult[]): HNSearchResult[] {
   return results
-    .filter(result => {
+    .filter((result) => {
       // Filter out low-quality content
       return (
         result.title.length > 10 &&
         result.points >= 5 && // Minimum points threshold
-        result.url && result.url.startsWith('http')
+        result.url &&
+        result.url.startsWith('http')
       )
     })
     .sort((a, b) => {
       // Rank by combination of points, recency, and comment count
-      const scoreA = a.points + (a.numComments * 0.5)
-      const scoreB = b.points + (b.numComments * 0.5)
+      const scoreA = a.points + a.numComments * 0.5
+      const scoreB = b.points + b.numComments * 0.5
       return scoreB - scoreA
     })
     .slice(0, 10) // Top 10 results
@@ -192,10 +222,7 @@ export async function POST(request: Request) {
     const { query, includeHNContext = false } = await request.json()
 
     if (!query || typeof query !== 'string') {
-      return NextResponse.json(
-        { error: 'Query is required and must be a string' },
-        { status: 400 },
-      )
+      return NextResponse.json({ error: 'Query is required and must be a string' }, { status: 400 })
     }
 
     if (!includeHNContext) {
@@ -219,7 +246,7 @@ export async function POST(request: Request) {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

@@ -21,7 +21,7 @@ export function InlineToolbar({ selection, onAction, onClose }: InlineToolbarPro
   // Position toolbar above selection
   const position = {
     top: selection.rect.top - 50, // 50px above selection
-    left: selection.rect.left + (selection.rect.width / 2) - 100, // Center horizontally
+    left: selection.rect.left + selection.rect.width / 2 - 100, // Center horizontally
   }
 
   // Close on click outside

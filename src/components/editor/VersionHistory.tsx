@@ -54,7 +54,7 @@ export function VersionHistory({
 
   // Sort versions by date (newest first)
   const sortedVersions = [...versions].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   )
 
   useEffect(() => {
@@ -100,7 +100,8 @@ export function VersionHistory({
       content: string
     }> = []
 
-    let i = 0, j = 0
+    let i = 0,
+      j = 0
 
     while (i < oldLines.length || j < newLines.length) {
       if (i < oldLines.length && j < newLines.length && oldLines[i] === newLines[j]) {
@@ -131,9 +132,10 @@ export function VersionHistory({
     createdAt: new Date().toISOString(),
   }
 
-  const diffContent = diffView && selectedVersion && currentContent
-    ? generateDiff(selectedVersion.snapshot.html, currentContent)
-    : []
+  const diffContent =
+    diffView && selectedVersion && currentContent
+      ? generateDiff(selectedVersion.snapshot.html, currentContent)
+      : []
 
   return (
     <div className="flex h-full">
@@ -189,7 +191,11 @@ export function VersionHistory({
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-text-secondary" />
                     <span className="font-medium text-text-primary">
-                      {selectedVersion.id === 'current' ? 'Current Version' : formatDistanceToNow(new Date(selectedVersion.createdAt), { addSuffix: true })}
+                      {selectedVersion.id === 'current'
+                        ? 'Current Version'
+                        : formatDistanceToNow(new Date(selectedVersion.createdAt), {
+                            addSuffix: true,
+                          })}
                     </span>
                   </div>
 
@@ -274,7 +280,7 @@ export function VersionHistory({
                           'p-2 rounded',
                           line.type === 'added' && 'bg-green-500/10 text-green-400',
                           line.type === 'removed' && 'bg-red-500/10 text-red-400',
-                          line.type === 'equal' && 'text-text-secondary',
+                          line.type === 'equal' && 'text-text-secondary'
                         )}
                       >
                         <span className="inline-block w-12 text-right mr-4 text-text-muted">
@@ -326,7 +332,7 @@ function VersionCard({
       className={cn(
         'p-3 cursor-pointer transition-all hover:bg-surface-100',
         isSelected && 'ring-2 ring-accent-teal bg-surface-100',
-        isCurrent && 'border-accent-teal',
+        isCurrent && 'border-accent-teal'
       )}
       onClick={onSelect}
     >
@@ -353,9 +359,7 @@ function VersionCard({
           )}
         </div>
 
-        {isSelected && (
-          <ChevronRight className="w-4 h-4 text-accent-teal" />
-        )}
+        {isSelected && <ChevronRight className="w-4 h-4 text-accent-teal" />}
       </div>
     </Card>
   )

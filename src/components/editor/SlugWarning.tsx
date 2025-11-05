@@ -22,7 +22,9 @@ export function SlugWarning({ currentSlug, newSlug, onConfirm, onCancel }: SlugW
     // Check if slug change will break links
     const checkImpact = async () => {
       try {
-        const response = await fetch(`/api/posts/check-slug-impact?current=${currentSlug}&new=${newSlug}`)
+        const response = await fetch(
+          `/api/posts/check-slug-impact?current=${currentSlug}&new=${newSlug}`
+        )
         const data = await response.json()
         setHasExistingRedirect(data.hasExistingRedirect)
       } catch (error) {
@@ -49,9 +51,7 @@ export function SlugWarning({ currentSlug, newSlug, onConfirm, onCancel }: SlugW
         <Card className="p-4 border-yellow-500/30 bg-yellow-500/5">
           <div className="flex items-center gap-3">
             <div className="w-5 h-5 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-sm text-yellow-700 dark:text-yellow-300">
-              Checking link impact...
-            </p>
+            <p className="text-sm text-yellow-700 dark:text-yellow-300">Checking link impact...</p>
           </div>
         </Card>
       </motion.div>
@@ -70,11 +70,13 @@ export function SlugWarning({ currentSlug, newSlug, onConfirm, onCancel }: SlugW
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
     >
-      <Card className={`p-4 border-2 ${
-        willBreakLinks
-          ? 'border-orange-500/50 bg-orange-500/5'
-          : 'border-green-500/50 bg-green-500/5'
-      }`}>
+      <Card
+        className={`p-4 border-2 ${
+          willBreakLinks
+            ? 'border-orange-500/50 bg-orange-500/5'
+            : 'border-green-500/50 bg-green-500/5'
+        }`}
+      >
         <div className="flex items-start gap-3">
           {willBreakLinks ? (
             <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
@@ -97,17 +99,13 @@ export function SlugWarning({ currentSlug, newSlug, onConfirm, onCancel }: SlugW
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2 text-text-secondary">
                 <span className="font-medium">From:</span>
-                <code className="px-2 py-1 bg-dark-card rounded text-xs">
-                  {currentSlug}
-                </code>
+                <code className="px-2 py-1 bg-dark-card rounded text-xs">{currentSlug}</code>
                 <ExternalLink className="w-3 h-3" />
               </div>
 
               <div className="flex items-center gap-2 text-text-secondary">
                 <span className="font-medium">To:</span>
-                <code className="px-2 py-1 bg-dark-card rounded text-xs">
-                  {newSlug}
-                </code>
+                <code className="px-2 py-1 bg-dark-card rounded text-xs">{newSlug}</code>
                 <ExternalLink className="w-3 h-3" />
               </div>
             </div>
@@ -115,13 +113,13 @@ export function SlugWarning({ currentSlug, newSlug, onConfirm, onCancel }: SlugW
             <p className="text-sm text-text-secondary mt-3">
               {willBreakLinks ? (
                 <>
-                  This change will break existing links to your post.
-                  A redirect will be created to maintain link functionality.
+                  This change will break existing links to your post. A redirect will be created to
+                  maintain link functionality.
                 </>
               ) : (
                 <>
-                  This change is safe. An existing redirect will be updated
-                  to point to the new slug.
+                  This change is safe. An existing redirect will be updated to point to the new
+                  slug.
                 </>
               )}
             </p>

@@ -33,27 +33,26 @@ export function TagSelector({ selectedTags, onTagsChange, availableTags }: TagSe
 
   useEffect(() => {
     if (searchQuery.trim()) {
-      const filtered = availableTags.filter(tag =>
-        tag.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !selectedTags.some(st => st.id === tag.id),
+      const filtered = availableTags.filter(
+        (tag) =>
+          tag.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+          !selectedTags.some((st) => st.id === tag.id)
       )
       setFilteredTags(filtered)
     } else {
-      setFilteredTags(availableTags.filter(tag =>
-        !selectedTags.some(st => st.id === tag.id),
-      ))
+      setFilteredTags(availableTags.filter((tag) => !selectedTags.some((st) => st.id === tag.id)))
     }
   }, [searchQuery, availableTags, selectedTags])
 
   const handleAddTag = (tag: Tag) => {
-    if (!selectedTags.some(t => t.id === tag.id)) {
+    if (!selectedTags.some((t) => t.id === tag.id)) {
       onTagsChange([...selectedTags, tag])
     }
     setSearchQuery('')
   }
 
   const handleRemoveTag = (tagId: string) => {
-    onTagsChange(selectedTags.filter(t => t.id !== tagId))
+    onTagsChange(selectedTags.filter((t) => t.id !== tagId))
   }
 
   const handleCreateNewTag = () => {
@@ -97,7 +96,12 @@ export function TagSelector({ selectedTags, onTagsChange, availableTags }: TagSe
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button type="button" variant="ghost" size="sm" className="gap-1.5 text-teal-400 hover:text-teal-300 hover:bg-teal-500/10 transition-colors h-7">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 text-teal-400 hover:text-teal-300 hover:bg-teal-500/10 transition-colors h-7"
+            >
               <Plus className="w-3.5 h-3.5" />
               Add Tag
             </Button>
@@ -148,14 +152,21 @@ export function TagSelector({ selectedTags, onTagsChange, availableTags }: TagSe
                 <div className="flex items-center gap-2 p-3 bg-teal-500/5 border border-teal-500/20 rounded-lg">
                   <Plus className="w-4 h-4 text-teal-400" />
                   <p className="text-sm text-text-primary">
-                    Press <kbd className="px-1.5 py-0.5 bg-[#27272a] rounded text-xs font-mono">Enter</kbd> or click Create to add "<span className="text-teal-400 font-medium">{searchQuery}</span>"
+                    Press{' '}
+                    <kbd className="px-1.5 py-0.5 bg-[#27272a] rounded text-xs font-mono">
+                      Enter
+                    </kbd>{' '}
+                    or click Create to add "
+                    <span className="text-teal-400 font-medium">{searchQuery}</span>"
                   </p>
                 </div>
               )}
 
               {filteredTags.length > 0 && (
                 <div className="space-y-2">
-                  <p className="text-sm text-text-secondary font-medium">Available tags ({filteredTags.length}):</p>
+                  <p className="text-sm text-text-secondary font-medium">
+                    Available tags ({filteredTags.length}):
+                  </p>
                   <div className="grid grid-cols-2 gap-2 max-h-[240px] overflow-y-auto">
                     {filteredTags.slice(0, 20).map((tag) => (
                       <Badge
@@ -180,5 +191,3 @@ export function TagSelector({ selectedTags, onTagsChange, availableTags }: TagSe
     </div>
   )
 }
-
-

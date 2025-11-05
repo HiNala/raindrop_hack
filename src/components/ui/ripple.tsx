@@ -27,10 +27,10 @@ export function useRipple() {
       id: Date.now(),
     }
 
-    setRipples(prev => [...prev, newRipple])
+    setRipples((prev) => [...prev, newRipple])
 
     setTimeout(() => {
-      setRipples(prev => prev.filter(r => r.id !== newRipple.id))
+      setRipples((prev) => prev.filter((r) => r.id !== newRipple.id))
     }, 800)
   }, [])
 
@@ -44,7 +44,7 @@ interface RippleEffectProps {
 export function RippleEffect({ ripples }: RippleEffectProps) {
   return (
     <span className="absolute inset-0 overflow-hidden rounded-md pointer-events-none">
-      {ripples.map(ripple => (
+      {ripples.map((ripple) => (
         <span
           key={ripple.id}
           className="absolute bg-white/30 rounded-full animate-ripple"
@@ -62,4 +62,3 @@ export function RippleEffect({ ripples }: RippleEffectProps) {
     </span>
   )
 }
-

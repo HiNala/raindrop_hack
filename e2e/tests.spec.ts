@@ -165,15 +165,15 @@ test.describe('Blog Platform E2E Tests', () => {
 
     test('should switch between Reader and Writer tabs', async ({ page }) => {
       // Default to Writer tab
-      await expect(page.locator('[data-testid="writer-tab"]').toHaveAttribute('data-state', 'active')
-      
+      await expect(page.locator('[data-testid="writer-tab"]')).toHaveAttribute('data-state', 'active')
+
       // Switch to Reader tab
       await page.click('[data-testid="reader-tab"]')
-      await expect(page.locator('[data-testid="reader-tab"]').toHaveAttribute('data-state', 'active')
-      
+      await expect(page.locator('[data-testid="reader-tab"]')).toHaveAttribute('data-state', 'active')
+
       // Switch back to Writer tab
       await page.click('[data-testid="writer-tab"]')
-      await expect(page.locator('[data-testid="writer-tab"]').toHaveAttribute('data-state', 'active')
+      await expect(page.locator('[data-testid="writer-tab"]')).toHaveAttribute('data-state', 'active')
     })
 
     test('should show post preview in side panel', async ({ page }) => {

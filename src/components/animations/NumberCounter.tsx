@@ -24,10 +24,5 @@ export function NumberCounter({ value, duration = 1, className = '' }: NumberCou
     })
   }, [display])
 
-  return (
-    <motion.span className={className}>
-      {displayValue.toLocaleString()}
-    </motion.span>
-  )
+  return <motion.span className={className}>{displayValue.toLocaleString()}</motion.span>
 }
-

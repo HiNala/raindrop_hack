@@ -3,16 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Search,
-  FileText,
-  Tag,
-  User,
-  Settings,
-  Plus,
-  TrendingUp,
-  Clock,
-} from 'lucide-react'
+import { Search, FileText, Tag, User, Settings, Plus, TrendingUp, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface CommandItem {
@@ -93,7 +84,7 @@ export function CommandPalette() {
     }
 
     const filtered = allCommands.filter((cmd) =>
-      cmd.title.toLowerCase().includes(search.toLowerCase()),
+      cmd.title.toLowerCase().includes(search.toLowerCase())
     )
     setResults(filtered)
     setSelectedIndex(0)
@@ -175,7 +166,7 @@ export function CommandPalette() {
                           'w-full flex items-center gap-3 px-4 py-3 text-left transition-colors relative',
                           selectedIndex === index
                             ? 'bg-teal-500/10 text-text-primary'
-                            : 'text-text-secondary hover:bg-dark-card',
+                            : 'text-text-secondary hover:bg-dark-card'
                         )}
                       >
                         {/* Sliding highlight indicator */}
@@ -191,9 +182,7 @@ export function CommandPalette() {
                           />
                         )}
 
-                        <div className="flex-shrink-0 text-teal-400">
-                          {item.icon}
-                        </div>
+                        <div className="flex-shrink-0 text-teal-400">{item.icon}</div>
                         <div className="flex-1 min-w-0">
                           <div className="font-medium text-sm">{item.title}</div>
                           {item.description && (

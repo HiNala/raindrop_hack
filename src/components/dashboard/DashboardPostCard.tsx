@@ -96,7 +96,10 @@ export function DashboardPostCard({ post, onDelete }: DashboardPostCardProps) {
                 </Badge>
               ))}
               {post.tags.length > 3 && (
-                <Badge variant="outline" className="px-2 py-0.5 text-xs bg-dark-bg text-text-tertiary">
+                <Badge
+                  variant="outline"
+                  className="px-2 py-0.5 text-xs bg-dark-bg text-text-tertiary"
+                >
                   +{post.tags.length - 3}
                 </Badge>
               )}

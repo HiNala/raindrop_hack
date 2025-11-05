@@ -97,7 +97,7 @@ export function EnhancedEditor({
           'prose-blockquote:text-text-secondary prose-blockquote:border-l-accent-teal',
           'prose-hr:border-surface-300',
           'min-h-[200px] p-4',
-          editable ? 'cursor-text' : 'cursor-default',
+          editable ? 'cursor-text' : 'cursor-default'
         ),
       },
     },
@@ -131,9 +131,12 @@ export function EnhancedEditor({
   useEffect(() => {
     if (!postId || !onVersionCreate) return
 
-    const interval = setInterval(() => {
-      createVersionSnapshot()
-    }, 5 * 60 * 1000) // 5 minutes
+    const interval = setInterval(
+      () => {
+        createVersionSnapshot()
+      },
+      5 * 60 * 1000
+    ) // 5 minutes
 
     return () => clearInterval(interval)
   }, [createVersionSnapshot, postId, onVersionCreate])
@@ -268,9 +271,7 @@ export function EnhancedEditor({
           <div className="flex items-center gap-4 text-sm text-text-secondary">
             <span>{wordCount} words</span>
             <span>≈ {readTime} min read</span>
-            {isCreatingVersion && (
-              <span className="text-accent-teal">Saving version...</span>
-            )}
+            {isCreatingVersion && <span className="text-accent-teal">Saving version...</span>}
           </div>
         </div>
       )}
@@ -298,9 +299,15 @@ export function EnhancedEditor({
         </div>
 
         <div className="flex items-center gap-2">
-          {editor.isActive('bold') && <span className="px-2 py-1 bg-surface-100 rounded">Bold</span>}
-          {editor.isActive('italic') && <span className="px-2 py-1 bg-surface-100 rounded">Italic</span>}
-          {editor.isActive('codeBlock') && <span className="px-2 py-1 bg-surface-100 rounded">Code</span>}
+          {editor.isActive('bold') && (
+            <span className="px-2 py-1 bg-surface-100 rounded">Bold</span>
+          )}
+          {editor.isActive('italic') && (
+            <span className="px-2 py-1 bg-surface-100 rounded">Italic</span>
+          )}
+          {editor.isActive('codeBlock') && (
+            <span className="px-2 py-1 bg-surface-100 rounded">Code</span>
+          )}
         </div>
       </div>
     </div>
@@ -327,7 +334,7 @@ function ToolbarButton({
         'hover:bg-surface-200 hover:text-text-primary',
         'focus:outline-none focus:ring-2 focus:ring-accent-teal/50',
         active ? 'bg-accent-teal text-white' : 'text-text-secondary',
-        disabled && 'opacity-50 cursor-not-allowed',
+        disabled && 'opacity-50 cursor-not-allowed'
       )}
     >
       {children}

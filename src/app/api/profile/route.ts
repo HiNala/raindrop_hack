@@ -13,7 +13,7 @@ const updateProfileSchema = z.object({
 
 export async function GET(_request: NextRequest) {
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -36,7 +36,7 @@ export async function GET(_request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const { userId } = auth()
+    const { userId } = await auth()
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -59,7 +59,11 @@ export async function PATCH(request: NextRequest) {
         data: {
           userId: user.id,
           username: user.email.split('@')[0], // Generate username from email
-          displayName: validatedData.displayName || user.firstName || user.emailAddresses[0]?.emailAddress?.split('@')[0] || 'User',
+          displayName:
+            validatedData.displayName ||
+            user.firstName ||
+            user.emailAddresses[0]?.emailAddress?.split('@')[0] ||
+            'User',
           bio: validatedData.bio || null,
           websiteUrl: validatedData.websiteUrl || null,
           avatarUrl: validatedData.avatarUrl || null,
@@ -80,7 +84,7 @@ export async function PATCH(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
-        { status: 400 },
+        { status: 400 }
       )
     }
 

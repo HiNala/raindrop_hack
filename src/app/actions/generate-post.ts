@@ -78,7 +78,7 @@ async function fetchHNContext(prompt: string, includeHNContext: boolean = false)
  */
 export async function generateAuthenticatedPost(
   prompt: string,
-  options: GeneratePostOptions & { includeHNContext?: boolean } = {},
+  options: GeneratePostOptions & { includeHNContext?: boolean } = {}
 ) {
   try {
     const user = await getCurrentUser()
@@ -151,16 +151,14 @@ export async function generateAuthenticatedPost(
  */
 export async function generateAnonymousPost(
   prompt: string,
-  options: GeneratePostOptions & { includeHNContext?: boolean } = {},
+  options: GeneratePostOptions & { includeHNContext?: boolean } = {}
 ) {
   try {
     // For anonymous users, we don't save to DB or rate limit strictly
     // The client will handle the 3-post limit via localStorage
 
     // Fetch HN context if enabled (limited for anonymous users)
-    const hnContext = options.includeHNContext
-      ? await fetchHNContext(prompt, true)
-      : null
+    const hnContext = options.includeHNContext ? await fetchHNContext(prompt, true) : null
 
     const generated = await generatePostWithAI(prompt, {
       ...options,
@@ -186,4 +184,3 @@ export async function generateAnonymousPost(
     }
   }
 }
-
