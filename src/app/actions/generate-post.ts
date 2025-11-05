@@ -3,6 +3,7 @@
 import { generatePost as generatePostWithAI, GeneratePostOptions } from '@/lib/openai'
 import { getCurrentUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { enrichWithHN, formatCitationsMarkdown } from '@/lib/hn-search'
 
 // Rate limiting tracking (in-memory for simplicity, use Redis in production)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
@@ -44,11 +45,40 @@ function incrementRateLimit(userId: string) {
 }
 
 /**
+ * Fetch Hacker News context for enrichment
+ */
+async function fetchHNContext(prompt: string, includeHNContext: boolean = false) {
+  if (!includeHNContext) {
+    return null
+  }
+
+  try {
+    const { citations, contextText } = await enrichWithHN(prompt, {
+      limit: 5,
+      minPoints: 20
+    })
+
+    if (citations.length === 0) {
+      return null
+    }
+
+    return {
+      contextText,
+      citations,
+      citationsMarkdown: formatCitationsMarkdown(citations)
+    }
+  } catch (error) {
+    console.error('Error fetching HN context:', error)
+    return null
+  }
+}
+
+/**
  * Generate a blog post from a prompt (authenticated users only)
  */
 export async function generateAuthenticatedPost(
   prompt: string,
-  options: GeneratePostOptions = {}
+  options: GeneratePostOptions & { includeHNContext?: boolean } = {}
 ) {
   try {
     const user = await getCurrentUser()
@@ -69,8 +99,14 @@ export async function generateAuthenticatedPost(
       }
     }
 
+    // Fetch HN context if enabled
+    const hnContext = await fetchHNContext(prompt, options.includeHNContext)
+
     // Generate post with AI
-    const generated = await generatePostWithAI(prompt, options)
+    const generated = await generatePostWithAI(prompt, {
+      ...options,
+      hnContext,
+    })
 
     // Increment rate limit
     incrementRateLimit(user.id)
@@ -97,6 +133,7 @@ export async function generateAuthenticatedPost(
         contentJson: generated.contentJson,
         suggestedTags: generated.suggestedTags,
         readTimeMin: generated.readTimeMin,
+        hnSources: generated.hnSources,
         remaining: rateLimit.remaining - 1,
       },
     }
@@ -114,13 +151,21 @@ export async function generateAuthenticatedPost(
  */
 export async function generateAnonymousPost(
   prompt: string,
-  options: GeneratePostOptions = {}
+  options: GeneratePostOptions & { includeHNContext?: boolean } = {}
 ) {
   try {
     // For anonymous users, we don't save to DB or rate limit strictly
     // The client will handle the 3-post limit via localStorage
 
-    const generated = await generatePostWithAI(prompt, options)
+    // Fetch HN context if enabled (limited for anonymous users)
+    const hnContext = options.includeHNContext 
+      ? await fetchHNContext(prompt, true) 
+      : null
+
+    const generated = await generatePostWithAI(prompt, {
+      ...options,
+      hnContext,
+    })
 
     return {
       success: true,
@@ -130,6 +175,7 @@ export async function generateAnonymousPost(
         contentJson: generated.contentJson,
         suggestedTags: generated.suggestedTags,
         readTimeMin: generated.readTimeMin,
+        hnSources: generated.hnSources,
       },
     }
   } catch (error) {

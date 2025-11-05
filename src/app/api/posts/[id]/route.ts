@@ -1,12 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
-import { postSchema } from '@/lib/validations'
-import slugify from 'slugify'
 import { z } from 'zod'
 
 interface Params {
   params: { id: string }
 }
+
+const updatePostSchema = z.object({
+  title: z.string().min(1).max(200).optional(),
+  excerpt: z.string().max(500).optional(),
+  contentJson: z.object().optional(),
+  contentHtml: z.string().optional(),
+  coverImage: z.string().url().optional(),
+  published: z.boolean().optional(),
+  tagIds: z.array(z.string()).optional(),
+})
 
 export async function GET(request: NextRequest, { params }: Params) {
   try {
@@ -14,120 +23,105 @@ export async function GET(request: NextRequest, { params }: Params) {
       where: { id: params.id },
       include: {
         author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            bio: true,
+          include: {
+            profile: true
           }
         },
-        category: true,
         tags: {
           include: {
             tag: true
           }
         },
-        comments: {
-          where: { approved: true },
-          orderBy: { createdAt: 'desc' },
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              }
-            }
-          }
-        },
         _count: {
           select: {
-            comments: true,
-            likes: true
+            likes: true,
+            comments: true
           }
         }
       }
     })
 
     if (!post) {
-      return NextResponse.json(
-        { error: 'Post not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
+
+    // Increment view count
+    await prisma.post.update({
+      where: { id: post.id },
+      data: { viewCount: { increment: 1 } }
+    })
 
     return NextResponse.json(post)
   } catch (error) {
     console.error('Error fetching post:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch post' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch post' }, { status: 500 })
   }
 }
 
 export async function PUT(request: NextRequest, { params }: Params) {
   try {
-    const body = await request.json()
-    
-    // Generate slug if title changed and slug not provided
-    if (body.title && !body.slug) {
-      body.slug = slugify(body.title, { lower: true, strict: true })
+    const { userId } = auth()
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const validatedData = postSchema.partial().parse(body)
+    const body = await request.json()
+    const validatedData = updatePostSchema.parse(body)
 
-    // Check if slug is unique (if changing)
-    if (validatedData.slug) {
-      const existingPost = await prisma.post.findFirst({
-        where: {
-          slug: validatedData.slug,
-          NOT: { id: params.id }
-        }
-      })
+    // Check if user owns the post
+    const existingPost = await prisma.post.findUnique({
+      where: { id: params.id },
+      include: { author: true }
+    })
 
-      if (existingPost) {
-        return NextResponse.json(
-          { error: 'A post with this slug already exists' },
-          { status: 400 }
-        )
-      }
+    if (!existingPost) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    }
+
+    if (existingPost.author.clerkId !== userId) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     // Handle tag updates
-    let tagOperations
+    let updateData: any = { ...validatedData }
+    
     if (validatedData.tagIds !== undefined) {
       // Delete existing tag relationships
       await prisma.postTag.deleteMany({
         where: { postId: params.id }
       })
 
-      // Create new tag relationships
-      tagOperations = {
-        create: validatedData.tagIds.map(tagId => ({
-          tagId
+      updateData.tags = {
+        create: validatedData.tagIds.map((tagId, index) => ({
+          tagId,
+          postId: params.id
         }))
       }
     }
 
+    // Update publishedAt if publishing
+    if (validatedData.published && !existingPost.publishedAt) {
+      updateData.publishedAt = new Date()
+    }
+
     const post = await prisma.post.update({
       where: { id: params.id },
-      data: {
-        ...validatedData,
-        tagOperations
-      },
+      data: updateData,
       include: {
         author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+          include: {
+            profile: true
           }
         },
-        category: true,
         tags: {
           include: {
             tag: true
+          }
+        },
+        _count: {
+          select: {
+            likes: true,
+            comments: true
           }
         }
       }
@@ -143,15 +137,44 @@ export async function PUT(request: NextRequest, { params }: Params) {
     }
 
     console.error('Error updating post:', error)
-    return NextResponse.json(
-      { error: 'Failed to update post' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update post' }, { status: 500 })
   }
 }
 
 export async function DELETE(request: NextRequest, { params }: Params) {
   try {
+    const { userId } = auth()
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Check if user owns the post
+    const existingPost = await prisma.post.findUnique({
+      where: { id: params.id },
+      include: { author: true }
+    })
+
+    if (!existingPost) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    }
+
+    if (existingPost.author.clerkId !== userId) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    // Delete related records first
+    await prisma.postTag.deleteMany({
+      where: { postId: params.id }
+    })
+
+    await prisma.comment.deleteMany({
+      where: { postId: params.id }
+    })
+
+    await prisma.like.deleteMany({
+      where: { postId: params.id }
+    })
+
     await prisma.post.delete({
       where: { id: params.id }
     })
@@ -159,9 +182,6 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     return NextResponse.json({ message: 'Post deleted successfully' })
   } catch (error) {
     console.error('Error deleting post:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete post' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 })
   }
 }

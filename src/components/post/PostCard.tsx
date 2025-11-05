@@ -1,4 +1,8 @@
+'use client'
+
+import { useState, useRef } from 'react'
 import Link from 'next/link'
+import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, Heart, MessageCircle, Clock, ArrowRight } from 'lucide-react'
@@ -34,6 +38,32 @@ interface PostCardProps {
 }
 
 export function PostCard({ post }: PostCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [isHovered, setIsHovered] = useState(false)
+  
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+
+  const rotateX = useTransform(mouseY, [-100, 100], [5, -5])
+  const rotateY = useTransform(mouseX, [-100, 100], [-5, 5])
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return
+    
+    const rect = cardRef.current.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const centerY = rect.top + rect.height / 2
+    
+    mouseX.set(e.clientX - centerX)
+    mouseY.set(e.clientY - centerY)
+  }
+
+  const handleMouseLeave = () => {
+    mouseX.set(0)
+    mouseY.set(0)
+    setIsHovered(false)
+  }
+
   const initials = post.author.profile?.displayName
     ?.split(' ')
     .map((n) => n[0])
@@ -42,14 +72,50 @@ export function PostCard({ post }: PostCardProps) {
 
   return (
     <Link href={`/p/${post.slug}`}>
-      <article className="card-hover h-full flex flex-col group">
+      <motion.article
+        ref={cardRef}
+        className="card-hover h-full flex flex-col group relative"
+        style={{
+          rotateX,
+          rotateY,
+          transformStyle: 'preserve-3d',
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={handleMouseLeave}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      >
+        {/* Shimmer overlay */}
+        {isHovered && (
+          <motion.div
+            className="absolute inset-0 pointer-events-none rounded-xl overflow-hidden z-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+              initial={{ x: '-100%' }}
+              animate={{ x: '200%' }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.5,
+                ease: 'linear',
+              }}
+            />
+          </motion.div>
+        )}
         {/* Cover Image */}
         {post.coverImage && (
           <div className="relative h-48 overflow-hidden">
-            <img
+            <motion.img
               src={post.coverImage}
               alt={post.title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              className="w-full h-full object-cover"
+              style={{
+                transform: `translateZ(20px) scale(${isHovered ? 1.1 : 1})`,
+              }}
+              transition={{ duration: 0.5 }}
             />
             {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-dark-card/20 to-transparent"></div>
@@ -60,21 +126,28 @@ export function PostCard({ post }: PostCardProps) {
         <div className="p-6 flex-1 flex flex-col">
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
-              {post.tags.slice(0, 2).map((postTag) => (
-                <Badge
+            <motion.div 
+              className="flex flex-wrap gap-2 mb-3"
+              style={{ transform: `translateZ(30px)` }}
+            >
+              {post.tags.slice(0, 2).map((postTag, idx) => (
+                <motion.div
                   key={postTag.tag.slug}
-                  className="px-2.5 py-0.5 text-xs bg-teal-500/10 text-teal-400 border-teal-500/30 hover:bg-teal-500/20 transition-colors"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: isHovered ? idx * 0.05 : 0 }}
                 >
-                  {postTag.tag.name}
-                </Badge>
+                  <Badge className="px-2.5 py-0.5 text-xs bg-teal-500/10 text-teal-400 border-teal-500/30 hover:bg-teal-500/20 transition-colors">
+                    {postTag.tag.name}
+                  </Badge>
+                </motion.div>
               ))}
               {post.tags.length > 2 && (
                 <Badge className="px-2.5 py-0.5 text-xs bg-dark-bg text-text-tertiary border-dark-border">
                   +{post.tags.length - 2}
                 </Badge>
               )}
-            </div>
+            </motion.div>
           )}
 
           {/* Title */}
@@ -110,10 +183,20 @@ export function PostCard({ post }: PostCardProps) {
               </div>
 
               {/* Read More */}
-              <div className="flex items-center gap-1 text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <motion.div
+                className="flex items-center gap-1 text-teal-400"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : -10 }}
+                transition={{ duration: 0.2 }}
+              >
                 <span className="text-sm font-medium">Read</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </div>
+                <motion.div
+                  animate={{ x: isHovered ? [0, 5, 0] : 0 }}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                >
+                  <ArrowRight className="w-4 h-4" />
+                </motion.div>
+              </motion.div>
             </div>
 
             {/* Meta */}
@@ -154,7 +237,7 @@ export function PostCard({ post }: PostCardProps) {
             </div>
           </div>
         </div>
-      </article>
+      </motion.article>
     </Link>
   )
 }

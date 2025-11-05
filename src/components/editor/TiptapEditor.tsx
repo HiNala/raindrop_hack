@@ -6,7 +6,29 @@ import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import { lowlight } from 'lowlight'
+import { common, createLowlight } from 'lowlight'
+import javascript from 'highlight.js/lib/languages/javascript'
+import typescript from 'highlight.js/lib/languages/typescript'
+import python from 'highlight.js/lib/languages/python'
+import java from 'highlight.js/lib/languages/java'
+import go from 'highlight.js/lib/languages/go'
+import rust from 'highlight.js/lib/languages/rust'
+import css from 'highlight.js/lib/languages/css'
+import json from 'highlight.js/lib/languages/json'
+import bash from 'highlight.js/lib/languages/bash'
+import sql from 'highlight.js/lib/languages/sql'
+
+const lowlight = createLowlight(common)
+lowlight.register('javascript', javascript)
+lowlight.register('typescript', typescript)
+lowlight.register('python', python)
+lowlight.register('java', java)
+lowlight.register('go', go)
+lowlight.register('rust', rust)
+lowlight.register('css', css)
+lowlight.register('json', json)
+lowlight.register('bash', bash)
+lowlight.register('sql', sql)
 import {
   Bold,
   Italic,
@@ -41,18 +63,19 @@ export function TiptapEditor({ content, onChange, placeholder = 'Start writing..
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-600 dark:text-blue-400 underline hover:text-blue-700',
+          class: 'text-teal-400 underline hover:text-teal-300 transition-colors',
         },
       }),
       Image.configure({
         HTMLAttributes: {
-          class: 'max-w-full h-auto rounded-lg my-4',
+          class: 'max-w-full h-auto rounded-xl my-4 border border-[#27272a]',
         },
       }),
       CodeBlockLowlight.configure({
         lowlight,
+        defaultLanguage: 'javascript',
         HTMLAttributes: {
-          class: 'bg-gray-100 dark:bg-gray-800 rounded-lg p-4 my-4 font-mono text-sm',
+          class: 'code-block-wrapper',
         },
       }),
     ],

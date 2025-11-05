@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Upload, Loader2 } from 'lucide-react'
+import { X, Upload, Loader2, Image as ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useUploadThing } from '@/lib/uploadthing'
 import toast from 'react-hot-toast'
@@ -14,12 +14,10 @@ interface CoverUploadProps {
 
 export function CoverUpload({ currentImage, onUpload, onRemove }: CoverUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
   const { startUpload } = useUploadThing('coverImageUploader')
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
+  const validateAndUpload = async (file: File) => {
     // Validate file type
     if (!file.type.startsWith('image/')) {
       toast.error('Please upload an image file')
@@ -49,6 +47,39 @@ export function CoverUpload({ currentImage, onUpload, onRemove }: CoverUploadPro
     } finally {
       setIsUploading(false)
     }
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    await validateAndUpload(file)
+  }
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+
+    const file = e.dataTransfer.files?.[0]
+    if (!file) return
+    await validateAndUpload(file)
   }
 
   return (
@@ -104,7 +135,17 @@ export function CoverUpload({ currentImage, onUpload, onRemove }: CoverUploadPro
           </div>
         </div>
       ) : (
-        <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 dark:border-gray-700 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+        <label
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
+            isDragging
+              ? 'border-teal-500 bg-teal-500/5 shadow-glow-teal'
+              : 'border-[#27272a] bg-[#1a1a1d] hover:border-teal-500/50 hover:bg-[#1a1a1d]/80'
+          }`}
+        >
           <input
             type="file"
             accept="image/*"
@@ -112,22 +153,37 @@ export function CoverUpload({ currentImage, onUpload, onRemove }: CoverUploadPro
             className="hidden"
             disabled={isUploading}
           />
-          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+          <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4">
             {isUploading ? (
               <>
-                <Loader2 className="w-12 h-12 mb-4 text-gray-400 animate-spin" />
-                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                <Loader2 className="w-12 h-12 mb-4 text-teal-400 animate-spin" />
+                <p className="mb-2 text-sm text-text-primary font-medium">
                   Uploading cover image...
                 </p>
               </>
             ) : (
               <>
-                <Upload className="w-12 h-12 mb-4 text-gray-400" />
-                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                  <span className="font-semibold">Click to upload</span> or drag and drop
+                <div className="w-16 h-16 mb-4 rounded-full bg-teal-500/10 flex items-center justify-center">
+                  {isDragging ? (
+                    <ImageIcon className="w-8 h-8 text-teal-400" />
+                  ) : (
+                    <Upload className="w-8 h-8 text-teal-400" />
+                  )}
+                </div>
+                <p className="mb-2 text-sm text-text-primary font-medium">
+                  {isDragging ? (
+                    'Drop your image here'
+                  ) : (
+                    <>
+                      <span className="text-teal-400">Click to upload</span> or drag and drop
+                    </>
+                  )}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  PNG, JPG, WEBP up to 8MB
+                <p className="text-xs text-text-secondary">
+                  PNG, JPG, WEBP or GIF • Max 8MB
+                </p>
+                <p className="text-xs text-text-tertiary mt-1">
+                  Recommended: 1200×630px for optimal display
                 </p>
               </>
             )}

@@ -22,6 +22,7 @@ model User {
   likes         Like[]
   
   @@map("users")
+  @@index([clerkId])
 }
 
 model Profile {
@@ -38,6 +39,7 @@ model Profile {
   updatedAt   DateTime @updatedAt
   
   @@map("profiles")
+  @@index([username])
 }
 
 model Post {
@@ -54,17 +56,20 @@ model Post {
   publishedAt  DateTime?
   featured     Boolean   @default(false)
   readTimeMin  Int?
+  viewCount    Int       @default(0)
   tags         PostTag[]
   likes        Like[]
   comments     Comment[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   
-  @@index([slug])
-  @@index([published, publishedAt])
-  @@index([authorId, published])
-  @@index([publishedAt(sort: Desc)])
   @@map("posts")
+  @@index([slug])
+  @@index([published])
+  @@index([publishedAt])
+  @@index([authorId])
+  @@index([published, publishedAt])
+  @@index([published, featured])
 }
 
 model Tag {
@@ -75,6 +80,7 @@ model Tag {
   createdAt DateTime @default(now())
   
   @@map("tags")
+  @@index([slug])
 }
 
 model PostTag {

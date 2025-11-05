@@ -75,6 +75,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
+export const revalidate = 3600 // Revalidate every hour (ISR)
+
 export default async function PostPage({ params }: { params: { slug: string } }) {
   const post = await getPost(params.slug)
 
@@ -89,10 +91,12 @@ export default async function PostPage({ params }: { params: { slug: string } })
       {/* Cover Image */}
       {post.coverImage && (
         <div className="w-full h-[400px] relative bg-[#1a1a1d]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={post.coverImage}
             alt={post.title}
             className="w-full h-full object-cover"
+            loading="eager"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0b]/80 to-transparent"></div>
         </div>

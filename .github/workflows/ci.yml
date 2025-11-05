@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint-typecheck-build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [20.x]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run ESLint
+      run: npm run lint
+      continue-on-error: false
+    
+    - name: Run TypeScript type check
+      run: npx tsc --noEmit
+      continue-on-error: false
+    
+    - name: Build application
+      run: npm run build
+      env:
+        DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_dummy
+        CLERK_SECRET_KEY: sk_test_dummy
+        OPENAI_API_KEY: sk-dummy
+        UPLOADTHING_SECRET: sk_dummy
+        UPLOADTHING_APP_ID: dummy
+      continue-on-error: false
+    
+    - name: Check for build artifacts
+      run: |
+        if [ ! -d ".next" ]; then
+          echo "Build failed: .next directory not found"
+          exit 1
+        fi
+        echo "✅ Build successful!"
+  
+  prisma-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Validate Prisma schema
+      run: npx prisma validate
+    
+    - name: Generate Prisma Client
+      run: npx prisma generate
+      
+    - name: Check migrations
+      run: |
+        if [ ! -d "prisma/migrations" ]; then
+          echo "⚠️  Warning: No migrations directory found"
+        else
+          echo "✅ Migrations directory exists"
+        fi
+  
+  security-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+    
+    - name: Run npm audit
+      run: npm audit --audit-level=moderate
+      continue-on-error: true
+    
+    - name: Check for security vulnerabilities
+      run: |
+        AUDIT_RESULT=$(npm audit --json || true)
+        echo "$AUDIT_RESULT"
+        CRITICAL=$(echo "$AUDIT_RESULT" | jq -r '.metadata.vulnerabilities.critical // 0')
+        HIGH=$(echo "$AUDIT_RESULT" | jq -r '.metadata.vulnerabilities.high // 0')
+        if [ "$CRITICAL" -gt "0" ] || [ "$HIGH" -gt "0" ]; then
+          echo "❌ Found $CRITICAL critical and $HIGH high severity vulnerabilities"
+          echo "Please run 'npm audit fix' to resolve"
+        else
+          echo "✅ No critical or high vulnerabilities found"
+        fi
+

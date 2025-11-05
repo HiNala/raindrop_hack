@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { motion } from 'framer-motion'
 import { useUser, UserButton } from '@clerk/nextjs'
 import { 
   Search, 
@@ -36,13 +38,16 @@ interface HeaderProps {
 export function Header({ onSearchOpen }: HeaderProps) {
   const { isSignedIn, user } = useUser()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const { isOpen, open, close } = useCommandPalette()
+  const pathname = usePathname()
+  const [hoveredNav, setHoveredNav] = useState<string | null>(null)
 
   const mainNav = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Explore', href: '/explore', icon: Search },
     { name: 'Tags', href: '/tags', icon: Bookmark },
   ]
+
+  const activeNav = mainNav.find(item => pathname === item.href)
 
   const userMenu = [
     { name: 'Profile', href: '/profile', icon: User },
@@ -67,18 +72,56 @@ export function Header({ onSearchOpen }: HeaderProps) {
                 </span>
               </Link>
               
-              {/* Desktop Navigation */}
-              <nav className="hidden md:flex items-center space-x-6">
-                {mainNav.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="text-text-secondary hover:text-text-primary font-medium transition-colors duration-200 flex items-center gap-2"
-                  >
-                    {item.icon && <item.icon className="w-4 h-4" />}
-                    {item.name}
-                  </Link>
-                ))}
+              {/* Desktop Navigation with sliding indicator */}
+              <nav className="hidden md:flex items-center gap-1 relative">
+                {mainNav.map((item) => {
+                  const isActive = pathname === item.href
+                  return (
+                    <motion.div
+                      key={item.name}
+                      onHoverStart={() => setHoveredNav(item.name)}
+                      onHoverEnd={() => setHoveredNav(null)}
+                      whileHover={{ y: -2 }}
+                      className="relative"
+                    >
+                      <Link
+                        href={item.href}
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2 relative z-10 ${
+                          isActive
+                            ? 'text-text-primary'
+                            : 'text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        {item.icon && <item.icon className="w-4 h-4" />}
+                        {item.name}
+                      </Link>
+                      
+                      {/* Active indicator */}
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeNav"
+                          className="absolute inset-0 bg-teal-500/10 rounded-lg border border-teal-500/30"
+                          transition={{
+                            type: 'spring',
+                            stiffness: 400,
+                            damping: 30,
+                          }}
+                        />
+                      )}
+                      
+                      {/* Hover effect */}
+                      {hoveredNav === item.name && !isActive && (
+                        <motion.div
+                          layoutId="hoverNav"
+                          className="absolute inset-0 bg-dark-card rounded-lg"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                        />
+                      )}
+                    </motion.div>
+                  )
+                })}
               </nav>
             </div>
             

@@ -8,7 +8,8 @@ export async function requireUser() {
     throw new Error('Unauthorized')
   }
 
-  let user = await prisma.user.findFirst({
+  // Check if user exists, create if not
+  let user = await prisma.user.findUnique({
     where: { clerkId: userId },
     include: { profile: true }
   })
@@ -35,6 +36,7 @@ export async function requireUser() {
       counter++
     }
 
+    // Create user and profile
     user = await prisma.user.create({
       data: {
         clerkId: userId,
@@ -52,6 +54,8 @@ export async function requireUser() {
       },
       include: { profile: true }
     })
+
+    console.log(`Created new user: ${user.id} with username: ${finalUsername}`)
   }
 
   return user
@@ -61,7 +65,7 @@ export async function getCurrentUser() {
   const { userId } = auth()
   if (!userId) return null
 
-  return await prisma.user.findFirst({
+  return await prisma.user.findUnique({
     where: { clerkId: userId },
     include: { profile: true }
   })

@@ -1,178 +1,186 @@
-# API Reference
+# 📚 API Reference
 
-Complete API documentation for Blog App endpoints.
+This document provides a comprehensive overview of all API endpoints available in the blog platform.
 
-## Base URL
+## 🔐 Authentication
 
-- Development: `http://localhost:3000`
-- Production: `https://your-domain.com`
+Most API endpoints require authentication via Clerk. Include the Clerk session token in your requests:
 
-## Authentication
+```javascript
+// Client-side with Clerk
+const { getToken } = auth();
+const token = await getToken();
 
-Most endpoints require Clerk authentication. Include the session cookie in requests, or use the `Authorization` header for server-to-server calls.
-
-## Endpoints
-
-### Health Check
-
-**GET** `/api/health`
-
-Check application health and environment configuration.
-
-**Response:**
-```json
-{
-  "status": "healthy",
-  "timestamp": "2024-11-05T06:54:53.000Z",
-  "environment": {
-    "node": "production",
-    "configured": true,
-    "checks": {
-      "database": true,
-      "clerk": true,
-      "openai": true,
-      "uploadthing": true
-    }
-  },
-  "database": {
-    "connected": true,
-    "provider": "postgresql"
-  }
+// Include in headers
+headers: {
+  'Authorization': `Bearer ${token}`,
+  'Content-Type': 'application/json'
 }
 ```
 
----
+## 📝 Posts API
 
-### Posts
-
-#### Get All Posts
-
-**GET** `/api/posts`
+### Get All Posts
+```http
+GET /api/posts
+```
 
 **Query Parameters:**
-- `published` (boolean): Filter by published status
-- `authorId` (string): Filter by author
-- `tag` (string): Filter by tag slug
-- `limit` (number): Limit results (default: 20)
-- `offset` (number): Pagination offset
+- `page` (optional): Page number (default: 1)
+- `limit` (optional): Posts per page (default: 10)
+- `tag` (optional): Filter by tag slug
+- `search` (optional): Search in title and content
+- `author` (optional): Filter by author username
 
 **Response:**
 ```json
 {
   "posts": [
     {
-      "id": "clx...",
+      "id": "post_id",
       "title": "Post Title",
-      "slug": "post-title",
-      "excerpt": "Post excerpt",
-      "published": true,
-      "publishedAt": "2024-11-05T06:00:00.000Z",
+      "slug": "post-slug",
+      "excerpt": "Post excerpt...",
+      "publishedAt": "2024-01-01T00:00:00.000Z",
       "author": {
         "profile": {
           "username": "author",
-          "displayName": "Author Name"
+          "displayName": "Author Name",
+          "avatarUrl": "https://..."
         }
       },
-      "tags": [...],
+      "tags": [
+        {
+          "tag": {
+            "name": "javascript",
+            "slug": "javascript"
+          }
+        }
+      ],
       "_count": {
         "likes": 10,
         "comments": 5
       }
     }
   ],
-  "total": 100
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 50,
+    "totalPages": 5
+  }
 }
 ```
 
-#### Get Single Post
-
-**GET** `/api/posts/[id]`
+### Get Single Post
+```http
+GET /api/posts/[id]
+```
 
 **Response:**
 ```json
 {
-  "id": "clx...",
+  "id": "post_id",
   "title": "Post Title",
-  "slug": "post-title",
+  "slug": "post-slug",
+  "excerpt": "Post excerpt...",
   "contentJson": {...},
+  "contentHtml": "<p>Post content...</p>",
   "published": true,
-  "author": {...},
+  "publishedAt": "2024-01-01T00:00:00.000Z",
+  "coverImage": "https://...",
+  "readTimeMin": 5,
+  "author": {
+    "profile": {
+      "username": "author",
+      "displayName": "Author Name",
+      "bio": "Author bio...",
+      "avatarUrl": "https://..."
+    }
+  },
   "tags": [...]
 }
 ```
 
-#### Create Post
+### Create Post (Authenticated)
+```http
+POST /api/posts
+```
 
-**POST** `/api/posts`
-
-**Authentication:** Required
-
-**Body:**
+**Request Body:**
 ```json
 {
   "title": "Post Title",
-  "slug": "post-title",
-  "excerpt": "Post excerpt",
+  "excerpt": "Post excerpt...",
   "contentJson": {...},
-  "tags": ["tag-slug-1", "tag-slug-2"]
+  "coverImage": "https://...",
+  "tagIds": ["tag_id_1", "tag_id_2"],
+  "published": false
 }
 ```
 
 **Response:**
 ```json
 {
-  "id": "clx...",
-  "title": "Post Title",
-  "slug": "post-title"
+  "success": true,
+  "data": {
+    "id": "new_post_id",
+    "slug": "post-slug"
+  }
 }
 ```
 
-#### Update Post
+### Update Post (Authenticated, Owner Only)
+```http
+PUT /api/posts/[id]
+```
 
-**PATCH** `/api/posts/[id]`
-
-**Authentication:** Required (owner only)
-
-**Body:** Same as create, all fields optional
-
-**Response:** Updated post object
-
-#### Delete Post
-
-**DELETE** `/api/posts/[id]`
-
-**Authentication:** Required (owner only)
+**Request Body:** Same as create post
 
 **Response:**
 ```json
 {
-  "success": true
+  "success": true,
+  "data": {
+    "id": "post_id",
+    "slug": "updated-slug"
+  }
 }
 ```
 
----
-
-### Likes
-
-#### Toggle Like
-
-**POST** `/api/posts/[id]/like`
-
-**Authentication:** Required
+### Delete Post (Authenticated, Owner Only)
+```http
+DELETE /api/posts/[id]
+```
 
 **Response:**
 ```json
 {
+  "success": true,
+  "message": "Post deleted successfully"
+}
+```
+
+## ❤️ Likes API
+
+### Like/Unlike Post (Authenticated)
+```http
+POST /api/posts/[id]/like
+```
+
+**Response:**
+```json
+{
+  "success": true,
   "liked": true,
-  "likes": 11
+  "likesCount": 11
 }
 ```
 
-#### Check Like Status
-
-**GET** `/api/posts/[id]/like/check`
-
-**Authentication:** Required
+### Check Like Status (Authenticated)
+```http
+GET /api/posts/[id]/like/check
+```
 
 **Response:**
 ```json
@@ -181,305 +189,352 @@ Check application health and environment configuration.
 }
 ```
 
----
+## 💬 Comments API
 
-### Comments
-
-#### Get Comments
-
-**GET** `/api/posts/[id]/comments`
+### Get Post Comments
+```http
+GET /api/posts/[id]/comments
+```
 
 **Response:**
 ```json
 {
   "comments": [
     {
-      "id": "clx...",
-      "body": "Comment text",
+      "id": "comment_id",
+      "body": "Comment content...",
+      "createdAt": "2024-01-01T00:00:00.000Z",
       "author": {
         "profile": {
-          "username": "user",
-          "displayName": "User Name"
+          "username": "commenter",
+          "displayName": "Commenter Name",
+          "avatarUrl": "https://..."
         }
-      },
-      "createdAt": "2024-11-05T06:00:00.000Z"
-    }
-  ]
-}
-```
-
-#### Add Comment
-
-**POST** `/api/posts/[id]/comments`
-
-**Authentication:** Required
-
-**Body:**
-```json
-{
-  "body": "Comment text"
-}
-```
-
-**Response:** Created comment object
-
-#### Delete Comment
-
-**DELETE** `/api/posts/[id]/comments/[commentId]`
-
-**Authentication:** Required (author only)
-
-**Response:**
-```json
-{
-  "success": true
-}
-```
-
----
-
-### Tags
-
-#### Get All Tags
-
-**GET** `/api/tags`
-
-**Response:**
-```json
-{
-  "tags": [
-    {
-      "id": "clx...",
-      "name": "JavaScript",
-      "slug": "javascript",
-      "_count": {
-        "posts": 10
       }
     }
   ]
 }
 ```
 
-#### Create Tag
+### Add Comment (Authenticated)
+```http
+POST /api/posts/[id]/comments
+```
 
-**POST** `/api/tags`
+**Request Body:**
+```json
+{
+  "body": "Comment content..."
+}
+```
 
-**Authentication:** Required
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "new_comment_id",
+    "body": "Comment content...",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
 
-**Body:**
+### Delete Comment (Authenticated, Author Only)
+```http
+DELETE /api/comments/[id]
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Comment deleted successfully"
+}
+```
+
+## 🏷️ Tags API
+
+### Get All Tags
+```http
+GET /api/tags
+```
+
+**Response:**
+```json
+{
+  "tags": [
+    {
+      "id": "tag_id",
+      "name": "JavaScript",
+      "slug": "javascript",
+      "_count": {
+        "posts": 15
+      }
+    }
+  ]
+}
+```
+
+### Create Tag (Authenticated)
+```http
+POST /api/tags
+```
+
+**Request Body:**
 ```json
 {
   "name": "New Tag"
 }
 ```
 
-**Response:** Created tag object
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "new_tag_id",
+    "name": "New Tag",
+    "slug": "new-tag"
+  }
+}
+```
 
----
+## 👤 Profile API
 
-### Profile
-
-#### Get Profile
-
-**GET** `/api/profile`
-
-**Authentication:** Required
+### Get User Profile
+```http
+GET /api/profile
+```
 
 **Response:**
 ```json
 {
-  "username": "user",
-  "displayName": "User Name",
-  "bio": "Bio text",
+  "id": "user_id",
+  "username": "username",
+  "displayName": "Display Name",
+  "bio": "User bio...",
   "avatarUrl": "https://...",
   "websiteUrl": "https://...",
-  "location": "Location"
+  "location": "Location",
+  "_count": {
+    "posts": 10,
+    "followers": 100,
+    "following": 50
+  }
 }
 ```
 
-#### Update Profile
+### Update Profile (Authenticated)
+```http
+PATCH /api/profile
+```
 
-**PATCH** `/api/profile`
-
-**Authentication:** Required
-
-**Body:**
+**Request Body:**
 ```json
 {
-  "displayName": "New Name",
-  "bio": "New bio",
+  "displayName": "New Display Name",
+  "bio": "Updated bio...",
+  "avatarUrl": "https://...",
   "websiteUrl": "https://...",
   "location": "New Location"
 }
 ```
 
-**Response:** Updated profile object
-
----
-
-### Upload
-
-#### Upload Image
-
-**POST** `/api/uploadthing`
-
-**Authentication:** Required (via UploadThing)
-
-Upload cover images or avatars via UploadThing.
-
 **Response:**
-```json
-{
-  "url": "https://utfs.io/...",
-  "key": "...",
-  "name": "image.jpg",
-  "size": 123456
-}
-```
-
----
-
-## Rate Limiting
-
-### Current Limits
-
-- **AI Generation:** 10 requests per day per user
-- **HN Context:** 10 requests per day per user (when implemented)
-- **Comments:** 50 per hour per user
-- **Likes:** 100 per hour per user
-
-### Rate Limit Headers
-
-```
-X-RateLimit-Limit: 10
-X-RateLimit-Remaining: 9
-X-RateLimit-Reset: 1700000000
-```
-
-### Rate Limit Response
-
-```json
-{
-  "error": "Rate limit exceeded",
-  "retryAfter": 3600
-}
-```
-
----
-
-## Error Responses
-
-All errors follow this format:
-
-```json
-{
-  "error": "Error message",
-  "code": "ERROR_CODE",
-  "details": {}
-}
-```
-
-### Common Error Codes
-
-- `UNAUTHORIZED` (401): Authentication required
-- `FORBIDDEN` (403): Insufficient permissions
-- `NOT_FOUND` (404): Resource not found
-- `VALIDATION_ERROR` (400): Invalid input
-- `RATE_LIMIT_EXCEEDED` (429): Too many requests
-- `INTERNAL_ERROR` (500): Server error
-
----
-
-## Server Actions
-
-### Generate Post
-
-**Server Action:** `generateAuthenticatedPost`
-
-**Parameters:**
-- `prompt` (string): Post description
-- `options` (object):
-  - `tone`: 'professional' | 'casual' | 'technical'
-  - `length`: 'short' | 'medium' | 'long'
-
-**Returns:**
 ```json
 {
   "success": true,
   "data": {
-    "postId": "clx...",
-    "title": "Generated Title",
-    "contentJson": {...}
+    "displayName": "New Display Name",
+    "bio": "Updated bio..."
   }
 }
 ```
 
-### Save Draft
+## 🔍 Search API
 
-**Server Action:** `saveDraft`
-
-**Parameters:**
-- `postId` (string): Post ID
-- `data` (object): Post data
-
-**Returns:** Updated post
-
-### Publish Post
-
-**Server Action:** `publishPost`
-
-**Parameters:**
-- `postId` (string): Post ID
-
-**Returns:** Published post
-
----
-
-## Webhooks
-
-### Clerk Webhooks
-
-**POST** `/api/webhooks/clerk`
-
-Handle Clerk user events (user.created, user.updated, user.deleted).
-
----
-
-## Examples
-
-### Create Post with cURL
-
-```bash
-curl -X POST https://your-domain.com/api/posts \
-  -H "Content-Type: application/json" \
-  -H "Cookie: __session=..." \
-  -d '{
-    "title": "My Post",
-    "slug": "my-post",
-    "excerpt": "Post excerpt",
-    "contentJson": {},
-    "tags": ["javascript"]
-  }'
+### Search Posts
+```http
+GET /api/search
 ```
 
-### Like Post with fetch
+**Query Parameters:**
+- `q` (required): Search query
+- `type` (optional): "posts" (default), "tags", "users"
+- `limit` (optional): Results per page (default: 10)
 
-```javascript
-const response = await fetch('/api/posts/post-id/like', {
-  method: 'POST',
-  credentials: 'include',
-});
-const data = await response.json();
+**Response:**
+```json
+{
+  "results": [
+    {
+      "type": "post",
+      "id": "post_id",
+      "title": "Post Title",
+      "slug": "post-slug",
+      "excerpt": "Matching excerpt...",
+      "author": {...}
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25
+  }
+}
 ```
+
+## 🚀 Server Actions
+
+The following server actions are available for form handling:
+
+### generatePost
+```typescript
+import { generateAuthenticatedPost, generateAnonymousPost } from '@/app/actions/generate-post'
+
+// For authenticated users
+const result = await generateAuthenticatedPost(prompt, {
+  tone: 'professional',
+  length: 'medium'
+})
+
+// For anonymous users
+const result = await generateAnonymousPost(prompt, {
+  tone: 'casual',
+  length: 'short'
+})
+```
+
+### Post Management
+```typescript
+import { saveDraft, publishPost, deletePost, getOrCreateTags } from '@/app/actions/post-actions'
+
+// Save draft
+const result = await saveDraft(postId, postData)
+
+// Publish post
+const result = await publishPost(postId)
+
+// Delete post
+const result = await deletePost(postId)
+
+// Get or create tags
+const result = await getOrCreateTags(['javascript', 'react'])
+```
+
+## 📊 Response Format
+
+All API responses follow a consistent format:
+
+### Success Response
+```json
+{
+  "success": true,
+  "data": {...}
+}
+```
+
+### Error Response
+```json
+{
+  "success": false,
+  "error": "Error message",
+  "code": "ERROR_CODE"
+}
+```
+
+## 🔒 Rate Limits
+
+- **AI Generation**: 10 posts per day per authenticated user
+- **Anonymous Posts**: 3 posts total (client-side enforced)
+- **API Calls**: No global rate limit (implement as needed)
+
+## 🌍 CORS Configuration
+
+The API is configured to accept requests from:
+- `http://localhost:3000` (development)
+- Your production domain
+- UploadThing domains for file uploads
+
+## 🛠️ Error Codes
+
+| Code | Description |
+|------|-------------|
+| `UNAUTHORIZED` | User not authenticated |
+| `FORBIDDEN` | User doesn't have permission |
+| `NOT_FOUND` | Resource not found |
+| `VALIDATION_ERROR` | Invalid request data |
+| `RATE_LIMITED` | Too many requests |
+| `SERVER_ERROR` | Internal server error |
+
+## 📝 Data Models
+
+### Post
+```typescript
+interface Post {
+  id: string
+  title: string
+  slug: string
+  excerpt?: string
+  contentJson: object
+  contentHtml?: string
+  coverImage?: string
+  published: boolean
+  publishedAt?: Date
+  featured: boolean
+  readTimeMin?: number
+  authorId: string
+  author: User
+  tags: PostTag[]
+  likes: Like[]
+  comments: Comment[]
+  createdAt: Date
+  updatedAt: Date
+}
+```
+
+### User
+```typescript
+interface User {
+  id: string
+  clerkId: string
+  email: string
+  profile?: Profile
+  posts: Post[]
+  comments: Comment[]
+  likes: Like[]
+  createdAt: Date
+  updatedAt: Date
+}
+```
+
+### Profile
+```typescript
+interface Profile {
+  id: string
+  userId: string
+  username: string
+  displayName: string
+  bio?: string
+  avatarUrl?: string
+  websiteUrl?: string
+  location?: string
+  createdAt: Date
+  updatedAt: Date
+}
+```
+
+## 🔄 Real-time Features
+
+While the API is RESTful, the UI provides optimistic updates for:
+- Likes
+- Comments
+- Post creation
+- Draft saving
+
+For real-time collaboration, consider implementing WebSockets or Server-Sent Events.
 
 ---
 
-## Changelog
-
-### v1.0.0 (2024-11-05)
-- Initial API release
-- Posts, Comments, Likes endpoints
-- Tag management
-- Profile management
-- Image uploads
-
+For more information, check the [TypeScript types](src/lib/validations.ts) and [Prisma schema](prisma/schema.prisma).

@@ -1,27 +1,32 @@
 import { NextResponse } from 'next/server'
-import { requireUser } from '@/lib/auth'
+import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = await requireUser()
+    const { userId } = auth()
+    if (!userId) {
+      return NextResponse.json({ isLiked: false })
+    }
 
     const like = await prisma.like.findUnique({
       where: {
         userId_postId: {
-          userId: user.id,
+          userId: userId,
           postId: params.id,
         },
       },
     })
 
-    return NextResponse.json({ isLiked: !!like })
+    return NextResponse.json({ 
+      success: true,
+      isLiked: !!like
+    })
   } catch (error) {
+    console.error('Like check error:', error)
     return NextResponse.json({ isLiked: false })
   }
 }
-
-

@@ -1,71 +1,16 @@
-// Temporarily simplified posts API for frontend development
-// TODO: Implement full API when database is connected
-
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
 
-const mockPosts = [
-  {
-    id: "1",
-    title: "Welcome to the Blog",
-    slug: "welcome-to-the-blog",
-    excerpt: "This is a sample post for frontend development.",
-    contentJson: {},
-    contentHtml: "<p>This is a sample post for frontend development.</p>",
-    coverImage: null,
-    published: true,
-    publishedAt: new Date().toISOString(),
-    featured: false,
-    readTimeMin: 5,
-    author: {
-      id: "1",
-      clerkId: "user_123",
-      email: "demo@example.com",
-      profile: {
-        username: "demo_user",
-        displayName: "Demo User",
-        avatarUrl: null
-      }
-    },
-    tags: [
-      { tag: { name: "demo", slug: "demo" } }
-    ],
-    _count: {
-      likes: 5,
-      comments: 2
-    }
-  },
-  {
-    id: "2",
-    title: "Getting Started with Modern Web Development",
-    slug: "getting-started-with-modern-web-development",
-    excerpt: "A comprehensive guide to modern web development tools and practices.",
-    contentJson: {},
-    contentHtml: "<p>A comprehensive guide to modern web development tools and practices.</p>",
-    coverImage: null,
-    published: true,
-    publishedAt: new Date().toISOString(),
-    featured: true,
-    readTimeMin: 8,
-    author: {
-      id: "1",
-      clerkId: "user_123", 
-      email: "demo@example.com",
-      profile: {
-        username: "demo_user",
-        displayName: "Demo User",
-        avatarUrl: null
-      }
-    },
-    tags: [
-      { tag: { name: "webdev", slug: "webdev" } },
-      { tag: { name: "tutorial", slug: "tutorial" } }
-    ],
-    _count: {
-      likes: 12,
-      comments: 4
-    }
-  }
-]
+const createPostSchema = z.object({
+  title: z.string().min(1).max(200),
+  excerpt: z.string().max(500).optional(),
+  contentJson: z.object({}).optional(),
+  contentHtml: z.string().optional(),
+  coverImage: z.string().url().optional(),
+  tagIds: z.array(z.string()).optional(),
+})
 
 export async function GET(request: NextRequest) {
   try {
@@ -73,27 +18,109 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     const slug = searchParams.get('slug')
+    const tag = searchParams.get('tag')
+    const search = searchParams.get('search')
+    const authorId = searchParams.get('authorId')
 
+    // If specific slug requested
     if (slug) {
-      const post = mockPosts.find(p => p.slug === slug)
+      const post = await prisma.post.findUnique({
+        where: { 
+          slug,
+          published: true 
+        },
+        include: {
+          author: {
+            include: {
+              profile: true
+            }
+          },
+          tags: {
+            include: {
+              tag: true
+            }
+          },
+          _count: {
+            select: {
+              likes: true,
+              comments: true
+            }
+          }
+        }
+      })
+
       if (!post) {
         return NextResponse.json({ error: 'Post not found' }, { status: 404 })
       }
+
+      // Increment view count
+      await prisma.post.update({
+        where: { id: post.id },
+        data: { viewCount: { increment: 1 } }
+      })
+
       return NextResponse.json(post)
     }
 
-    // Return paginated results
-    const startIndex = (page - 1) * limit
-    const endIndex = startIndex + limit
-    const paginatedPosts = mockPosts.slice(startIndex, endIndex)
+    // Build where clause
+    const where: any = { published: true }
+    
+    if (tag) {
+      where.tags = {
+        some: {
+          tag: { slug: tag }
+        }
+      }
+    }
+    
+    if (authorId) {
+      where.authorId = authorId
+    }
+    
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { excerpt: { contains: search, mode: 'insensitive' } }
+      ]
+    }
+
+    const posts = await prisma.post.findMany({
+      where,
+      include: {
+        author: {
+          include: {
+            profile: true
+          }
+        },
+        tags: {
+          include: {
+            tag: true
+          }
+        },
+        _count: {
+          select: {
+            likes: true,
+            comments: true
+          }
+        }
+      },
+      orderBy: [
+        { publishedAt: 'desc' },
+        { featured: 'desc' }
+      ],
+      skip: (page - 1) * limit,
+      take: limit,
+    })
+
+    const total = await prisma.post.count({ where })
 
     return NextResponse.json({
-      posts: paginatedPosts,
+      posts,
       pagination: {
         page,
         limit,
-        total: mockPosts.length,
-        pages: Math.ceil(mockPosts.length / limit)
+        total,
+        pages: Math.ceil(total / limit)
       }
     })
   } catch (error) {
@@ -105,9 +132,91 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST() {
-  return NextResponse.json(
-    { error: 'Post creation temporarily disabled' },
-    { status: 503 }
-  )
+export async function POST(request: NextRequest) {
+  try {
+    const { userId } = auth()
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const validatedData = createPostSchema.parse(body)
+
+    // Get user
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      include: { profile: true }
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    // Generate unique slug
+    const baseSlug = validatedData.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/-+/g, '-')
+      .trim()
+
+    let slug = baseSlug
+    let counter = 1
+    while (await prisma.post.findUnique({ where: { slug } })) {
+      slug = `${baseSlug}-${counter}`
+      counter++
+    }
+
+    // Create post
+    const post = await prisma.post.create({
+      data: {
+        title: validatedData.title,
+        slug,
+        excerpt: validatedData.excerpt,
+        contentJson: validatedData.contentJson || {},
+        contentHtml: validatedData.contentHtml,
+        coverImage: validatedData.coverImage,
+        authorId: user.id,
+        published: false, // Start as draft
+        readTimeMin: validatedData.contentHtml ? 
+          Math.ceil(validatedData.contentHtml.split(' ').length / 200) : 5,
+        tags: validatedData.tagIds ? {
+          create: validatedData.tagIds.map((tagId, index) => ({
+            tagId,
+            postId: post.id, // This will be set after post creation
+          }))
+        } : undefined
+      },
+      include: {
+        author: {
+          include: {
+            profile: true
+          }
+        },
+        tags: {
+          include: {
+            tag: true
+          }
+        }
+      }
+    })
+
+    return NextResponse.json({
+      success: true,
+      data: post
+    })
+  } catch (error) {
+    console.error('Post creation error:', error)
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid input data', details: error.errors },
+        { status: 400 }
+      )
+    }
+
+    return NextResponse.json(
+      { error: 'Failed to create post' },
+      { status: 500 }
+    )
+  }
 }
