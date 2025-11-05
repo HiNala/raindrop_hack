@@ -2,6 +2,50 @@ import { NextResponse } from 'next/server'
 import { requireUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string; commentId: string } }
+) {
+  try {
+    const user = await requireUser()
+    const { body } = await request.json()
+
+    if (!body || !body.trim()) {
+      return NextResponse.json({ error: 'Comment body is required' }, { status: 400 })
+    }
+
+    const comment = await prisma.comment.findUnique({
+      where: { id: params.commentId },
+    })
+
+    if (!comment) {
+      return NextResponse.json({ error: 'Comment not found' }, { status: 404 })
+    }
+
+    // Only comment author can edit
+    if (comment.authorId !== user.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    }
+
+    const updatedComment = await prisma.comment.update({
+      where: { id: params.commentId },
+      data: { body },
+      include: {
+        author: {
+          include: {
+            profile: true,
+          },
+        },
+      },
+    })
+
+    return NextResponse.json({ comment: updatedComment })
+  } catch (error) {
+    console.error('Comment update error:', error)
+    return NextResponse.json({ error: 'Failed to update comment' }, { status: 500 })
+  }
+}
+
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string; commentId: string } }

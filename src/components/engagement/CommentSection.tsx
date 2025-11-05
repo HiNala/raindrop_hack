@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { format } from 'date-fns'
-import { MessageCircle, Send, Trash2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { MessageCircle, Send, Trash2, Edit2, X, Check } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -33,6 +34,8 @@ export function CommentSection({ postId }: CommentSectionProps) {
   const [newComment, setNewComment] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editText, setEditText] = useState('')
 
   // Load comments
   useEffect(() => {
@@ -103,6 +106,43 @@ export function CommentSection({ postId }: CommentSectionProps) {
     }
   }
 
+  const handleEdit = (comment: Comment) => {
+    setEditingId(comment.id)
+    setEditText(comment.body)
+  }
+
+  const handleSaveEdit = async (commentId: string) => {
+    if (!editText.trim()) {
+      toast.error('Comment cannot be empty')
+      return
+    }
+
+    try {
+      const res = await fetch(`/api/posts/${postId}/comments/${commentId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ body: editText }),
+      })
+
+      if (!res.ok) {
+        throw new Error('Failed to update comment')
+      }
+
+      const data = await res.json()
+      setComments(comments.map((c) => (c.id === commentId ? data.comment : c)))
+      setEditingId(null)
+      setEditText('')
+      toast.success('Comment updated')
+    } catch (error) {
+      toast.error('Failed to update comment')
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingId(null)
+    setEditText('')
+  }
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
@@ -157,46 +197,108 @@ export function CommentSection({ postId }: CommentSectionProps) {
           </p>
         </Card>
       ) : (
-        <div className="space-y-6">
-          {comments.map((comment) => (
-            <Card key={comment.id} className="p-6">
-              <div className="flex items-start gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={comment.author.profile?.avatarUrl || undefined} />
-                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                    {comment.author.profile?.displayName?.charAt(0) || 'U'}
-                  </AvatarFallback>
-                </Avatar>
+        <div className="space-y-4">
+          <AnimatePresence mode="popLayout">
+            {comments.map((comment, index) => (
+              <motion.div
+                key={comment.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <Card className="p-6 glass-effect border-[#27272a] hover:border-teal-500/30 transition-colors">
+                  <div className="flex items-start gap-4">
+                    <Avatar className="h-10 w-10 ring-2 ring-[#27272a]">
+                      <AvatarImage src={comment.author.profile?.avatarUrl || undefined} />
+                      <AvatarFallback className="bg-gradient-to-br from-teal-500 to-teal-600 text-white">
+                        {comment.author.profile?.displayName?.charAt(0) || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
 
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <div className="font-semibold text-sm">
-                        {comment.author.profile?.displayName || 'Unknown User'}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <div className="font-semibold text-sm text-text-primary">
+                            {comment.author.profile?.displayName || 'Unknown User'}
+                          </div>
+                          <div className="text-xs text-text-tertiary">
+                            {format(new Date(comment.createdAt), 'MMM d, yyyy • h:mm a')}
+                          </div>
+                        </div>
+
+                        {user && comment.author.profile?.username === user.username && (
+                          <div className="flex items-center gap-1">
+                            {editingId !== comment.id && (
+                              <>
+                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleEdit(comment)}
+                                    className="h-8 w-8 p-0 text-text-secondary hover:text-teal-400"
+                                  >
+                                    <Edit2 className="w-4 h-4" />
+                                  </Button>
+                                </motion.div>
+                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleDelete(comment.id)}
+                                    className="h-8 w-8 p-0 text-text-secondary hover:text-red-400"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </motion.div>
+                              </>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {format(new Date(comment.createdAt), 'MMM d, yyyy • h:mm a')}
-                      </div>
+
+                      {editingId === comment.id ? (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="space-y-2"
+                        >
+                          <Textarea
+                            value={editText}
+                            onChange={(e) => setEditText(e.target.value)}
+                            className="min-h-[80px] bg-[#0a0a0b] border-[#27272a] focus:border-teal-500"
+                          />
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => handleSaveEdit(comment.id)}
+                              className="bg-teal-500 hover:bg-teal-600"
+                            >
+                              <Check className="w-4 h-4 mr-1" />
+                              Save
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={handleCancelEdit}
+                              className="text-text-secondary"
+                            >
+                              <X className="w-4 h-4 mr-1" />
+                              Cancel
+                            </Button>
+                          </div>
+                        </motion.div>
+                      ) : (
+                        <p className="text-text-secondary whitespace-pre-wrap leading-relaxed">
+                          {comment.body}
+                        </p>
+                      )}
                     </div>
-
-                    {user && comment.author.profile?.username === user.username && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(comment.id)}
-                      >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </Button>
-                    )}
                   </div>
-
-                  <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                    {comment.body}
-                  </p>
-                </div>
-              </div>
-            </Card>
-          ))}
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
     </div>

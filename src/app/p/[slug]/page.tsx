@@ -10,6 +10,8 @@ import { Clock, Eye, Calendar, Sparkles } from 'lucide-react'
 import { TiptapRenderer } from '@/components/post/TiptapRenderer'
 import { LikeButton } from '@/components/engagement/LikeButton'
 import { CommentSection } from '@/components/engagement/CommentSection'
+import { TableOfContents } from '@/components/post/TableOfContents'
+import { ReadingProgress } from '@/components/ui/reading-progress'
 
 async function getPost(slug: string) {
   const post = await prisma.post.findUnique({
@@ -87,8 +89,11 @@ export default async function PostPage({ params }: { params: { slug: string } })
   const authorProfile = post.author.profile
 
   return (
-    <article className="min-h-screen bg-[#0a0a0b]">
-      {/* Cover Image */}
+    <>
+      <ReadingProgress />
+      <TableOfContents />
+      <article className="min-h-screen bg-[#0a0a0b]">
+        {/* Cover Image */}
       {post.coverImage && (
         <div className="w-full h-[400px] relative bg-[#1a1a1d]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -210,5 +215,6 @@ export default async function PostPage({ params }: { params: { slug: string } })
         <CommentSection postId={post.id} />
       </div>
     </article>
+    </>
   )
 }
