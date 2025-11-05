@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, Playfair_Display } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
+import { Toaster } from 'sonner'
 import { Header } from '@/components/layout/Header'
 import './globals.css'
 
@@ -45,6 +46,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Header />
             <main className="flex-1">{children}</main>
           </div>
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: '#1a1a1d',
+                border: '1px solid #27272a',
+                color: '#fafafa',
+              },
+            }}
+          />
         </body>
       </html>
     </ClerkProvider>

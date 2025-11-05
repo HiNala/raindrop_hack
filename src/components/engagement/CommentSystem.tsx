@@ -406,11 +406,28 @@ export function CommentSystem({ postId, initialComments = [], currentUser }: Com
           )}
 
           {/* Replies */}
-          {comment.replies && comment.replies.length > 0 && (
-            <div className="mt-4 space-y-4">
-              {comment.replies.map((reply) => (
-                <CommentItem key={reply.id} comment={reply} isReply />
-              ))}
+          {comment._count?.replies && comment._count.replies > 0 && (
+            <div className="mt-4">
+              {comment.replies && comment.replies.length > 0 ? (
+                <div className="space-y-4">
+                  {comment.replies.map((reply) => (
+                    <CommentItem key={reply.id} comment={reply} isReply />
+                  ))}
+                </div>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    // Load replies - in a real app, this would fetch from API
+                    console.log('Loading replies for comment:', comment.id)
+                  }}
+                  className="text-xs gap-1 px-2 py-1 text-text-secondary hover:text-text-primary"
+                >
+                  <MessageCircle className="w-3 h-3" />
+                  Show {comment._count.replies} repl{comment._count.replies === 1 ? 'y' : 'ies'}
+                </Button>
+              )}
             </div>
           )}
         </div>

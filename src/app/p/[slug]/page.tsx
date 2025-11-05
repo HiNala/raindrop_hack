@@ -12,6 +12,7 @@ import { LikeButton } from '@/components/engagement/LikeButton'
 import { CommentSection } from '@/components/engagement/CommentSection'
 import { TableOfContents } from '@/components/post/TableOfContents'
 import { ReadingProgress } from '@/components/ui/reading-progress'
+import { PostAnalyticsTracker } from '@/components/analytics/PostAnalyticsTracker'
 
 async function getPost(slug: string) {
   const post = await prisma.post.findUnique({
@@ -97,6 +98,9 @@ export default async function PostPage({ params }: { params: { slug: string } })
       <ReadingProgress />
       <TableOfContents />
       <article className="min-h-screen bg-[#0a0a0b]">
+        {/* Analytics Tracking */}
+        <PostAnalyticsTracker postId={post.id} />
+
         {/* Cover Image */}
         {post.coverImage && (
           <div className="w-full h-[400px] relative bg-[#1a1a1d]">

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { checkRateLimit, getIdentifier, rlHN } from '@/lib/ratelimit'
 
 interface HNSearchResult {
   title: string
@@ -223,6 +224,33 @@ export async function POST(request: Request) {
 
     if (!query || typeof query !== 'string') {
       return NextResponse.json({ error: 'Query is required and must be a string' }, { status: 400 })
+    }
+
+    // Check rate limit for HN requests
+    if (includeHNContext) {
+      const rateLimitResult = await checkRateLimit(
+        getIdentifier(request),
+        rlHN
+      )
+      
+      if (!rateLimitResult.allowed) {
+        return NextResponse.json(
+          { 
+            error: rateLimitResult.error,
+            limit: rateLimitResult.limit,
+            remaining: rateLimitResult.remaining,
+            reset: rateLimitResult.reset,
+          },
+          { 
+            status: 429,
+            headers: {
+              'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+              'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+              'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+            },
+          }
+        )
+      }
     }
 
     if (!includeHNContext) {

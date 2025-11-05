@@ -1,304 +1,213 @@
-# API Reference
+# 📚 API Reference
 
-Complete reference for all API endpoints and server actions in the Medium AI Blog Platform.
+This document provides a comprehensive overview of all API endpoints available in the blog platform.
 
-## Table of Contents
+## 🔐 Authentication
 
-1. [Authentication](#authentication)
-2. [Server Actions](#server-actions)
-3. [REST API Endpoints](#rest-api-endpoints)
-4. [File Upload](#file-upload)
-5. [Response Formats](#response-formats)
+Most API endpoints require authentication via Clerk. Include the Clerk session token in your requests:
 
----
+```javascript
+// Client-side with Clerk
+const { getToken } = auth();
+const token = await getToken();
 
-## Authentication
-
-All protected endpoints require Clerk authentication. The session token is automatically passed via cookies for same-origin requests.
-
-### Headers Required for Protected Endpoints
-
-```
-Authorization: Bearer <session_token>
-```
-
----
-
-## Server Actions
-
-Server actions are called directly from client components using React Server Actions.
-
-### Post Management
-
-#### `saveDraft(postId, data)`
-
-**Location:** `src/app/actions/post-actions.ts`
-
-**Description:** Create or update a draft post
-
-**Parameters:**
-```typescript
-postId: string | undefined  // undefined for new draft
-data: {
-  title: string
-  excerpt?: string
-  contentJson: object       // TipTap JSON
-  coverImage?: string
-  tagIds?: string[]
+// Include in headers
+headers: {
+  'Authorization': `Bearer ${token}`,
+  'Content-Type': 'application/json'
 }
 ```
 
-**Returns:**
-```typescript
-{
-  success: boolean
-  data?: { postId: string }
-  error?: string
-}
+## 📝 Posts API
+
+### Get All Posts
+```http
+GET /api/posts
 ```
 
-**Usage:**
-```typescript
-const result = await saveDraft(undefined, {
-  title: "My Post",
-  contentJson: { type: 'doc', content: [] },
-  tagIds: ["tag-id-1", "tag-id-2"]
-})
-```
-
----
-
-#### `publishPost(postId)`
-
-**Description:** Publish a draft post
-
-**Parameters:**
-```typescript
-postId: string
-```
-
-**Returns:**
-```typescript
-{
-  success: boolean
-  data?: { slug: string }
-  error?: string
-}
-```
-
-**Validation:**
-- Title must be at least 10 characters
-- At least one tag required
-- Content must not be empty
-
----
-
-#### `unpublishPost(postId)`
-
-**Description:** Revert published post to draft
-
-**Parameters:**
-```typescript
-postId: string
-```
-
-**Returns:**
-```typescript
-{
-  success: boolean
-  error?: string
-}
-```
-
----
-
-#### `deletePost(postId)`
-
-**Description:** Permanently delete a post
-
-**Parameters:**
-```typescript
-postId: string
-```
-
-**Returns:**
-```typescript
-{
-  success: boolean
-  error?: string
-}
-```
-
-**Authorization:** Only post owner can delete
-
----
-
-#### `getOrCreateTags(tagNames)`
-
-**Description:** Get existing tags or create new ones
-
-**Parameters:**
-```typescript
-tagNames: string[]  // e.g., ["JavaScript", "React", "Web Dev"]
-```
-
-**Returns:**
-```typescript
-{
-  success: boolean
-  data?: string[]  // Array of tag IDs
-  error?: string
-}
-```
-
----
-
-### AI Generation
-
-#### `generateAuthenticatedPost(prompt, options)`
-
-**Location:** `src/app/actions/generate-post.ts`
-
-**Description:** Generate a blog post using OpenAI for authenticated users
-
-**Parameters:**
-```typescript
-prompt: string
-options?: {
-  tone?: 'professional' | 'casual' | 'technical'
-  length?: 'short' | 'medium' | 'long'
-  audience?: string
-}
-```
-
-**Returns:**
-```typescript
-{
-  success: boolean
-  data?: {
-    postId: string
-    title: string
-    excerpt: string
-    contentJson: object
-    suggestedTags: string[]
-    readTimeMin: number
-    remaining: number  // Remaining generations today
-  }
-  error?: string
-}
-```
-
-**Rate Limit:** 10 generations per day per user
-
----
-
-#### `generateAnonymousPost(prompt, options)`
-
-**Description:** Generate post content for anonymous users (not saved to DB)
-
-**Parameters:** Same as `generateAuthenticatedPost`
-
-**Returns:**
-```typescript
-{
-  success: boolean
-  data?: {
-    title: string
-    excerpt: string
-    contentJson: object
-    suggestedTags: string[]
-    readTimeMin: number
-  }
-  error?: string
-}
-```
-
-**Note:** Content returned but not saved. Client stores in localStorage.
-
----
-
-## REST API Endpoints
-
-### Tags
-
-#### `GET /api/tags`
-
-**Description:** Get all tags
-
-**Authentication:** Public
+**Query Parameters:**
+- `page` (optional): Page number (default: 1)
+- `limit` (optional): Posts per page (default: 10)
+- `tag` (optional): Filter by tag slug
+- `search` (optional): Search in title and content
+- `author` (optional): Filter by author username
 
 **Response:**
 ```json
 {
-  "tags": [
+  "posts": [
     {
-      "id": "tag-id",
-      "name": "JavaScript",
-      "slug": "javascript",
-      "createdAt": "2024-01-01T00:00:00.000Z"
+      "id": "post_id",
+      "title": "Post Title",
+      "slug": "post-slug",
+      "excerpt": "Post excerpt...",
+      "publishedAt": "2024-01-01T00:00:00.000Z",
+      "author": {
+        "profile": {
+          "username": "author",
+          "displayName": "Author Name",
+          "avatarUrl": "https://..."
+        }
+      },
+      "tags": [
+        {
+          "tag": {
+            "name": "javascript",
+            "slug": "javascript"
+          }
+        }
+      ],
+      "_count": {
+        "likes": 10,
+        "comments": 5
+      }
     }
-  ]
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 50,
+    "totalPages": 5
+  }
 }
 ```
 
----
-
-### Likes
-
-#### `POST /api/posts/[id]/like`
-
-**Description:** Toggle like on a post
-
-**Authentication:** Required
-
-**Parameters:**
-- `id`: Post ID (in URL path)
+### Get Single Post
+```http
+GET /api/posts/[id]
+```
 
 **Response:**
 ```json
 {
-  "likes": 42,
-  "isLiked": true
+  "id": "post_id",
+  "title": "Post Title",
+  "slug": "post-slug",
+  "excerpt": "Post excerpt...",
+  "contentJson": {...},
+  "contentHtml": "<p>Post content...</p>",
+  "published": true,
+  "publishedAt": "2024-01-01T00:00:00.000Z",
+  "coverImage": "https://...",
+  "readTimeMin": 5,
+  "author": {
+    "profile": {
+      "username": "author",
+      "displayName": "Author Name",
+      "bio": "Author bio...",
+      "avatarUrl": "https://..."
+    }
+  },
+  "tags": [...]
 }
 ```
 
----
+### Create Post (Authenticated)
+```http
+POST /api/posts
+```
 
-#### `GET /api/posts/[id]/like/check`
-
-**Description:** Check if current user has liked a post
-
-**Authentication:** Required
+**Request Body:**
+```json
+{
+  "title": "Post Title",
+  "excerpt": "Post excerpt...",
+  "contentJson": {...},
+  "coverImage": "https://...",
+  "tagIds": ["tag_id_1", "tag_id_2"],
+  "published": false
+}
+```
 
 **Response:**
 ```json
 {
-  "isLiked": true
+  "success": true,
+  "data": {
+    "id": "new_post_id",
+    "slug": "post-slug"
+  }
 }
 ```
 
----
+### Update Post (Authenticated, Owner Only)
+```http
+PUT /api/posts/[id]
+```
 
-### Comments
+**Request Body:** Same as create post
 
-#### `GET /api/posts/[id]/comments`
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "post_id",
+    "slug": "updated-slug"
+  }
+}
+```
 
-**Description:** Get all comments for a post
+### Delete Post (Authenticated, Owner Only)
+```http
+DELETE /api/posts/[id]
+```
 
-**Authentication:** Public
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Post deleted successfully"
+}
+```
+
+## ❤️ Likes API
+
+### Like/Unlike Post (Authenticated)
+```http
+POST /api/posts/[id]/like
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "liked": true,
+  "likesCount": 11
+}
+```
+
+### Check Like Status (Authenticated)
+```http
+GET /api/posts/[id]/like/check
+```
+
+**Response:**
+```json
+{
+  "liked": true
+}
+```
+
+## 💬 Comments API
+
+### Get Post Comments
+```http
+GET /api/posts/[id]/comments
+```
 
 **Response:**
 ```json
 {
   "comments": [
     {
-      "id": "comment-id",
-      "body": "Great post!",
+      "id": "comment_id",
+      "body": "Comment content...",
       "createdAt": "2024-01-01T00:00:00.000Z",
       "author": {
         "profile": {
-          "username": "john_doe",
-          "displayName": "John Doe",
+          "username": "commenter",
+          "displayName": "Commenter Name",
           "avatarUrl": "https://..."
         }
       }
@@ -307,307 +216,325 @@ options?: {
 }
 ```
 
----
-
-#### `POST /api/posts/[id]/comments`
-
-**Description:** Create a new comment
-
-**Authentication:** Required
+### Add Comment (Authenticated)
+```http
+POST /api/posts/[id]/comments
+```
 
 **Request Body:**
 ```json
 {
-  "body": "This is my comment"
+  "body": "Comment content..."
 }
 ```
 
 **Response:**
-```json
-{
-  "comment": {
-    "id": "comment-id",
-    "body": "This is my comment",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "author": {
-      "profile": {
-        "username": "john_doe",
-        "displayName": "John Doe",
-        "avatarUrl": "https://..."
-      }
-    }
-  }
-}
-```
-
-**Validation:**
-- `body` must not be empty
-- Maximum length: 1000 characters
-
----
-
-#### `DELETE /api/posts/[id]/comments/[commentId]`
-
-**Description:** Delete a comment
-
-**Authentication:** Required
-
-**Authorization:** Comment author or post author only
-
-**Response:**
-```json
-{
-  "success": true
-}
-```
-
----
-
-### Profile
-
-#### `PATCH /api/profile`
-
-**Description:** Update user profile
-
-**Authentication:** Required
-
-**Request Body:**
-```json
-{
-  "displayName": "John Doe",
-  "bio": "Software developer and writer",
-  "websiteUrl": "https://johndoe.com",
-  "avatarUrl": "https://..."
-}
-```
-
-**Response:**
-```json
-{
-  "profile": {
-    "id": "profile-id",
-    "userId": "user-id",
-    "username": "john_doe",
-    "displayName": "John Doe",
-    "bio": "Software developer and writer",
-    "avatarUrl": "https://...",
-    "websiteUrl": "https://johndoe.com",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "updatedAt": "2024-01-02T00:00:00.000Z"
-  }
-}
-```
-
-**Validation:**
-- `displayName` required, max 100 characters
-- `bio` max 500 characters
-- `websiteUrl` must be valid URL
-
----
-
-## File Upload
-
-### UploadThing Endpoints
-
-#### `POST /api/uploadthing`
-
-**Description:** Upload files via UploadThing
-
-**Authentication:** Required
-
-**Usage:** Use the provided hooks from `@/lib/uploadthing`
-
-```typescript
-import { useUploadThing } from '@/lib/uploadthing'
-
-const { startUpload } = useUploadThing('coverImageUploader')
-const result = await startUpload([file])
-```
-
-**Upload Types:**
-
-1. **coverImageUploader**
-   - Max size: 8MB
-   - Max files: 1
-   - Accepted: images only
-
-2. **avatarUploader**
-   - Max size: 2MB
-   - Max files: 1
-   - Accepted: images only
-
-3. **imageUploader**
-   - Max size: 4MB
-   - Max files: 1
-   - Accepted: images only
-
-**Response:**
-```typescript
-[
-  {
-    url: "https://utfs.io/f/...",
-    name: "image.jpg",
-    size: 123456,
-    key: "...",
-    type: "image/jpeg"
-  }
-]
-```
-
----
-
-## Response Formats
-
-### Success Response
-
 ```json
 {
   "success": true,
-  "data": { ... }
+  "data": {
+    "id": "new_comment_id",
+    "body": "Comment content...",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+### Delete Comment (Authenticated, Author Only)
+```http
+DELETE /api/comments/[id]
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Comment deleted successfully"
+}
+```
+
+## 🏷️ Tags API
+
+### Get All Tags
+```http
+GET /api/tags
+```
+
+**Response:**
+```json
+{
+  "tags": [
+    {
+      "id": "tag_id",
+      "name": "JavaScript",
+      "slug": "javascript",
+      "_count": {
+        "posts": 15
+      }
+    }
+  ]
+}
+```
+
+### Create Tag (Authenticated)
+```http
+POST /api/tags
+```
+
+**Request Body:**
+```json
+{
+  "name": "New Tag"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "new_tag_id",
+    "name": "New Tag",
+    "slug": "new-tag"
+  }
+}
+```
+
+## 👤 Profile API
+
+### Get User Profile
+```http
+GET /api/profile
+```
+
+**Response:**
+```json
+{
+  "id": "user_id",
+  "username": "username",
+  "displayName": "Display Name",
+  "bio": "User bio...",
+  "avatarUrl": "https://...",
+  "websiteUrl": "https://...",
+  "location": "Location",
+  "_count": {
+    "posts": 10,
+    "followers": 100,
+    "following": 50
+  }
+}
+```
+
+### Update Profile (Authenticated)
+```http
+PATCH /api/profile
+```
+
+**Request Body:**
+```json
+{
+  "displayName": "New Display Name",
+  "bio": "Updated bio...",
+  "avatarUrl": "https://...",
+  "websiteUrl": "https://...",
+  "location": "New Location"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "displayName": "New Display Name",
+    "bio": "Updated bio..."
+  }
+}
+```
+
+## 🔍 Search API
+
+### Search Posts
+```http
+GET /api/search
+```
+
+**Query Parameters:**
+- `q` (required): Search query
+- `type` (optional): "posts" (default), "tags", "users"
+- `limit` (optional): Results per page (default: 10)
+
+**Response:**
+```json
+{
+  "results": [
+    {
+      "type": "post",
+      "id": "post_id",
+      "title": "Post Title",
+      "slug": "post-slug",
+      "excerpt": "Matching excerpt...",
+      "author": {...}
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25
+  }
+}
+```
+
+## 🚀 Server Actions
+
+The following server actions are available for form handling:
+
+### generatePost
+```typescript
+import { generateAuthenticatedPost, generateAnonymousPost } from '@/app/actions/generate-post'
+
+// For authenticated users
+const result = await generateAuthenticatedPost(prompt, {
+  tone: 'professional',
+  length: 'medium'
+})
+
+// For anonymous users
+const result = await generateAnonymousPost(prompt, {
+  tone: 'casual',
+  length: 'short'
+})
+```
+
+### Post Management
+```typescript
+import { saveDraft, publishPost, deletePost, getOrCreateTags } from '@/app/actions/post-actions'
+
+// Save draft
+const result = await saveDraft(postId, postData)
+
+// Publish post
+const result = await publishPost(postId)
+
+// Delete post
+const result = await deletePost(postId)
+
+// Get or create tags
+const result = await getOrCreateTags(['javascript', 'react'])
+```
+
+## 📊 Response Format
+
+All API responses follow a consistent format:
+
+### Success Response
+```json
+{
+  "success": true,
+  "data": {...}
 }
 ```
 
 ### Error Response
-
 ```json
 {
   "success": false,
-  "error": "Error message here"
+  "error": "Error message",
+  "code": "ERROR_CODE"
 }
 ```
 
-Or for API routes:
+## 🔒 Rate Limits
 
-```json
-{
-  "error": "Error message here"
-}
-```
+- **AI Generation**: 10 posts per day per authenticated user
+- **Anonymous Posts**: 3 posts total (client-side enforced)
+- **API Calls**: No global rate limit (implement as needed)
 
-**Common HTTP Status Codes:**
-- `200` - Success
-- `400` - Bad Request (validation error)
-- `401` - Unauthorized (not authenticated)
-- `403` - Forbidden (not authorized)
-- `404` - Not Found
-- `500` - Internal Server Error
+## 🌍 CORS Configuration
 
----
+The API is configured to accept requests from:
+- `http://localhost:3000` (development)
+- Your production domain
+- UploadThing domains for file uploads
 
-## Rate Limiting
+## 🛠️ Error Codes
 
-### AI Generation
-- **Authenticated Users:** 10 posts per 24 hours
-- **Anonymous Users:** Enforced client-side (3 posts in localStorage)
+| Code | Description |
+|------|-------------|
+| `UNAUTHORIZED` | User not authenticated |
+| `FORBIDDEN` | User doesn't have permission |
+| `NOT_FOUND` | Resource not found |
+| `VALIDATION_ERROR` | Invalid request data |
+| `RATE_LIMITED` | Too many requests |
+| `SERVER_ERROR` | Internal server error |
 
-### Other Endpoints
-No rate limiting currently implemented. Consider adding for production:
-- Upstash Redis for distributed rate limiting
-- Or in-memory Map for single-server deployments
+## 📝 Data Models
 
----
-
-## Error Handling
-
-All API endpoints and server actions follow this pattern:
-
-**Server Actions:**
+### Post
 ```typescript
-try {
-  // Operation
-  return { success: true, data: result }
-} catch (error) {
-  return { success: false, error: error.message }
+interface Post {
+  id: string
+  title: string
+  slug: string
+  excerpt?: string
+  contentJson: object
+  contentHtml?: string
+  coverImage?: string
+  published: boolean
+  publishedAt?: Date
+  featured: boolean
+  readTimeMin?: number
+  authorId: string
+  author: User
+  tags: PostTag[]
+  likes: Like[]
+  comments: Comment[]
+  createdAt: Date
+  updatedAt: Date
 }
 ```
 
-**API Routes:**
+### User
 ```typescript
-try {
-  // Operation
-  return NextResponse.json({ data: result })
-} catch (error) {
-  return NextResponse.json(
-    { error: error.message }, 
-    { status: 500 }
-  )
+interface User {
+  id: string
+  clerkId: string
+  email: string
+  profile?: Profile
+  posts: Post[]
+  comments: Comment[]
+  likes: Like[]
+  createdAt: Date
+  updatedAt: Date
 }
 ```
 
----
-
-## Best Practices
-
-1. **Always check `success` field** in server action responses
-2. **Use optimistic UI** for likes and comments
-3. **Handle loading states** with disabled buttons
-4. **Show error toasts** for failed operations
-5. **Revalidate paths** after mutations
-6. **Use TypeScript** for type safety
-7. **Validate on both** client and server
-8. **Handle edge cases** (network errors, timeouts)
-
----
-
-## Example Usage
-
-### Complete Post Creation Flow
-
+### Profile
 ```typescript
-'use client'
-
-import { useState } from 'react'
-import { saveDraft, publishPost, getOrCreateTags } from '@/app/actions/post-actions'
-import toast from 'react-hot-toast'
-
-export function CreatePost() {
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState({})
-  const [tags, setTags] = useState(['JavaScript', 'Tutorial'])
-  
-  const handlePublish = async () => {
-    // 1. Create or get tags
-    const tagsResult = await getOrCreateTags(tags)
-    if (!tagsResult.success) {
-      toast.error('Failed to process tags')
-      return
-    }
-    
-    // 2. Save as draft
-    const draftResult = await saveDraft(undefined, {
-      title,
-      contentJson: content,
-      tagIds: tagsResult.data
-    })
-    
-    if (!draftResult.success) {
-      toast.error('Failed to save draft')
-      return
-    }
-    
-    // 3. Publish
-    const publishResult = await publishPost(draftResult.data.postId)
-    
-    if (!publishResult.success) {
-      toast.error('Failed to publish')
-      return
-    }
-    
-    toast.success('Post published!')
-    // Redirect to published post
-    window.location.href = `/p/${publishResult.data.slug}`
-  }
-  
-  return (
-    <button onClick={handlePublish}>
-      Publish Post
-    </button>
-  )
+interface Profile {
+  id: string
+  userId: string
+  username: string
+  displayName: string
+  bio?: string
+  avatarUrl?: string
+  websiteUrl?: string
+  location?: string
+  createdAt: Date
+  updatedAt: Date
 }
 ```
 
+## 🔄 Real-time Features
+
+While the API is RESTful, the UI provides optimistic updates for:
+- Likes
+- Comments
+- Post creation
+- Draft saving
+
+For real-time collaboration, consider implementing WebSockets or Server-Sent Events.
+
 ---
 
-For more details, see the source code in `src/app/actions/` and `src/app/api/`.
-
-
+For more information, check the [TypeScript types](src/lib/validations.ts) and [Prisma schema](prisma/schema.prisma).

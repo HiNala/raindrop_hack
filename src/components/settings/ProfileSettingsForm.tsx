@@ -1,237 +1,144 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useTransition } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Loader2, Upload } from 'lucide-react'
-import { useUploadThing } from '@/lib/uploadthing'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
+
+const profileSettingsSchema = z.object({
+  bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
+  websiteUrl: z.string().url('Please enter a valid URL').or(z.literal('')).optional(),
+  githubUrl: z.string().url('Please enter a valid URL').or(z.literal('')).optional(),
+  twitterUrl: z.string().url('Please enter a valid URL').or(z.literal('')).optional(),
+  linkedinUrl: z.string().url('Please enter a valid URL').or(z.literal('')).optional(),
+})
+
+type ProfileSettingsValues = z.infer<typeof profileSettingsSchema>
 
 interface ProfileSettingsFormProps {
-  profile: {
-    username: string
-    displayName: string
-    bio: string | null
-    avatarUrl: string | null
-    websiteUrl: string | null
-  }
+  userId: string
 }
 
-export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
-  const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
-
-  const [formData, setFormData] = useState({
-    displayName: profile.displayName,
-    bio: profile.bio || '',
-    websiteUrl: profile.websiteUrl || '',
-    avatarUrl: profile.avatarUrl || '',
+export default function ProfileSettingsForm({ userId }: ProfileSettingsFormProps) {
+  const [isPending, startTransition] = useTransition()
+  const [currentValues, setCurrentValues] = useState<ProfileSettingsValues>({
+    bio: '',
+    websiteUrl: '',
+    githubUrl: '',
+    twitterUrl: '',
+    linkedinUrl: '',
   })
 
-  const { startUpload } = useUploadThing('avatarUploader')
+  const form = useForm<ProfileSettingsValues>({
+    resolver: zodResolver(profileSettingsSchema),
+    defaultValues: currentValues,
+  })
 
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const onSubmit = async (values: ProfileSettingsValues) => {
+    startTransition(async () => {
+      try {
+        const response = await fetch('/api/settings/profile', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(values),
+        })
 
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file')
-      return
-    }
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.error || 'Failed to update profile settings')
+        }
 
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error('Image must be less than 2MB')
-      return
-    }
-
-    setIsUploadingAvatar(true)
-
-    try {
-      const res = await startUpload([file])
-
-      if (res && res[0]?.url) {
-        setFormData({ ...formData, avatarUrl: res[0].url })
-        toast.success('Avatar uploaded!')
-      } else {
-        throw new Error('Upload failed')
+        setCurrentValues(values)
+        form.reset(values)
+        toast.success('Profile settings updated successfully')
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Something went wrong')
       }
-    } catch (error) {
-      console.error('Upload error:', error)
-      toast.error('Failed to upload avatar')
-    } finally {
-      setIsUploadingAvatar(false)
-    }
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!formData.displayName.trim()) {
-      toast.error('Display name is required')
-      return
-    }
-
-    setIsSubmitting(true)
-
-    try {
-      const res = await fetch('/api/profile', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-
-      if (!res.ok) {
-        throw new Error('Failed to update profile')
-      }
-
-      toast.success('Profile updated!')
-      router.push(`/u/${profile.username}`)
-      router.refresh()
-    } catch (error) {
-      console.error('Update error:', error)
-      toast.error('Failed to update profile')
-    } finally {
-      setIsSubmitting(false)
-    }
+    })
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Public Profile</CardTitle>
-          <CardDescription>
-            This information will be displayed publicly on your profile
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Avatar */}
-          <div>
-            <Label>Avatar</Label>
-            <div className="flex items-center gap-4 mt-2">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src={formData.avatarUrl || undefined} />
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-2xl">
-                  {formData.displayName.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="bio">Bio</Label>
+          <Textarea
+            id="bio"
+            {...form.register('bio')}
+            placeholder="Tell us about yourself..."
+            disabled={isPending}
+            rows={4}
+          />
+          {form.formState.errors.bio && (
+            <p className="text-sm text-red-600">{form.formState.errors.bio.message}</p>
+          )}
+        </div>
 
-              <label className="cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="hidden"
-                  disabled={isUploadingAvatar}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={isUploadingAvatar}
-                  asChild
-                >
-                  <span>
-                    {isUploadingAvatar ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Uploading...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="w-4 h-4 mr-2" />
-                        Change Avatar
-                      </>
-                    )}
-                  </span>
-                </Button>
-              </label>
-            </div>
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="websiteUrl">Website URL</Label>
+          <Input
+            id="websiteUrl"
+            {...form.register('websiteUrl')}
+            placeholder="https://yourwebsite.com"
+            disabled={isPending}
+          />
+          {form.formState.errors.websiteUrl && (
+            <p className="text-sm text-red-600">{form.formState.errors.websiteUrl.message}</p>
+          )}
+        </div>
 
-          {/* Username (readonly) */}
-          <div>
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              value={profile.username}
-              disabled
-              className="bg-gray-100 dark:bg-gray-800"
-            />
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Username cannot be changed
-            </p>
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="githubUrl">GitHub URL</Label>
+          <Input
+            id="githubUrl"
+            {...form.register('githubUrl')}
+            placeholder="https://github.com/username"
+            disabled={isPending}
+          />
+          {form.formState.errors.githubUrl && (
+            <p className="text-sm text-red-600">{form.formState.errors.githubUrl.message}</p>
+          )}
+        </div>
 
-          {/* Display Name */}
-          <div>
-            <Label htmlFor="displayName">Display Name *</Label>
-            <Input
-              id="displayName"
-              value={formData.displayName}
-              onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-              placeholder="John Doe"
-              required
-            />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="twitterUrl">Twitter URL</Label>
+          <Input
+            id="twitterUrl"
+            {...form.register('twitterUrl')}
+            placeholder="https://twitter.com/username"
+            disabled={isPending}
+          />
+          {form.formState.errors.twitterUrl && (
+            <p className="text-sm text-red-600">{form.formState.errors.twitterUrl.message}</p>
+          )}
+        </div>
 
-          {/* Bio */}
-          <div>
-            <Label htmlFor="bio">Bio</Label>
-            <Textarea
-              id="bio"
-              value={formData.bio}
-              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-              placeholder="Tell us about yourself..."
-              rows={4}
-              maxLength={500}
-            />
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {formData.bio.length}/500 characters
-            </p>
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="linkedinUrl">LinkedIn URL</Label>
+          <Input
+            id="linkedinUrl"
+            {...form.register('linkedinUrl')}
+            placeholder="https://linkedin.com/in/username"
+            disabled={isPending}
+          />
+          {form.formState.errors.linkedinUrl && (
+            <p className="text-sm text-red-600">{form.formState.errors.linkedinUrl.message}</p>
+          )}
+        </div>
+      </div>
 
-          {/* Website */}
-          <div>
-            <Label htmlFor="website">Website</Label>
-            <Input
-              id="website"
-              type="url"
-              value={formData.websiteUrl}
-              onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
-              placeholder="https://yourwebsite.com"
-            />
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="submit"
-              disabled={isSubmitting || isUploadingAvatar}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                'Save Changes'
-              )}
-            </Button>
-
-            <Button type="button" variant="outline" onClick={() => router.back()}>
-              Cancel
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex justify-end">
+        <Button type="submit" disabled={isPending}>
+          {isPending ? 'Saving...' : 'Save Changes'}
+        </Button>
+      </div>
     </form>
   )
 }
