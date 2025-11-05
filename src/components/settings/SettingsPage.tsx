@@ -458,32 +458,77 @@ export function SettingsPage() {
     </div>
   )
 
+  const handleExport = async (type: 'posts' | 'comments' | 'profile') => {
+    try {
+      setSaveStatus('saving')
+      const res = await fetch(`/api/export/${type}`)
+      
+      if (!res.ok) {
+        throw new Error('Export failed')
+      }
+
+      // Trigger download
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${type}-export-${new Date().toISOString().split('T')[0]}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+
+      setSaveStatus('saved')
+      setTimeout(() => setSaveStatus('idle'), 2000)
+    } catch (error) {
+      console.error('Export error:', error)
+      alert('Failed to export data. Please try again.')
+      setSaveStatus('idle')
+    }
+  }
+
   const renderExportSection = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-4">Export Your Data</h3>
-        <Card className="p-6">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+        <h3 className="text-lg font-semibold mb-4 text-text-primary">Export Your Data</h3>
+        <div className="glass-effect border border-[#27272a] rounded-lg p-6">
+          <p className="text-text-secondary mb-6">
             Download all your posts, comments, and profile information in JSON format.
           </p>
           <div className="space-y-3">
-            <Button variant="outline" className="w-full justify-start">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start border-[#27272a] hover:border-teal-500/50 hover:bg-teal-500/5"
+              onClick={() => handleExport('posts')}
+              disabled={saveStatus === 'saving'}
+            >
               <Download className="w-4 h-4 mr-2" />
-              Export All Posts
+              {saveStatus === 'saving' ? 'Exporting...' : 'Export All Posts'}
             </Button>
-            <Button variant="outline" className="w-full justify-start">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start border-[#27272a] hover:border-teal-500/50 hover:bg-teal-500/5"
+              onClick={() => handleExport('comments')}
+              disabled={saveStatus === 'saving'}
+            >
               <Download className="w-4 h-4 mr-2" />
-              Export Comments
+              {saveStatus === 'saving' ? 'Exporting...' : 'Export Comments'}
             </Button>
-            <Button variant="outline" className="w-full justify-start">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start border-[#27272a] hover:border-teal-500/50 hover:bg-teal-500/5"
+              onClick={() => handleExport('profile')}
+              disabled={saveStatus === 'saving'}
+            >
               <Download className="w-4 h-4 mr-2" />
-              Export Profile Data
+              {saveStatus === 'saving' ? 'Exporting...' : 'Export Profile Data'}
             </Button>
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
-            You can request one export per day. Large exports may take a few minutes to prepare.
+          <p className="text-xs text-text-tertiary mt-6 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 bg-orange-500 rounded-full"></span>
+            Large exports may take a few moments to prepare.
           </p>
-        </Card>
+        </div>
       </div>
     </div>
   )
@@ -501,13 +546,13 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+    <div className="min-h-screen bg-[#0a0a0b]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mb-12">
+          <h1 className="text-4xl font-bold text-text-primary mb-3">
             Settings
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-text-secondary text-lg">
             Manage your account settings and preferences
           </p>
         </div>
@@ -515,7 +560,7 @@ export function SettingsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar Navigation */}
           <div className="lg:col-span-1">
-            <Card className="p-4">
+            <div className="glass-effect border border-[#27272a] rounded-xl p-4 sticky top-24">
               <nav className="space-y-1">
                 {settingsSections.map((section) => {
                   const Icon = section.icon
@@ -524,10 +569,10 @@ export function SettingsPage() {
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
                       className={cn(
-                        "w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                        "w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200",
                         activeSection === section.id
-                          ? "bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300"
-                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                          ? "bg-teal-500/10 text-teal-400 shadow-glow-teal border border-teal-500/30"
+                          : "text-text-secondary hover:text-text-primary hover:bg-dark-card border border-transparent"
                       )}
                     >
                       <Icon className="w-4 h-4" />
@@ -536,24 +581,25 @@ export function SettingsPage() {
                   )
                 })}
               </nav>
-            </Card>
+            </div>
           </div>
 
           {/* Main Content */}
           <div className="lg:col-span-3">
-            <Card className="p-6">
+            <div className="glass-effect border border-[#27272a] rounded-xl p-8">
               {renderSectionContent()}
               
               {/* Save Button */}
-              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="mt-8 pt-6 border-t border-[#27272a]">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                  <div className="text-sm text-text-tertiary flex items-center gap-2">
+                    <span className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></span>
                     Changes are saved automatically
                   </div>
                   <Button
                     onClick={handleSave}
                     disabled={saveStatus === 'saving'}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 bg-teal-500 hover:bg-teal-600"
                   >
                     {saveStatus === 'saving' && (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -566,7 +612,7 @@ export function SettingsPage() {
                   </Button>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { PostCard } from '@/components/post/PostCard'
 import { Badge } from '@/components/ui/badge'
-import { Tag } from 'lucide-react'
+import { Tag, Sparkles } from 'lucide-react'
 
 async function getTagWithPosts(slug: string) {
   const tag = await prisma.tag.findUnique({
@@ -72,35 +72,56 @@ export default async function TagPage({ params }: { params: { slug: string } }) 
   const posts = tag.posts.map((pt) => pt.post)
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
+    <div className="min-h-screen bg-[#0a0a0b] py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-12">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl">
-              <Tag className="w-8 h-8 text-white" />
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                {tag.name}
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                {posts.length} {posts.length === 1 ? 'post' : 'posts'}
-              </p>
+          <div className="glass-effect border border-[#27272a] rounded-2xl p-8 relative overflow-hidden">
+            {/* Background Glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl"></div>
+            
+            <div className="relative flex items-start justify-between">
+              <div className="flex items-center gap-6">
+                <div className="p-5 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl shadow-glow-teal">
+                  <Tag className="w-10 h-10 text-white" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h1 className="text-4xl md:text-5xl font-bold text-text-primary">
+                      {tag.name}
+                    </h1>
+                    <Sparkles className="w-6 h-6 text-teal-400 animate-pulse" />
+                  </div>
+                  <p className="text-text-secondary text-lg">
+                    {posts.length} {posts.length === 1 ? 'post' : 'posts'} published
+                  </p>
+                  {posts.length > 0 && (
+                    <div className="mt-4 flex items-center gap-2 text-sm text-text-tertiary">
+                      <span className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></span>
+                      Explore stories about {tag.name}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Posts Grid */}
         {posts.length === 0 ? (
-          <div className="text-center py-20">
-            <Tag className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <p className="text-xl text-gray-600 dark:text-gray-400">
-              No posts with this tag yet
+          <div className="glass-effect border border-[#27272a] rounded-xl p-20 text-center">
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-dark-card rounded-full mb-6">
+              <Tag className="w-12 h-12 text-text-tertiary" />
+            </div>
+            <h2 className="text-2xl font-bold text-text-primary mb-3">
+              No posts yet
+            </h2>
+            <p className="text-lg text-text-secondary max-w-md mx-auto">
+              Be the first to write about {tag.name}!
             </p>
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
