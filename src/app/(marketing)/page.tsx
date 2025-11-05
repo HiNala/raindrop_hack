@@ -5,6 +5,7 @@ import { AIShowcase } from '@/components/marketing/AIShowcase'
 import { Testimonials } from '@/components/marketing/Testimonials'
 import { PricingTeaser, CTASection } from '@/components/marketing/CTASection'
 import { CommunityShowcase } from '@/components/marketing/CommunityShowcase'
+import { HNDemo } from '@/components/marketing/HNDemo'
 
 export default function LandingPage() {
   return (
@@ -16,6 +17,7 @@ export default function LandingPage() {
       <div className="space-y-24 pb-24">
         <CommunityShowcase />
         <FeatureGrid />
+        <HNDemo />
         <HowItWorks />
         <AIShowcase />
         <Testimonials />

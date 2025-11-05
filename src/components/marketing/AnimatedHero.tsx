@@ -29,16 +29,18 @@ export function AnimatedHero() {
             </motion.div>
 
             {/* Main Headline */}
-            <h1 className="text-6xl md:text-8xl font-bold text-white mb-6 leading-tight text-shadow-glow">
-              Write Better,
+            <h1 className="text-6xl md:text-8xl font-extrabold mb-6 leading-tight tracking-tight">
+              <span className="text-white drop-shadow-[0_0_30px_rgba(20,184,166,0.5)]" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.3), 0 0 40px rgba(20,184,166,0.4)' }}>
+                Write Better,
+              </span>
               <br />
-              <span className="bg-gradient-to-r from-teal-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-teal-300 via-cyan-300 to-blue-300 bg-clip-text text-transparent drop-shadow-[0_0_50px_rgba(20,184,166,0.8)]" style={{ WebkitTextStroke: '1px rgba(20,184,166,0.2)' }}>
                 Create Faster
               </span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-xl md:text-2xl text-white/80 mb-12 max-w-2xl mx-auto leading-relaxed text-shadow-subtle">
+            <p className="text-xl md:text-2xl text-white mb-12 max-w-2xl mx-auto leading-relaxed font-medium" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
               Transform your ideas into compelling content with AI assistance.
               Join thousands of creators building their audience.
             </p>
