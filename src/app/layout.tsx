@@ -63,24 +63,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* ServiceWorkerRegister temporarily disabled - causing reload loop */}
           {/* <ServiceWorkerRegister /> */}
           <div className="min-h-[100dvh] flex flex-col">
-            <InstallBanner />
+            {/* Install banner - mobile/tablet only */}
+            <div className="lg:hidden">
+              <InstallBanner />
+            </div>
             <Header />
-            <main className="flex-1 pb-[calc(4rem+var(--safe-bottom,0px))] relative">
-              <Suspense
-                fallback={
-                  <div className="container-responsive py-responsive">
-                    <div className="animate-pulse space-y-4">
-                      <div className="h-8 bg-gray-800 rounded w-3/4" />
-                      <div className="h-4 bg-gray-800 rounded w-1/2" />
-                      <div className="h-32 bg-gray-800 rounded" />
-                    </div>
-                  </div>
-                }
-              >
-                <div className="container-responsive py-responsive">
-                  {children}
-                </div>
-              </Suspense>
+            <main className="flex-1">
+              {children}
             </main>
             <Suspense
               fallback={
@@ -89,8 +78,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             >
               <Footer />
             </Suspense>
-            <BottomNavigation />
-            <HydrationTest />
+            {/* Bottom navigation - mobile only */}
+            <div className="md:hidden">
+              <BottomNavigation />
+            </div>
+            {/* Debug components - development only */}
+            {process.env.NODE_ENV === 'development' && <HydrationTest />}
           </div>
           <Toaster
             position="top-center"

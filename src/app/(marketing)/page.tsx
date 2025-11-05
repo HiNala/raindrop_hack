@@ -8,15 +8,20 @@ import { CommunityShowcase } from '@/components/marketing/CommunityShowcase'
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen">
+    <>
+      {/* Hero Section - Full height, no extra spacing */}
       <AnimatedHero />
-      <CommunityShowcase />
-      <FeatureGrid />
-      <HowItWorks />
-      <AIShowcase />
-      <Testimonials />
-      <PricingTeaser />
-      <CTASection />
-    </div>
+      
+      {/* Content Sections - Proper spacing between sections */}
+      <div className="space-y-24 pb-24">
+        <CommunityShowcase />
+        <FeatureGrid />
+        <HowItWorks />
+        <AIShowcase />
+        <Testimonials />
+        <PricingTeaser />
+        <CTASection />
+      </div>
+    </>
   )
 }
