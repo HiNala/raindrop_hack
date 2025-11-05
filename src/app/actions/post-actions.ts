@@ -6,6 +6,7 @@ import { requireUser } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { generateUniqueSlug } from '@/lib/slug'
 import { calculateReadingTime } from '@/lib/reading-time'
+import { createSlugRedirect } from '@/lib/slug'
 
 interface SaveDraftData {
   title: string
@@ -111,8 +112,26 @@ export async function publishPost(postId: string) {
       return { success: false, error: 'Please add at least one tag' }
     }
 
-    // Generate slug if not exists
-    const slug = post.slug || (await generateUniqueSlug(post.title, postId))
+    // Handle slug generation/changes
+    let slug: string
+    const oldSlug = post.slug
+
+    if (!post.slug) {
+      // Generate new slug for unpublished post
+      slug = await generateUniqueSlug(post.title, postId)
+    } else {
+      // Check if slug needs updating based on title
+      const expectedSlug = await generateUniqueSlug(post.title, postId)
+      if (post.slug !== expectedSlug) {
+        // Slug changed, create redirect
+        slug = expectedSlug
+        if (oldSlug) {
+          await createSlugRedirect(postId, oldSlug, slug)
+        }
+      } else {
+        slug = post.slug
+      }
+    }
 
     // Publish
     const published = await prisma.post.update({
@@ -127,6 +146,11 @@ export async function publishPost(postId: string) {
     revalidatePath('/dashboard')
     revalidatePath('/')
     revalidatePath(`/p/${published.slug}`)
+
+    // Also revalidate old slug if it changed
+    if (oldSlug && oldSlug !== slug) {
+      revalidatePath(`/p/${oldSlug}`)
+    }
 
     return { success: true, data: { slug: published.slug } }
   } catch (error) {

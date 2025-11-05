@@ -123,7 +123,7 @@
   }
   
   .textarea {
-    @apply input resize-vertical min-h-[100px];
+    @apply input resize-y min-h-[100px];
   }
   
   .glass-effect {
