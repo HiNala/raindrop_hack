@@ -27,6 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useCommandPalette } from '@/components/search/CommandPalette'
 
 interface HeaderProps {
   onSearchOpen?: () => void
@@ -35,6 +36,7 @@ interface HeaderProps {
 export function Header({ onSearchOpen }: HeaderProps) {
   const { isSignedIn, user } = useUser()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { isOpen, open, close } = useCommandPalette()
 
   const mainNav = [
     { name: 'Home', href: '/', icon: Home },
@@ -96,13 +98,13 @@ export function Header({ onSearchOpen }: HeaderProps) {
               <div className="hidden md:block">
                 <div className="relative">
                   <Search
-                    onClick={onSearchOpen}
+                    onClick={open}
                     className="absolute left-3 top-2.5 w-4 h-4 text-gray-400 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                   />
                   <Input
                     type="search"
-                    placeholder="Search posts..."
-                    onClick={onSearchOpen}
+                    placeholder="Search posts... (⌘K)"
+                    onClick={open}
                     className="w-64 pl-10 pr-4 h-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:ring-primary-500 cursor-pointer"
                     readOnly
                   />

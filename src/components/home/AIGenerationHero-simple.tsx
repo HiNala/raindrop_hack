@@ -1,84 +1,264 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Sparkles, Wand2, Loader2 } from 'lucide-react'
+import { useUser } from '@clerk/nextjs'
+import { Sparkles, Wand2, Loader2, ArrowRight, Zap } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
+import { generateAuthenticatedPost, generateAnonymousPost } from '@/app/actions/generate-post'
+import toast from 'react-hot-toast'
+
+interface AnonymousDraft {
+  id: string
+  title: string
+  contentJson: object
+  excerpt: string
+  createdAt: string
+  tags: string[]
+}
 
 export function AIGenerationHero() {
   const router = useRouter()
+  const { isSignedIn, user } = useUser()
   const [prompt, setPrompt] = useState('')
+  const [tone, setTone] = useState<'professional' | 'casual' | 'technical'>('professional')
+  const [length, setLength] = useState<'short' | 'medium' | 'long'>('medium')
   const [isGenerating, setIsGenerating] = useState(false)
+  const [anonymousCount, setAnonymousCount] = useState(0)
+
+  // Load anonymous post count from localStorage
+  useEffect(() => {
+    if (!isSignedIn) {
+      const drafts = localStorage.getItem('anonymousDrafts')
+      if (drafts) {
+        try {
+          const parsed = JSON.parse(drafts) as AnonymousDraft[]
+          setAnonymousCount(parsed.length)
+        } catch (e) {
+          setAnonymousCount(0)
+        }
+      }
+    }
+  }, [isSignedIn])
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
-      alert('Please describe what you want to write about')
+      toast.error('Please describe what you want to write about')
+      return
+    }
+
+    if (!isSignedIn && anonymousCount >= 3) {
+      toast.error('Please sign in to generate more posts')
       return
     }
 
     setIsGenerating(true)
-    
-    // Simulate generation for now
-    setTimeout(() => {
+
+    try {
+      const result = isSignedIn
+        ? await generateAuthenticatedPost(prompt, { tone, length })
+        : await generateAnonymousPost(prompt, { tone, length })
+
+      if (!result.success) {
+        toast.error(result.error || 'Failed to generate post')
+        return
+      }
+
+      if (isSignedIn && result.data && 'postId' in result.data) {
+        // Authenticated user - redirect to editor
+        toast.success('Post generated! Opening editor...')
+        router.push(`/editor/${result.data.postId}`)
+      } else if (!isSignedIn && result.data) {
+        // Anonymous user - save to localStorage
+        const draft: AnonymousDraft = {
+          id: `anon_${Date.now()}`,
+          title: result.data.title,
+          contentJson: result.data.contentJson,
+          excerpt: result.data.excerpt || '',
+          createdAt: new Date().toISOString(),
+          tags: result.data.suggestedTags || [],
+        }
+
+        const existingDrafts = localStorage.getItem('anonymousDrafts')
+        const drafts: AnonymousDraft[] = existingDrafts ? JSON.parse(existingDrafts) : []
+        drafts.push(draft)
+        localStorage.setItem('anonymousDrafts', JSON.stringify(drafts))
+        
+        setAnonymousCount(drafts.length)
+        toast.success('Post generated! Saved to your drafts.')
+        setPrompt('')
+      }
+    } catch (error) {
+      console.error('Generation error:', error)
+      toast.error('Something went wrong. Please try again.')
+    } finally {
       setIsGenerating(false)
-      setPrompt('')
-      router.push('/editor/new')
-    }, 2000)
+    }
   }
 
+  const remainingPosts = isSignedIn ? null : 3 - anonymousCount
+
   return (
-    <section className="relative min-h-[80vh] flex items-center justify-center px-4 py-20 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden">
+    <section className="relative min-h-[85vh] flex items-center justify-center px-4 py-20 overflow-hidden hero-gradient">
+      {/* Animated background orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            x: [0, 100, 0],
+            y: [0, -50, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{
+            scale: [1.2, 1, 1.2],
+            x: [0, -100, 0],
+            y: [0, 50, 0],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl"
+        />
+      </div>
+
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-30"></div>
+
       <div className="relative z-10 w-full max-w-4xl">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
-            <Sparkles className="w-4 h-4 text-purple-600" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full glass-card border border-teal-500/30">
+            <Sparkles className="w-4 h-4 text-teal-400 animate-pulse" />
+            <span className="text-sm font-medium text-text-primary">
               AI-Powered Blog Generation
             </span>
+            <Zap className="w-4 h-4 text-orange-400" />
           </div>
           
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
-            Write Your Story
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight">
+            <span className="text-gradient-primary">
+              Write Your Story
+            </span>
             <br />
-            In Seconds
+            <span className="text-text-primary">
+              In Seconds
+            </span>
           </h1>
           
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-            Describe your idea and let AI craft a compelling blog post. Edit, refine, and publish in minutes.
+          <p className="text-xl text-text-secondary mb-8 max-w-2xl mx-auto leading-relaxed">
+            Describe your idea and let AI craft a compelling blog post. 
+            <span className="text-teal-400 font-medium"> Edit, refine, and publish</span> in minutes.
           </p>
 
-          <div className="mb-4">
-            <Badge variant="secondary" className="text-sm py-1 px-3">
-              Demo Mode - Sign in for full features
-            </Badge>
-          </div>
-        </div>
+          {!isSignedIn && remainingPosts !== null && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Badge className="bg-dark-card/50 text-teal-400 border-teal-500/30 text-sm py-1.5 px-4">
+                <Sparkles className="w-3 h-3 inline mr-1.5" />
+                {remainingPosts} free {remainingPosts === 1 ? 'post' : 'posts'} remaining
+              </Badge>
+            </motion.div>
+          )}
+        </motion.div>
 
-        <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 p-8">
+        {/* Input Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="glass-card p-8 relative overflow-hidden group"
+        >
+          {/* Gradient border on hover */}
+          <div className="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
+          
           <div className="space-y-6">
             <div>
-              <Label htmlFor="prompt" className="text-base font-semibold mb-3 block">
+              <label htmlFor="prompt" className="text-base font-semibold mb-3 block text-text-primary flex items-center gap-2">
+                <Wand2 className="w-5 h-5 text-teal-400" />
                 What would you like to write about?
-              </Label>
+              </label>
               <Textarea
                 id="prompt"
-                placeholder="E.g., 'A comprehensive guide to React Server Components' or 'The future of AI in web development'"
+                placeholder="E.g., 'A comprehensive guide to building scalable web applications' or 'The future of AI in software development'"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                className="min-h-[120px] text-base resize-none"
+                className="min-h-[140px] text-base resize-none bg-dark-bg border-dark-border focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 input-glow"
                 disabled={isGenerating}
               />
             </div>
 
-            <div className="flex gap-3">
+            {/* Options */}
+            <div className="flex flex-wrap gap-6">
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-text-secondary font-medium">Tone:</span>
+                <div className="flex gap-2">
+                  {(['professional', 'casual', 'technical'] as const).map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setTone(t)}
+                      disabled={isGenerating}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        tone === t
+                          ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/30'
+                          : 'bg-dark-card text-text-secondary border border-dark-border hover:border-teal-500/50 hover:text-text-primary'
+                      }`}
+                    >
+                      {t.charAt(0).toUpperCase() + t.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-text-secondary font-medium">Length:</span>
+                <div className="flex gap-2">
+                  {(['short', 'medium', 'long'] as const).map((l) => (
+                    <button
+                      key={l}
+                      type="button"
+                      onClick={() => setLength(l)}
+                      disabled={isGenerating}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        length === l
+                          ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30'
+                          : 'bg-dark-card text-text-secondary border border-dark-border hover:border-orange-500/50 hover:text-text-primary'
+                      }`}
+                    >
+                      {l.charAt(0).toUpperCase() + l.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-4 pt-2">
               <Button
                 onClick={handleGenerate}
                 disabled={isGenerating || !prompt.trim()}
                 size="lg"
-                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold"
+                className="flex-1 btn-primary text-base font-semibold h-12 group"
               >
                 {isGenerating ? (
                   <>
@@ -87,40 +267,51 @@ export function AIGenerationHero() {
                   </>
                 ) : (
                   <>
-                    <Wand2 className="w-5 h-5 mr-2" />
+                    <Wand2 className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
                     Generate with AI
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
               </Button>
 
               <Button
                 type="button"
-                variant="outline"
-                size="lg"
                 onClick={() => router.push('/editor/new')}
                 disabled={isGenerating}
+                size="lg"
+                className="btn-secondary text-base font-medium h-12 px-6"
               >
                 Write Manually
               </Button>
             </div>
 
-            <p className="text-xs text-center text-gray-500 dark:text-gray-400">
-              ✨ AI-generated content is a starting point. Review and personalize before publishing.
+            <p className="text-xs text-center text-text-tertiary pt-2 flex items-center justify-center gap-1">
+              <Sparkles className="w-3 h-3" />
+              AI-generated content is a starting point. Review and personalize before publishing.
             </p>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Want unlimited posts?{' '}
-            <a
-              href="/sign-up"
-              className="font-semibold text-purple-600 hover:text-purple-700 dark:text-purple-400"
-            >
-              Sign up for free
-            </a>
-          </p>
-        </div>
+        {/* Sign up CTA for anonymous users */}
+        {!isSignedIn && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-8 text-center"
+          >
+            <p className="text-sm text-text-secondary">
+              Want unlimited posts and access to all features?{' '}
+              <a
+                href="/sign-up"
+                className="font-semibold text-teal-400 hover:text-teal-300 transition-colors inline-flex items-center gap-1 group"
+              >
+                Sign up for free
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+            </p>
+          </motion.div>
+        )}
       </div>
     </section>
   )

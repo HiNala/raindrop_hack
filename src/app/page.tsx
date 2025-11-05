@@ -1,138 +1,103 @@
+import { prisma } from '@/lib/prisma'
 import { AIGenerationHero } from '@/components/home/AIGenerationHero-simple'
 import { PostCard } from '@/components/post/PostCard'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Link from 'next/link'
-import { ArrowRight, TrendingUp } from 'lucide-react'
+import { ArrowRight, TrendingUp, Sparkles, Zap } from 'lucide-react'
 
-// Mock data for frontend development
-const getLatestPosts = () => [
-  {
-    id: "1",
-    title: "Welcome to the Blog",
-    slug: "welcome-to-the-blog",
-    excerpt: "This is a sample post for frontend development.",
-    coverImage: null,
-    publishedAt: new Date(),
-    readTimeMin: 5,
-    viewCount: 120,
-    author: {
-      profile: {
-        username: "demo_user",
-        displayName: "Demo User",
-        avatarUrl: null
+// Temporary mock data for frontend development
+async function getLatestPosts() {
+  return [
+    {
+      id: "1",
+      title: "Welcome to the Blog",
+      slug: "welcome-to-the-blog",
+      excerpt: "This is a sample post for frontend development.",
+      publishedAt: new Date(),
+      author: {
+        profile: {
+          username: "demo_user",
+          displayName: "Demo User",
+          avatarUrl: null
+        }
+      },
+      tags: [
+        { tag: { name: "demo", slug: "demo" } }
+      ],
+      _count: {
+        likes: 5,
+        comments: 2
       }
-    },
-    tags: [{ tag: { name: "demo", slug: "demo" } }],
-    _count: { likes: 15, comments: 3 }
-  },
-  {
-    id: "2",
-    title: "Getting Started with Modern Web Development",
-    slug: "getting-started-with-modern-web-development",
-    excerpt: "A comprehensive guide to modern web development tools and practices.",
-    coverImage: null,
-    publishedAt: new Date(),
-    readTimeMin: 8,
-    viewCount: 250,
-    author: {
-      profile: {
-        username: "tech_writer",
-        displayName: "Tech Writer",
-        avatarUrl: null
-      }
-    },
-    tags: [
-      { tag: { name: "webdev", slug: "webdev" } },
-      { tag: { name: "tutorial", slug: "tutorial" } }
-    ],
-    _count: { likes: 32, comments: 8 }
-  },
-  {
-    id: "3",
-    title: "The Future of AI in Software Development",
-    slug: "the-future-of-ai-in-software-development",
-    excerpt: "Exploring how artificial intelligence is reshaping the way we write code and build software.",
-    coverImage: null,
-    publishedAt: new Date(),
-    readTimeMin: 10,
-    viewCount: 450,
-    author: {
-      profile: {
-        username: "ai_expert",
-        displayName: "AI Expert",
-        avatarUrl: null
-      }
-    },
-    tags: [
-      { tag: { name: "ai", slug: "ai" } },
-      { tag: { name: "future", slug: "future" } }
-    ],
-    _count: { likes: 67, comments: 14 }
-  }
-]
+    }
+  ]
+}
 
-const getTrendingPosts = () => [
-  {
-    id: "4",
-    title: "Understanding React Server Components",
-    slug: "understanding-react-server-components",
-    excerpt: "A deep dive into React's new Server Components paradigm and how it changes development.",
-    coverImage: null,
-    publishedAt: new Date(),
-    readTimeMin: 12,
-    viewCount: 320,
-    author: {
-      profile: {
-        username: "react_dev",
-        displayName: "React Developer",
-        avatarUrl: null
+async function getTrendingPosts() {
+  return [
+    {
+      id: "2", 
+      title: "Trending Sample Post",
+      slug: "trending-sample-post",
+      excerpt: "This is a trending sample post.",
+      publishedAt: new Date(),
+      author: {
+        profile: {
+          username: "trending_user",
+          displayName: "Trending User", 
+          avatarUrl: null
+        }
+      },
+      tags: [
+        { tag: { name: "trending", slug: "trending" } }
+      ],
+      _count: {
+        likes: 15,
+        comments: 8
       }
-    },
-    tags: [
-      { tag: { name: "react", slug: "react" } },
-      { tag: { name: "tutorial", slug: "tutorial" } }
-    ],
-    _count: { likes: 45, comments: 9 }
-  }
-]
+    }
+  ]
+}
 
-const getPopularTags = () => [
-  { id: "1", name: "JavaScript", slug: "javascript", _count: { posts: 10 } },
-  { id: "2", name: "React", slug: "react", _count: { posts: 8 } },
-  { id: "3", name: "TypeScript", slug: "typescript", _count: { posts: 6 } },
-  { id: "4", name: "Next.js", slug: "nextjs", _count: { posts: 5 } },
-  { id: "5", name: "AI", slug: "ai", _count: { posts: 7 } },
-  { id: "6", name: "CSS", slug: "css", _count: { posts: 4 } },
-  { id: "7", name: "Web Development", slug: "webdev", _count: { posts: 9 } },
-  { id: "8", name: "Tutorial", slug: "tutorial", _count: { posts: 12 } }
-]
+async function getPopularTags() {
+  return [
+    { id: "1", name: "JavaScript", slug: "javascript", _count: { posts: 10 } },
+    { id: "2", name: "React", slug: "react", _count: { posts: 8 } },
+    { id: "3", name: "TypeScript", slug: "typescript", _count: { posts: 6 } },
+    { id: "4", name: "Next.js", slug: "nextjs", _count: { posts: 5 } },
+    { id: "5", name: "CSS", slug: "css", _count: { posts: 4 } }
+  ]
+}
 
-export default function Home() {
-  const latestPosts = getLatestPosts()
-  const trendingPosts = getTrendingPosts()
-  const popularTags = getPopularTags()
+export default async function Home() {
+  const [latestPosts, trendingPosts, popularTags] = await Promise.all([
+    getLatestPosts(),
+    getTrendingPosts(),
+    getPopularTags(),
+  ])
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-dark-bg">
       {/* AI Generation Hero */}
       <AIGenerationHero />
 
-      {/* Popular Tags */}
-      <section className="py-12 bg-white dark:bg-gray-900 border-y border-gray-200 dark:border-gray-800">
+      {/* Popular Tags Section */}
+      <section className="py-16 border-y border-dark-border bg-dark-card/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-            Popular Topics
-          </h2>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex items-center gap-3 mb-6">
+            <Sparkles className="w-5 h-5 text-teal-400" />
+            <h2 className="text-2xl font-bold text-text-primary">
+              Popular Topics
+            </h2>
+          </div>
+          <div className="flex flex-wrap gap-3">
             {popularTags.map((tag) => (
               <Link key={tag.id} href={`/tag/${tag.slug}`}>
                 <Badge
-                  variant="outline"
-                  className="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                  className="px-5 py-2.5 text-sm bg-dark-card border-dark-border text-text-primary hover:border-teal-500/50 hover:bg-dark-hover hover:shadow-glow-teal transition-all cursor-pointer group"
                 >
                   {tag.name}
-                  <span className="ml-2 text-gray-500 dark:text-gray-400">
+                  <span className="ml-2 text-text-tertiary group-hover:text-teal-400 transition-colors">
                     {tag._count.posts}
                   </span>
                 </Badge>
@@ -142,25 +107,35 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Posts Feed */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Posts Feed Section */}
+      <section className="py-20 relative">
+        {/* Background pattern */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-20"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="mb-12">
-            <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
+            <h2 className="text-4xl font-bold mb-3 text-text-primary flex items-center gap-3">
+              <Zap className="w-8 h-8 text-orange-500" />
               Discover Stories
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-lg text-text-secondary">
               Explore the latest insights from our community
             </p>
           </div>
 
           <Tabs defaultValue="latest" className="w-full">
-            <TabsList className="mb-8">
-              <TabsTrigger value="latest" className="flex items-center gap-2">
+            <TabsList className="mb-10 bg-dark-card border border-dark-border p-1">
+              <TabsTrigger 
+                value="latest" 
+                className="flex items-center gap-2 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
+              >
                 <ArrowRight className="w-4 h-4" />
                 Latest
               </TabsTrigger>
-              <TabsTrigger value="trending" className="flex items-center gap-2">
+              <TabsTrigger 
+                value="trending" 
+                className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white"
+              >
                 <TrendingUp className="w-4 h-4" />
                 Trending
               </TabsTrigger>
@@ -168,14 +143,16 @@ export default function Home() {
 
             <TabsContent value="latest" className="mt-0">
               {latestPosts.length === 0 ? (
-                <div className="text-center py-20">
-                  <p className="text-gray-600 dark:text-gray-400 text-lg mb-4">
+                <div className="text-center py-20 glass-card">
+                  <Sparkles className="w-16 h-16 text-teal-400 mx-auto mb-4" />
+                  <p className="text-text-secondary text-lg mb-4">
                     No posts yet. Be the first to write!
                   </p>
                   <Link
                     href="/editor/new"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all"
+                    className="inline-flex items-center gap-2 px-6 py-3 btn-primary"
                   >
+                    <Zap className="w-5 h-5" />
                     Create Your First Post
                   </Link>
                 </div>
@@ -190,8 +167,9 @@ export default function Home() {
 
             <TabsContent value="trending" className="mt-0">
               {trendingPosts.length === 0 ? (
-                <div className="text-center py-20">
-                  <p className="text-gray-600 dark:text-gray-400 text-lg">
+                <div className="text-center py-20 glass-card">
+                  <TrendingUp className="w-16 h-16 text-orange-400 mx-auto mb-4" />
+                  <p className="text-text-secondary text-lg">
                     No trending posts this week. Check back soon!
                   </p>
                 </div>
@@ -208,24 +186,36 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Share Your Story?
+      <section className="py-24 relative overflow-hidden">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 via-dark-bg to-orange-500/10"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        </div>
+        
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <Sparkles className="w-12 h-12 text-teal-400 mx-auto mb-6 animate-pulse" />
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-text-primary">
+            Ready to Share{' '}
+            <span className="text-gradient-primary">Your Story?</span>
           </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of writers sharing their expertise and passion. Start writing today.
+          <p className="text-xl text-text-secondary mb-10 max-w-2xl mx-auto leading-relaxed">
+            Join thousands of writers sharing their expertise and passion. 
+            <span className="text-teal-400 font-medium"> Start writing today.</span>
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/sign-up"
-              className="inline-flex items-center justify-center px-8 py-3 bg-white text-purple-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+              className="inline-flex items-center justify-center px-8 py-4 btn-primary text-lg font-semibold group"
             >
+              <Zap className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
               Get Started Free
+              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
-              href="/posts"
-              className="inline-flex items-center justify-center px-8 py-3 border-2 border-white text-white rounded-lg font-semibold hover:bg-white/10 transition-colors"
+              href="/search"
+              className="inline-flex items-center justify-center px-8 py-4 btn-secondary text-lg font-medium"
             >
               Explore More Posts
             </Link>

@@ -13,21 +13,55 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Capacity.so inspired color palette
+        teal: {
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6', // Primary
+          600: '#0d9488', // Hover
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
+        },
+        orange: {
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          400: '#fb923c',
+          500: '#f97316', // Accent
+          600: '#ea580c', // Hover accent
+          700: '#c2410c',
+          800: '#9a3412',
+          900: '#7c2d12',
+        },
+        // Dark theme colors
+        dark: {
+          bg: '#0a0a0b',      // Main background
+          card: '#1a1a1d',    // Card background
+          border: '#27272a',  // Borders
+          hover: '#2a2a2d',   // Hover states
+        },
+        // Keep existing primary for backwards compatibility
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6',
+          600: '#0d9488',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
         },
       },
       animation: {
         aurora: "aurora 60s linear infinite",
+        'glow-pulse': 'glow-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
         aurora: {
@@ -38,6 +72,20 @@ module.exports = {
             backgroundPosition: "350% 50%, 350% 50%",
           },
         },
+        'glow-pulse': {
+          '0%, 100%': {
+            opacity: '1',
+            boxShadow: '0 0 20px rgba(20, 184, 166, 0.5)',
+          },
+          '50%': {
+            opacity: '.8',
+            boxShadow: '0 0 30px rgba(20, 184, 166, 0.8)',
+          },
+        },
+      },
+      boxShadow: {
+        'glow-teal': '0 0 20px rgba(20, 184, 166, 0.3)',
+        'glow-orange': '0 0 20px rgba(249, 115, 22, 0.3)',
       },
     },
   },
