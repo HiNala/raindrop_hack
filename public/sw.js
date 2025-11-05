@@ -5,10 +5,7 @@ const DYNAMIC_CACHE_NAME = 'raindrop-dynamic-v1'
 // URLs to cache on install
 const STATIC_ASSETS = [
   '/',
-  '/dashboard',
   '/offline',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
   '/manifest.json',
 ]
 
@@ -18,7 +15,12 @@ self.addEventListener('install', (event) => {
     caches.open(STATIC_CACHE_NAME)
       .then((cache) => {
         console.log('Service Worker: Caching static assets')
-        return cache.addAll(STATIC_ASSETS)
+        // Cache assets individually to avoid failing on missing files
+        return Promise.allSettled(
+          STATIC_ASSETS.map(url => 
+            cache.add(url).catch(err => console.warn('Failed to cache:', url, err))
+          )
+        )
       })
       .then(() => {
         console.log('Service Worker: Static assets cached')
@@ -147,25 +149,11 @@ self.addEventListener('sync', (event) => {
 self.addEventListener('push', (event) => {
   const options = {
     body: event.data ? event.data.text() : 'New notification from Raindrop',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-96x96.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
       primaryKey: 1
-    },
-    actions: [
-      {
-        action: 'explore',
-        title: 'Explore',
-        icon: '/icons/checkmark.png'
-      },
-      {
-        action: 'close',
-        title: 'Close',
-        icon: '/icons/xmark.png'
-      }
-    ]
+    }
   }
 
   event.waitUntil(
