@@ -7,7 +7,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import { InstallBanner } from '@/components/layout/InstallBanner'
-import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister'
+// import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister'
 import { ResponsiveTest } from '@/components/test/ResponsiveTest'
 import { HydrationTest } from '@/components/test/HydrationTest'
 import './globals.css'
@@ -27,7 +27,8 @@ export const metadata: Metadata = {
       'Create compelling blog posts in seconds with AI. Share your stories with the world.',
     type: 'website',
   },
-  manifest: '/manifest.json',
+  // Temporarily disabled to prevent icon requests
+  // manifest: '/manifest.json',
 }
 
 export const viewport = {
@@ -59,7 +60,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <html lang="en" className={`${inter.variable} ${playfair.variable} dark`}>
         <body className="font-sans antialiased bg-[#0a0a0b] text-[#fafafa] overflow-x-hidden">
-          <ServiceWorkerRegister />
+          {/* ServiceWorkerRegister temporarily disabled - causing reload loop */}
+          {/* <ServiceWorkerRegister /> */}
           <div className="min-h-[100dvh] flex flex-col">
             <InstallBanner />
             <Header />
