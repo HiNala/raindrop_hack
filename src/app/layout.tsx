@@ -8,8 +8,8 @@ import { Footer } from '@/components/layout/Footer'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import { InstallBanner } from '@/components/layout/InstallBanner'
 // import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister'
-import { ResponsiveTest } from '@/components/test/ResponsiveTest'
-import { HydrationTest } from '@/components/test/HydrationTest'
+// import { ResponsiveTest } from '@/components/test/ResponsiveTest'
+// import { HydrationTest } from '@/components/test/HydrationTest'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
@@ -82,8 +82,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="md:hidden">
               <BottomNavigation />
             </div>
-            {/* Debug components - development only */}
-            {process.env.NODE_ENV === 'development' && <HydrationTest />}
           </div>
           <Toaster
             position="top-center"

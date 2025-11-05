@@ -276,13 +276,21 @@ export function Header({ onSearchOpen, className }: HeaderProps) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button
-                  variant="outline"
-                  asChild
-                  className="border-[#27272a] hover:bg-[#1a1a1d] text-text-primary hover:text-teal-400 transition-colors h-9 px-3 sm:h-10 sm:px-4 text-[16px]"
-                >
-                  <Link href="/sign-in">Sign In</Link>
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    asChild
+                    className="hover:bg-[#1a1a1d] text-text-primary hover:text-teal-400 transition-colors h-9 px-3 sm:h-10 sm:px-4 text-[16px]"
+                  >
+                    <Link href="/sign-in">Sign In</Link>
+                  </Button>
+                  <Button
+                    asChild
+                    className="bg-teal-500 hover:bg-teal-600 text-white shadow-glow-teal transition-colors h-9 px-3 sm:h-10 sm:px-4 text-[16px]"
+                  >
+                    <Link href="/sign-up">Get Started</Link>
+                  </Button>
+                </div>
               )}
 
               {/* Mobile Menu Toggle - Sheet */}
