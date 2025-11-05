@@ -1,31 +1,80 @@
-# 🚀 Deployment Guide
+# Deployment Guide
 
-This guide will help you deploy your blog platform to production on Vercel.
+Complete guide to deploying the Blog App to production.
 
-## 📋 Prerequisites
+## Prerequisites
 
-Before deploying, make sure you have:
+- GitHub account
+- Vercel account (free tier available)
+- Neon PostgreSQL database (free tier available)
+- Clerk account (free tier available)
+- OpenAI API key
+- UploadThing account (for image uploads)
 
-- ✅ All environment variables configured
-- ✅ Database set up and accessible
-- ✅ Clerk application configured
-- ✅ OpenAI API key ready
-- ✅ UploadThing application set up
-- ✅ Code pushed to GitHub repository
+## Step 1: Database Setup (Neon)
 
-## 🔧 Environment Variables
+1. Go to [neon.tech](https://neon.tech) and create an account
+2. Create a new project
+3. Copy your connection string from the dashboard
+   - Use the **pooler** connection string for better performance
+   - Format: `postgresql://user:password@host/dbname?sslmode=require`
+
+## Step 2: Clerk Setup
+
+1. Go to [clerk.com](https://clerk.com) and create an account
+2. Create a new application
+3. Copy your API keys from the **API Keys** page:
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (starts with `pk_`)
+   - `CLERK_SECRET_KEY` (starts with `sk_`)
+4. Configure URLs in Clerk dashboard:
+   - Sign-in URL: `/sign-in`
+   - Sign-up URL: `/sign-up`
+   - After sign-in: `/dashboard`
+   - After sign-up: `/dashboard`
+
+## Step 3: UploadThing Setup
+
+1. Go to [uploadthing.com](https://uploadthing.com) and sign in with GitHub
+2. Create a new app
+3. Copy your credentials:
+   - `UPLOADTHING_SECRET` (starts with `sk_live_`)
+   - `UPLOADTHING_APP_ID`
+
+## Step 4: Deploy to Vercel
+
+### Option A: Deploy from GitHub
+
+1. Push your code to GitHub (already done)
+2. Go to [vercel.com](https://vercel.com) and sign in
+3. Click **Add New Project**
+4. Import your GitHub repository (`HiNala/raindrop_hack`)
+5. Configure project:
+   - Framework Preset: **Next.js**
+   - Root Directory: `./` (leave default)
+   - Build Command: `npm run build` (default)
+   - Output Directory: `.next` (default)
+
+### Option B: Deploy via CLI
+
+```bash
+npm i -g vercel
+vercel login
+vercel
+```
+
+## Step 5: Environment Variables
+
+Add these environment variables in Vercel dashboard (Settings → Environment Variables):
 
 ### Required Variables
 
-Add these to your Vercel project settings:
-
 ```env
-# Database (Required)
-DATABASE_URL="postgresql://username:password@host/database?sslmode=require"
+# Database
+DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
 
-# Clerk Authentication (Required)
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
-CLERK_SECRET_KEY="sk_test_..."
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
+CLERK_SECRET_KEY=sk_live_...
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
@@ -33,319 +82,159 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
 NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
 NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
 
-# OpenAI API (Required)
-OPENAI_API_KEY="sk-proj-..."
+# OpenAI
+OPENAI_API_KEY=sk-proj-...
 
-# UploadThing (Required)
-UPLOADTHING_SECRET="sk_live_..."
-UPLOADTHING_APP_ID="your_app_id"
+# UploadThing
+UPLOADTHING_SECRET=sk_live_...
+UPLOADTHING_APP_ID=your_app_id
 
-# App Configuration
-NEXT_PUBLIC_API_URL="https://yourdomain.com"
-JWT_SECRET="your-super-secret-jwt-key"
+# App URL (use your Vercel domain)
+NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
 ```
 
-## 🗄️ Database Setup
+### Optional Variables
 
-### Neon Database
+```env
+# Rate Limiting (Upstash Redis)
+UPSTASH_REDIS_REST_URL=https://...
+UPSTASH_REDIS_REST_TOKEN=...
 
-1. **Create Neon Account**
-   - Go to [neon.tech](https://neon.tech)
-   - Sign up for free tier
-
-2. **Create Database**
-   - Click "New Project"
-   - Choose region closest to your users
-   - Copy connection string
-
-3. **Configure Connection String**
-   ```
-   postgresql://username:password@ep-xxx.us-west-2.aws.neon.tech/dbname?sslmode=require&channel_binding=require
-   ```
-
-4. **Test Connection**
-   ```bash
-   npx prisma db push
-   npx prisma studio
-   ```
-
-## 🔐 Clerk Configuration
-
-### 1. Create Clerk Application
-
-1. Go to [clerk.com](https://clerk.com)
-2. Create new application
-3. Configure "User & Authentication" settings:
-   - Email addresses: Allow
-   - Phone numbers: Optional
-   - Social connections: Configure as needed
-
-### 2. Get API Keys
-
-1. Go to API Keys section
-2. Copy Publishable Key and Secret Key
-3. Add to environment variables
-
-### 3. Configure URLs
-
-In Clerk dashboard → Paths → Configure:
-
-```
-Sign in URL: /sign-in
-Sign up URL: /sign-up
-After sign in: /dashboard
-After sign up: /dashboard
-Sign in fallback: /
-Sign up fallback: /
+# Email (Resend)
+RESEND_API_KEY=re_...
+FROM_EMAIL=noreply@yourdomain.com
 ```
 
-### 4. Customize Appearance
+## Step 6: Run Database Migrations
 
-1. Go to "Theme & Branding"
-2. Upload your logo
-3. Customize colors to match your brand
-4. Test the sign-in flow
+After deployment, run migrations:
 
-## 🤖 OpenAI Setup
+```bash
+# Via Vercel CLI
+vercel env pull .env.local
+npx prisma migrate deploy
 
-### 1. Get API Key
+# Or via Vercel dashboard: add a build command
+# Build Command: npm run build && npx prisma migrate deploy
+```
 
-1. Go to [platform.openai.com](https://platform.openai.com)
-2. Create account and add payment method
-3. Generate API key
-4. Add to environment variables
+## Step 7: Seed Database (Optional)
 
-### 2. Configure Usage Limits
+```bash
+npm run db:seed
+```
 
-1. Set usage limits in OpenAI dashboard
-2. Monitor usage to control costs
-3. Consider rate limiting in your application
+## Step 8: Verify Deployment
 
-## 📁 UploadThing Setup
+1. Visit your Vercel URL
+2. Check `/api/health` endpoint
+3. Test sign-up flow
+4. Create a test post
+5. Verify publishing works
 
-### 1. Create Application
+## Post-Deployment Checklist
 
-1. Go to [uploadthing.com](https://uploadthing.com)
-2. Create new application
-3. Configure file types and sizes
+- [ ] Environment variables set in Vercel
+- [ ] Database migrations run successfully
+- [ ] Clerk URLs configured correctly
+- [ ] Health endpoint returns 200
+- [ ] Sign-up flow works
+- [ ] Post creation works
+- [ ] Image uploads work
+- [ ] SEO metadata generates correctly
+- [ ] Sitemap accessible at `/sitemap.xml`
+- [ ] Robots.txt accessible at `/robots.txt`
 
-### 2. Get Credentials
+## Custom Domain Setup
 
-1. Get App ID and Secret Key
-2. Add to environment variables
-3. Configure CORS settings
+1. In Vercel dashboard, go to **Settings → Domains**
+2. Add your custom domain
+3. Update DNS records as instructed
+4. Update `NEXT_PUBLIC_APP_URL` environment variable
+5. Update Clerk URLs to use your custom domain
 
-## 🚀 Deploy to Vercel
+## Performance Optimization
 
-### 1. Connect Repository
+### Enable ISR (Incremental Static Regeneration)
 
-1. Go to [vercel.com](https://vercel.com)
-2. Click "New Project"
-3. Connect your GitHub repository
-4. Select the blog-app directory
+Posts are already configured for ISR. To adjust revalidation:
 
-### 2. Configure Build Settings
+```typescript
+// In post page
+export const revalidate = 3600 // Revalidate every hour
+```
 
-Vercel will auto-detect Next.js settings:
+### Database Connection Pooling
 
-```json
-{
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install"
+Use Neon's connection pooler for better performance:
+
+```
+postgresql://user:password@host-pooler.neon.tech/dbname?sslmode=require
+```
+
+### Image Optimization
+
+Configure `next.config.js` for image domains:
+
+```javascript
+images: {
+  domains: ['utfs.io'], // UploadThing domain
 }
 ```
 
-### 3. Set Environment Variables
-
-1. Go to "Environment Variables" tab
-2. Add all required variables
-3. Mark sensitive variables as "Secret"
-4. Save and re-deploy
-
-### 4. Deploy
-
-1. Click "Deploy"
-2. Wait for build to complete
-3. Test the deployed application
-
-## 🔄 Database Migration
-
-### First Time Setup
-
-After deployment, run database migration:
-
-1. Access your deployed app
-2. Navigate to `https://yourdomain.com/api/db/migrate` (if you created this endpoint)
-3. Or run locally and push to production:
-   ```bash
-   npx prisma db push
-   ```
-
-### Schema Updates
-
-When updating database schema:
-
-1. Make changes to `prisma/schema.prisma`
-2. Generate migration:
-   ```bash
-   npx prisma migrate dev --name migration_name
-   ```
-3. Deploy with new migrations
-
-## 🔍 Testing Your Deployment
-
-### Checklist
-
-- [ ] Homepage loads correctly
-- [ ] Sign up/sign in flow works
-- [ ] Can create new post
-- [ ] AI generation works
-- [ ] Image uploads work
-- [ ] Post publishing works
-- [ ] Mobile responsive
-
-### Common Issues
-
-1. **Database Connection Errors**
-   - Verify DATABASE_URL is correct
-   - Check IP whitelist settings
-   - Ensure SSL is enabled
-
-2. **Clerk Authentication Issues**
-   - Verify API keys are correct
-   - Check redirect URLs
-   - Ensure CORS is configured
-
-3. **Image Upload Failures**
-   - Verify UploadThing credentials
-   - Check file size limits
-   - Ensure CORS allows your domain
-
-## 📊 Monitoring & Analytics
+## Monitoring
 
 ### Vercel Analytics
 
-1. Enable Vercel Analytics in project settings
-2. Monitor page views, performance
-3. Set up custom events
+Enable in Vercel dashboard for performance monitoring.
 
 ### Error Tracking
 
-Consider adding Sentry or similar:
+Consider adding:
+- Sentry for error tracking
+- LogRocket for session replay
+- Vercel's built-in error logs
 
-```bash
-npm install @sentry/nextjs
-```
+## Troubleshooting
 
-### Database Monitoring
+### Database Connection Issues
 
-Monitor your Neon database:
-- Connection usage
-- Storage usage
-- Query performance
+- Verify `DATABASE_URL` is correct
+- Check Neon dashboard for connection limits
+- Use connection pooler URL
 
-## 🛡️ Security Checklist
+### Clerk Authentication Issues
 
-### Environment Variables
-- [ ] All secrets are marked as such
-- [ ] No hardcoded credentials in code
-- [ ] Production URLs are correctly set
+- Verify all Clerk environment variables are set
+- Check Clerk dashboard for allowed URLs
+- Ensure middleware is configured correctly
 
-### Headers & Security
-Vercel automatically adds:
-- HTTPS
-- Security headers
-- Rate limiting basics
+### Build Failures
 
-### Database Security
-- [ ] Connection uses SSL
-- [ ] IP whitelist configured
-- [ ] Regular backups enabled
+- Check build logs in Vercel dashboard
+- Verify all dependencies are in `package.json`
+- Ensure Prisma Client is generated (`npx prisma generate`)
 
-## 📈 Performance Optimization
+### Image Upload Issues
 
-### Build Optimization
+- Verify UploadThing credentials
+- Check CORS settings in UploadThing dashboard
+- Ensure image domains are configured in `next.config.js`
 
-Vercel automatically optimizes:
-- Next.js builds
-- Image optimization
-- Static asset serving
+## Rollback Strategy
 
-### Caching Strategy
+1. Go to Vercel dashboard → Deployments
+2. Find previous working deployment
+3. Click "..." → Promote to Production
 
-```javascript
-// next.config.js
-module.exports = {
-  experimental: {
-    optimizeCss: true,
-    optimizePackageImports: ['lucide-react']
-  }
-}
-```
+## CI/CD Pipeline
 
-### CDN Configuration
+See `.github/workflows/ci.yml` for automated testing and deployment.
 
-Vercel Edge Network provides:
-- Global CDN
-- Automatic caching
-- Edge functions support
+## Support
 
-## 🔄 CI/CD Pipeline
-
-### Automatic Deployments
-
-1. Push to main branch → Deploy to production
-2. Push to develop branch → Deploy to preview
-3. Pull requests → Preview deployments
-
-### Build Hooks
-
-```bash
-# Add to package.json scripts
-"scripts": {
-  "postbuild": "prisma generate",
-  "prebuild": "npm run db:generate"
-}
-```
-
-## 🆘 Troubleshooting
-
-### Common Build Errors
-
-1. **Prisma Generation Failed**
-   ```bash
-   npx prisma generate
-   npx prisma db push
-   ```
-
-2. **TypeScript Errors**
-   ```bash
-   npx tsc --noEmit
-   ```
-
-3. **Environment Variable Issues**
-   - Check Vercel dashboard
-   - Restart deployment
-   - Verify variable names
-
-### Production Debugging
-
-1. Check Vercel Function Logs
-2. Use Vercel CLI for local debugging
-3. Monitor browser console
-4. Test with production environment variables
-
-## 📞 Support Resources
-
-- [Vercel Documentation](https://vercel.com/docs)
-- [Next.js Deployment Guide](https://nextjs.org/docs/deployment)
-- [Clerk Deployment Guide](https://clerk.com/docs/deployments)
-- [Neon Documentation](https://neon.tech/docs)
-- [UploadThing Docs](https://uploadthing.com/docs)
-
----
-
-🎉 **Congratulations!** Your blog platform is now live and ready for users.
-
-For issues or questions, check the troubleshooting section or open a support ticket with the respective service provider.
+For issues:
+1. Check Vercel logs
+2. Check Neon database logs
+3. Review error boundaries in app
+4. Check `/api/health` endpoint
