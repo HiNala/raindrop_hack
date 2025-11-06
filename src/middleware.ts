@@ -3,10 +3,11 @@ import { NextResponse, NextRequest } from 'next/server'
 import { prisma } from './lib/prisma'
 import { SECURITY_HEADERS } from './lib/security-enhanced'
 
-// Define protected routes
+// Define protected routes (excludes /editor/new for anonymous users)
 const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
-  '/editor(.*)',
+  '/editor/[id]',
+  '/editor/[id]/(.*)',
   '/settings(.*)',
   '/api/private(.*)',
   '/admin(.*)',

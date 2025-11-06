@@ -6,44 +6,29 @@ import { prisma } from '@/lib/prisma'
 import { enrichWithHN, formatCitationsMarkdown } from '@/lib/hn-search'
 import { logger } from '@/lib/logger'
 import { sanitizeText } from '@/lib/security-enhanced'
+import { checkRateLimit, RateLimitConfig } from '@/lib/rate-limiting-redis'
 
-// Rate limiting tracking (in-memory for simplicity, use Redis in production)
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT_CONFIG: RateLimitConfig = {
+  requests: 10, // Max generations per day
+  window: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+}
 
-const RATE_LIMIT = 10 // Max generations per day
-const RATE_WINDOW = 24 * 60 * 60 * 1000 // 24 hours in milliseconds
-
-/**
- * Check if user has exceeded rate limit
- */
-function checkRateLimit(userId: string): { allowed: boolean; remaining: number } {
-  const now = Date.now()
-  const userLimit = rateLimitMap.get(userId)
-
-  if (!userLimit || now > userLimit.resetAt) {
-    // Reset or create new entry
-    rateLimitMap.set(userId, {
-      count: 0,
-      resetAt: now + RATE_WINDOW,
-    })
-    return { allowed: true, remaining: RATE_LIMIT }
-  }
-
-  if (userLimit.count >= RATE_LIMIT) {
-    return { allowed: false, remaining: 0 }
-  }
-
-  return { allowed: true, remaining: RATE_LIMIT - userLimit.count }
+const ANONYMOUS_RATE_LIMIT_CONFIG: RateLimitConfig = {
+  requests: 3, // Max generations per session for anonymous users
+  window: 60 * 60 * 1000, // 1 hour
 }
 
 /**
- * Increment rate limit counter
+ * Generate a unique identifier for rate limiting
  */
-function incrementRateLimit(userId: string) {
-  const userLimit = rateLimitMap.get(userId)
-  if (userLimit) {
-    userLimit.count++
+function getRateLimitIdentifier(userId?: string, sessionId?: string): string {
+  if (userId) {
+    return `ai-generation:user:${userId}`
   }
+  if (sessionId) {
+    return `ai-generation:anonymous:${sessionId}`
+  }
+  return 'ai-generation:unknown'
 }
 
 /**
@@ -84,8 +69,10 @@ export async function generateAuthenticatedPost(
   prompt: string,
   options: GeneratePostOptions & { includeHNContext?: boolean } = {}
 ) {
+  let user = null
+  
   try {
-    const user = await getCurrentUser()
+    user = await getCurrentUser()
 
     if (!user) {
       return {
@@ -94,12 +81,35 @@ export async function generateAuthenticatedPost(
       }
     }
 
-    // Check rate limit
-    const rateLimit = checkRateLimit(user.id)
-    if (!rateLimit.allowed) {
+    // Validate input
+    if (!prompt || typeof prompt !== 'string || prompt.trim().length === 0) {
       return {
         success: false,
-        error: 'Rate limit exceeded. You can generate up to 10 posts per day.',
+        error: 'Prompt is required',
+      }
+    }
+
+    if (prompt.length > 1000) {
+      return {
+        success: false,
+        error: 'Prompt is too long (max 1000 characters)',
+      }
+    }
+
+    // Check rate limit
+    const identifier = getRateLimitIdentifier(user.id)
+    const rateLimit = await checkRateLimit(identifier, RATE_LIMIT_CONFIG)
+    
+    if (!rateLimit.allowed) {
+      logger.security('AI generation rate limit exceeded', {
+        userId: user.id,
+        prompt: sanitizeText(prompt).substring(0, 100),
+        retryAfter: rateLimit.retryAfter
+      })
+      
+      return {
+        success: false,
+        error: `Rate limit exceeded. You can generate up to ${RATE_LIMIT_CONFIG.requests} posts per day. Try again in ${rateLimit.retryAfter} minutes.`,
       }
     }
 
@@ -112,20 +122,25 @@ export async function generateAuthenticatedPost(
       hnContext,
     })
 
-    // Increment rate limit
-    incrementRateLimit(user.id)
-
     // Create draft in database
     const post = await prisma.post.create({
       data: {
         authorId: user.id,
-        title: generated.title,
+        title: sanitizeText(generated.title).substring(0, 200),
         slug: '', // Will be generated on publish
-        excerpt: generated.excerpt,
+        excerpt: sanitizeText(generated.excerpt).substring(0, 500),
         contentJson: generated.contentJson,
-        readTimeMin: generated.readTimeMin,
+        readTimeMin: Math.max(1, Math.min(99, generated.readTimeMin || 5)),
         published: false,
       },
+    })
+
+    logger.info('AI post generated successfully', {
+      userId: user.id,
+      postId: post.id,
+      title: generated.title.substring(0, 100),
+      hasHNContext: !!hnContext,
+      remaining: rateLimit.remaining - 1
     })
 
     return {
@@ -139,13 +154,15 @@ export async function generateAuthenticatedPost(
         readTimeMin: generated.readTimeMin,
         hnSources: generated.hnSources,
         remaining: rateLimit.remaining - 1,
+        resetAt: rateLimit.resetAt,
       },
     }
   } catch (error) {
-    logger.error('Error generating post', error, {
+    logger.error('Error generating authenticated post', error, {
       userId: user?.id,
       prompt: sanitizeText(prompt).substring(0, 100),
     })
+    
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to generate post',
@@ -158,11 +175,40 @@ export async function generateAuthenticatedPost(
  */
 export async function generateAnonymousPost(
   prompt: string,
-  options: GeneratePostOptions & { includeHNContext?: boolean } = {}
+  options: GeneratePostOptions & { includeHNContext?: boolean; sessionId?: string } = {}
 ) {
   try {
-    // For anonymous users, we don't save to DB or rate limit strictly
-    // The client will handle the 3-post limit via localStorage
+    // Validate input
+    if (!prompt || typeof prompt !== 'string || prompt.trim().length === 0) {
+      return {
+        success: false,
+        error: 'Prompt is required',
+      }
+    }
+
+    if (prompt.length > 1000) {
+      return {
+        success: false,
+        error: 'Prompt is too long (max 1000 characters)',
+      }
+    }
+
+    // Check rate limit for anonymous users
+    const identifier = getRateLimitIdentifier(undefined, options.sessionId)
+    const rateLimit = await checkRateLimit(identifier, ANONYMOUS_RATE_LIMIT_CONFIG)
+    
+    if (!rateLimit.allowed) {
+      logger.security('Anonymous AI generation rate limit exceeded', {
+        sessionId: options.sessionId,
+        prompt: sanitizeText(prompt).substring(0, 100),
+        retryAfter: rateLimit.retryAfter
+      })
+      
+      return {
+        success: false,
+        error: `Rate limit exceeded. You can generate up to ${ANONYMOUS_RATE_LIMIT_CONFIG.requests} posts per session. Try again in ${rateLimit.retryAfter} minutes.`,
+      }
+    }
 
     // Fetch HN context if enabled (limited for anonymous users)
     const hnContext = options.includeHNContext ? await fetchHNContext(prompt, true) : null
@@ -170,6 +216,13 @@ export async function generateAnonymousPost(
     const generated = await generatePostWithAI(prompt, {
       ...options,
       hnContext,
+    })
+
+    logger.info('Anonymous AI post generated successfully', {
+      sessionId: options.sessionId,
+      title: generated.title.substring(0, 100),
+      hasHNContext: !!hnContext,
+      remaining: rateLimit.remaining - 1
     })
 
     return {
@@ -181,12 +234,16 @@ export async function generateAnonymousPost(
         suggestedTags: generated.suggestedTags,
         readTimeMin: generated.readTimeMin,
         hnSources: generated.hnSources,
+        remaining: rateLimit.remaining - 1,
+        resetAt: rateLimit.resetAt,
       },
     }
   } catch (error) {
     logger.error('Error generating anonymous post', error, {
+      sessionId: options.sessionId,
       prompt: sanitizeText(prompt).substring(0, 100),
     })
+    
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to generate post',
