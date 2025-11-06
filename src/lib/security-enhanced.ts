@@ -263,7 +263,7 @@ export function generateSecureToken(length: number = 32): string {
  * Enhanced email validation
  */
 export function isValidEmail(email: string): boolean {
-  if (!email || typeof email !== 'string) {
+  if (!email || typeof email !== 'string') {
     return false
   }
 
