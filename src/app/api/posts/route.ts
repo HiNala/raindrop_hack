@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { handleAPIError, withErrorHandling, validateRequest } from '@/lib/errors'
 import { applyRateLimit, RATE_LIMITS } from '@/lib/rate-limit-middleware'
 import { requireUser } from '@/lib/auth'
-import { sanitizeHtml, sanitizeText } from '@/lib/security-enhanced'
+import { sanitizeHtml, sanitizeText, sanitizeUrl, VALIDATION_PATTERNS } from '@/lib/security-enhanced'
 import { logger } from '@/lib/logger'
 import slugify from 'slugify'
 
@@ -23,6 +23,7 @@ const createPostSchema = z
     title: sanitizeText(data.title),
     excerpt: data.excerpt ? sanitizeText(data.excerpt) : undefined,
     contentHtml: data.contentHtml ? sanitizeHtml(data.contentHtml) : undefined,
+    coverImage: data.coverImage && sanitizeUrl(data.coverImage) ? data.coverImage : undefined,
   }))
 
 export async function GET(request: NextRequest) {
@@ -38,6 +39,23 @@ export async function GET(request: NextRequest) {
       const tag = searchParams.get('tag')
       const search = searchParams.get('search')
       const authorId = searchParams.get('authorId')
+
+      // Validate and sanitize inputs
+      if (page < 1 || limit < 1) {
+        return NextResponse.json({ error: 'Invalid pagination parameters' }, { status: 400 })
+      }
+
+      if (slug && (!VALIDATION_PATTERNS.slug.test(slug) || slug.length > 100)) {
+        return NextResponse.json({ error: 'Invalid slug parameter' }, { status: 400 })
+      }
+
+      if (tag && (!VALIDATION_PATTERNS.tagSlug.test(tag) || tag.length > 50)) {
+        return NextResponse.json({ error: 'Invalid tag parameter' }, { status: 400 })
+      }
+
+      if (authorId && (!VALIDATION_PATTERNS.postId.test(authorId) || authorId.length > 50)) {
+        return NextResponse.json({ error: 'Invalid author parameter' }, { status: 400 })
+      }
 
       // If specific slug requested
       if (slug) {
@@ -75,7 +93,7 @@ export async function GET(request: NextRequest) {
         })
 
         if (!post) {
-          throw new Error('Post not found')
+          return NextResponse.json({ error: 'Post not found' }, { status: 404 })
         }
 
         // Increment view count asynchronously
@@ -91,20 +109,8 @@ export async function GET(request: NextRequest) {
         return post
       }
 
-      // Build where clause with optimizations
-      const where: {
-        published: boolean
-        tags?: {
-          some: {
-            tag: {
-              slug: string
-            }
-          }
-        }
-        author?: {
-          clerkId: string
-        }
-      } = { published: true }
+      // Build where clause with enhanced security
+      const where: any = { published: true }
 
       if (tag) {
         where.tags = {
@@ -120,21 +126,44 @@ export async function GET(request: NextRequest) {
 
       if (search) {
         const sanitizedSearch = sanitizeText(search)
-        if (sanitizedSearch) {
+        // Enhanced search validation
+        if (sanitizedSearch && sanitizedSearch.length <= 100 && /^[a-zA-Z0-9\s\-_.,!?]+$/.test(sanitizedSearch)) {
           where.OR = [
             { title: { contains: sanitizedSearch, mode: 'insensitive' } },
             { excerpt: { contains: sanitizedSearch, mode: 'insensitive' } },
           ]
+        } else {
+          // Return empty result for invalid search
+          return {
+            posts: [],
+            pagination: {
+              page,
+              limit,
+              total: 0,
+              pages: 0,
+            },
+          }
         }
       }
 
-      // Optimized query with proper pagination
+      // Optimized query with proper field selection
       const [posts, total] = await Promise.all([
         prisma.post.findMany({
           where,
-          include: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            excerpt: true,
+            coverImage: true,
+            publishedAt: true,
+            featured: true,
+            readTimeMin: true,
+            viewCount: true,
             author: {
-              include: {
+              select: {
+                id: true,
+                clerkId: true,
                 profile: {
                   select: {
                     username: true,
@@ -145,9 +174,15 @@ export async function GET(request: NextRequest) {
               },
             },
             tags: {
-              include: {
+              select: {
+                id: true,
                 tag: {
-                  select: { name: true, slug: true, color: true },
+                  select: { 
+                    id: true,
+                    name: true, 
+                    slug: true, 
+                    color: true 
+                  },
                 },
               },
             },
@@ -161,46 +196,20 @@ export async function GET(request: NextRequest) {
           orderBy: [{ featured: 'desc' }, { publishedAt: 'desc' }],
           skip: (page - 1) * limit,
           take: limit,
-          select: {
-            id: true,
-            title: true,
-            slug: true,
-            excerpt: true,
-            coverImage: true,
-            publishedAt: true,
-            featured: true,
-            readTimeMin: true,
-            author: {
-              include: {
-                profile: {
-                  select: {
-                    username: true,
-                    displayName: true,
-                    avatarUrl: true,
-                  },
-                },
-              },
-            },
-            tags: {
-              include: {
-                tag: {
-                  select: { name: true, slug: true, color: true },
-                },
-              },
-            },
-            _count: {
-              select: {
-                likes: true,
-                comments: true,
-              },
-            },
-          },
         }),
         prisma.post.count({ where }),
       ])
 
+      // Sanitize post data before returning
+      const sanitizedPosts = posts.map(post => ({
+        ...post,
+        title: sanitizeText(post.title),
+        excerpt: post.excerpt ? sanitizeText(post.excerpt) : undefined,
+        coverImage: post.coverImage && sanitizeUrl(post.coverImage) ? post.coverImage : null,
+      }))
+
       return {
-        posts,
+        posts: sanitizedPosts,
         pagination: {
           page,
           limit,
@@ -223,47 +232,84 @@ export async function POST(request: NextRequest) {
       const body = await request.json()
       const validatedData = validateRequest(createPostSchema, body)
 
-      // Generate unique slug
+      // Additional validation
+      if (validatedData.contentHtml && validatedData.contentHtml.length > 50000) {
+        return NextResponse.json({ error: 'Content too long (max 50,000 characters)' }, { status: 400 })
+      }
+
+      // Generate unique slug with collision handling
       const baseSlug = slugify(sanitizeText(validatedData.title), {
         lower: true,
         strict: true,
-      })
+        remove: /[^\w\s-]/g, // Remove non-word chars except space and hyphen
+      }).substring(0, 100) // Limit length
 
       let slug = baseSlug
       let counter = 1
-      while (await prisma.post.findUnique({ where: { slug } })) {
+      const maxAttempts = 100
+
+      while (await prisma.post.findUnique({ where: { slug } }) && counter <= maxAttempts) {
         slug = `${baseSlug}-${counter}`
         counter++
+      }
+
+      if (counter > maxAttempts) {
+        logger.error('Unable to generate unique slug', { baseSlug, attempts: maxAttempts })
+        return NextResponse.json({ error: 'Unable to generate unique slug' }, { status: 500 })
       }
 
       // Calculate reading time if content provided
       let readTimeMin = 5 // default
       if (validatedData.contentHtml) {
-        const wordCount = validatedData.contentHtml.split(/\s+/).length
-        readTimeMin = Math.max(1, Math.ceil(wordCount / 200))
+        const textContent = sanitizeText(validatedData.contentHtml.replace(/<[^>]*>/g, ''))
+        const wordCount = textContent.split(/\s+/).filter(word => word.length > 0).length
+        readTimeMin = Math.max(1, Math.min(99, Math.ceil(wordCount / 200)))
       }
 
-      // Create post with proper error handling
-      const post = await prisma.post.create({
-        data: {
-          title: validatedData.title,
-          slug,
-          excerpt: validatedData.excerpt,
-          contentJson: validatedData.contentJson || {},
-          contentHtml: validatedData.contentHtml,
-          coverImage: validatedData.coverImage,
-          authorId: user.id,
-          published: false, // Start as draft
-          readTimeMin,
-          tags:
-            validatedData.tagIds && validatedData.tagIds.length > 0
-              ? {
-                  create: validatedData.tagIds.map((tagId) => ({
-                    tagId,
-                  })),
-                }
-              : undefined,
-        },
+      // Validate tag IDs
+      if (validatedData.tagIds && validatedData.tagIds.length > 0) {
+        const validTagIds = await prisma.tag.findMany({
+          where: { id: { in: validatedData.tagIds } },
+          select: { id: true }
+        })
+        
+        if (validTagIds.length !== validatedData.tagIds.length) {
+          return NextResponse.json({ error: 'One or more invalid tag IDs' }, { status: 400 })
+        }
+      }
+
+      // Create post with transaction for data consistency
+      const post = await prisma.$transaction(async (tx) => {
+        const newPost = await tx.post.create({
+          data: {
+            title: validatedData.title,
+            slug,
+            excerpt: validatedData.excerpt,
+            contentJson: validatedData.contentJson || {},
+            contentHtml: validatedData.contentHtml,
+            coverImage: validatedData.coverImage,
+            authorId: user.id,
+            published: false, // Start as draft
+            readTimeMin,
+          },
+        })
+
+        // Create tag relationships if provided
+        if (validatedData.tagIds && validatedData.tagIds.length > 0) {
+          await tx.postTag.createMany({
+            data: validatedData.tagIds.map((tagId) => ({
+              postId: newPost.id,
+              tagId,
+            })),
+          })
+        }
+
+        return newPost
+      })
+
+      // Fetch complete post data
+      const completePost = await prisma.post.findUnique({
+        where: { id: post.id },
         include: {
           author: {
             include: {
@@ -286,15 +332,20 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      logger.info('Post created', {
-        postId: post.id,
-        slug: post.slug,
+      if (!completePost) {
+        throw new Error('Post created but not found')
+      }
+
+      logger.info('Post created successfully', {
+        postId: completePost.id,
+        slug: completePost.slug,
         userId: user.id,
+        hasTags: validatedData.tagIds?.length > 0,
       })
 
       return {
         success: true,
-        data: post,
+        data: completePost,
       }
     },
     { route: '/api/posts', userId: (await requireUser()).id }
